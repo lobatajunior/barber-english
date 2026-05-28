@@ -6,11 +6,13 @@ import 'dart:js' as js;
 class ExerciseScreen extends StatefulWidget {
   final int leccionId;
   final String titulo;
+  final VoidCallback? onCompletada;
 
   const ExerciseScreen({
     super.key,
     required this.leccionId,
     required this.titulo,
+    this.onCompletada,
   });
 
   @override
@@ -22,7 +24,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   final Color colorFondo2 = const Color(0xFF1A53A1);
   final Color colorCian = const Color(0xFF00E5FF);
   final Color colorVerde = const Color(0xFF00C853);
-  final Color colorTexto = Colors.white;
+  final Color colorRojo = const Color(0xFFFF5252);
 
   int currentIndex = 0;
   String? selectedOption;
@@ -32,7 +34,9 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   bool ejercicioResuelto = false;
   List<String> shuffledOptions = [];
   List<String> shuffledEspanol = [];
-  final TextEditingController textController = TextEditingController();
+  bool isListening = false;
+  String micFeedback = '';
+  bool micCorrecto = false;
 
   late List<Map<String, dynamic>> ejercicios;
 
@@ -50,14 +54,149 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
         window.speechSynthesis.cancel();
         var msg = new SpeechSynthesisUtterance('${texto.replaceAll("'", "")}');
         msg.lang = 'en-US';
-        msg.rate = 0.85;
+        msg.rate = 0.78;
         msg.pitch = 1.0;
+        var voices = window.speechSynthesis.getVoices();
+        var preferidas = ['Google US English','Microsoft Aria','Samantha','Karen','Daniel'];
+        for (var i = 0; i < preferidas.length; i++) {
+          var voz = voices.find(v => v.name.includes(preferidas[i]));
+          if (voz) { msg.voice = voz; break; }
+        }
         window.speechSynthesis.speak(msg);
         """,
       ]);
     } catch (e) {
       print('Error voz: \$e');
     }
+  }
+
+  void _escucharMicrofono(String respuestaCorrecta) {
+    if (isListening) {
+      _detenerMicrofono();
+      return;
+    }
+
+    setState(() {
+      isListening = true;
+      micFeedback = 'Escuchando...';
+      micCorrecto = false;
+    });
+
+    try {
+      final respuestaLimpia = respuestaCorrecta
+          .toLowerCase()
+          .replaceAll(RegExp(r'[^\w\s]'), '')
+          .trim();
+
+      js.context.callMethod('eval', [
+        """
+        var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 3;
+        
+        recognition.onresult = function(event) {
+          var transcripts = [];
+          for (var i = 0; i < event.results[0].length; i++) {
+            transcripts.push(event.results[0][i].transcript.toLowerCase().replace(/[^\\w\\s]/g, '').trim());
+          }
+          window._micResult = transcripts.join('|');
+          window._micDone = true;
+        };
+        
+        recognition.onerror = function(event) {
+          window._micResult = 'error';
+          window._micDone = true;
+        };
+        
+        recognition.onend = function() {
+          if (!window._micDone) {
+            window._micResult = 'timeout';
+            window._micDone = true;
+          }
+        };
+        
+        window._micDone = false;
+        window._micResult = '';
+        recognition.start();
+        """,
+      ]);
+
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _verificarResultadoMic(respuestaLimpia);
+      });
+    } catch (e) {
+      setState(() {
+        isListening = false;
+        micFeedback = 'Error con el micrófono';
+      });
+    }
+  }
+
+  void _verificarResultadoMic(String respuestaLimpia) {
+    Future.delayed(const Duration(milliseconds: 300), () {
+      try {
+        final done = js.context['_micDone'];
+        if (done == true) {
+          final result = js.context['_micResult'].toString();
+
+          if (result == 'error' || result == 'timeout' || result.isEmpty) {
+            setState(() {
+              isListening = false;
+              micFeedback = 'No se escuchó nada, intenta de nuevo';
+              micCorrecto = false;
+            });
+            return;
+          }
+
+          final transcripts = result.split('|');
+          bool correcto = false;
+
+          for (final transcript in transcripts) {
+            final palabrasCorrectas = respuestaLimpia.split(' ');
+            final palabrasTranscritas = transcript.split(' ');
+            int coincidencias = 0;
+
+            for (final palabra in palabrasCorrectas) {
+              if (palabrasTranscritas.any(
+                (p) => p.contains(palabra) || palabra.contains(p),
+              )) {
+                coincidencias++;
+              }
+            }
+
+            final porcentaje = coincidencias / palabrasCorrectas.length;
+            if (porcentaje >= 0.6) {
+              correcto = true;
+              break;
+            }
+          }
+
+          setState(() {
+            isListening = false;
+            micCorrecto = correcto;
+            micFeedback = correcto
+                ? '¡Perfecto! Muy buena pronunciación 🎉'
+                : 'Casi, intenta de nuevo 💪';
+            if (correcto) ejercicioResuelto = true;
+          });
+        } else {
+          _verificarResultadoMic(respuestaLimpia);
+        }
+      } catch (e) {
+        setState(() {
+          isListening = false;
+          micFeedback = 'Intenta de nuevo';
+        });
+      }
+    });
+  }
+
+  void _detenerMicrofono() {
+    setState(() => isListening = false);
+    try {
+      js.context.callMethod('eval', ['window._micDone = true;']);
+    } catch (e) {}
   }
 
   String _cleanText(String text) {
@@ -72,7 +211,9 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     selectedEspanol = null;
     ejercicioResuelto = false;
     matchedWords.clear();
-    textController.clear();
+    isListening = false;
+    micFeedback = '';
+    micCorrecto = false;
 
     if (ej['tipo'] == 'opciones') {
       shuffledOptions = List<String>.from(ej['opciones'])..shuffle();
@@ -136,6 +277,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
+                  widget.onCompletada?.call();
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 },
@@ -412,69 +554,171 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   Widget _buildPronunciacion(Map<String, dynamic> ej) {
     return Column(
       children: [
+        // BOTÓN ESCUCHAR
         GestureDetector(
           onTap: () => _hablar(ej['respuesta_correcta'].toString()),
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: colorCian.withOpacity(0.1),
               shape: BoxShape.circle,
               border: Border.all(color: colorCian.withOpacity(0.3)),
             ),
-            child: Icon(Icons.volume_up_rounded, color: colorCian, size: 40),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Text(
-          ej['respuesta_correcta'] ?? '',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.outfit(
-            color: Colors.white,
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
+            child: Icon(Icons.volume_up_rounded, color: colorCian, size: 36),
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          '[ ${ej['fonetica'] ?? ''} ]',
-          textAlign: TextAlign.center,
+          'Toca para escuchar',
           style: GoogleFonts.outfit(
-            color: colorCian,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
+            color: colorCian.withOpacity(0.6),
+            fontSize: 11,
           ),
         ),
+
+        const SizedBox(height: 20),
+
+        // FRASE PRINCIPAL
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white12),
+          ),
+          child: Column(
+            children: [
+              Text(
+                ej['respuesta_correcta'] ?? '',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: colorCian.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '[ ${ej['fonetica'] ?? ''} ]',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.outfit(
+                    color: colorCian,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
         const SizedBox(height: 30),
-        TextField(
-          controller: textController,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            hintText: 'Escribe aquí para practicar',
-            hintStyle: const TextStyle(color: Colors.white30),
-            filled: true,
-            fillColor: Colors.white.withOpacity(0.08),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(color: Colors.white24),
+
+        // BOTÓN MICRÓFONO
+        GestureDetector(
+          onTap: () => _escucharMicrofono(ej['respuesta_correcta'].toString()),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: isListening ? 90 : 80,
+            height: isListening ? 90 : 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isListening
+                  ? colorRojo.withOpacity(0.2)
+                  : ejercicioResuelto
+                  ? colorVerde.withOpacity(0.2)
+                  : Colors.white.withOpacity(0.1),
+              border: Border.all(
+                color: isListening
+                    ? colorRojo
+                    : ejercicioResuelto
+                    ? colorVerde
+                    : Colors.white38,
+                width: isListening ? 3 : 2,
+              ),
+              boxShadow: isListening
+                  ? [
+                      BoxShadow(
+                        color: colorRojo.withOpacity(0.3),
+                        blurRadius: 20,
+                        spreadRadius: 5,
+                      ),
+                    ]
+                  : [],
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: colorCian, width: 2),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(color: Colors.white24),
+            child: Icon(
+              isListening
+                  ? Icons.mic
+                  : ejercicioResuelto
+                  ? Icons.check_rounded
+                  : Icons.mic_none_rounded,
+              color: isListening
+                  ? colorRojo
+                  : ejercicioResuelto
+                  ? colorVerde
+                  : Colors.white70,
+              size: 36,
             ),
           ),
-          onChanged: (val) {
-            if (_cleanText(
-              val,
-            ).contains(_cleanText(ej['respuesta_correcta'].toString()))) {
-              setState(() => ejercicioResuelto = true);
-            }
-          },
         ),
+
+        const SizedBox(height: 12),
+
+        Text(
+          isListening
+              ? '🔴 Escuchando... toca para parar'
+              : ejercicioResuelto
+              ? '✅ ¡Correcto!'
+              : '🎤 Toca para pronunciar',
+          style: GoogleFonts.outfit(
+            color: isListening
+                ? colorRojo
+                : ejercicioResuelto
+                ? colorVerde
+                : Colors.white54,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+
+        // FEEDBACK DEL MICRÓFONO
+        if (micFeedback.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: micCorrecto
+                    ? colorVerde.withOpacity(0.1)
+                    : colorRojo.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: micCorrecto
+                      ? colorVerde.withOpacity(0.3)
+                      : colorRojo.withOpacity(0.3),
+                ),
+              ),
+              child: Text(
+                micFeedback,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(
+                  color: micCorrecto ? colorVerde : colorRojo,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }
