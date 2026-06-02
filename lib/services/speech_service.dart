@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:speech_to_text/speech_to_text.dart';
+import 'tts_web.dart' if (dart.library.io) 'tts_stub.dart';
 
 class SpeechService {
   final AudioPlayer _player = AudioPlayer();
@@ -7,21 +10,41 @@ class SpeechService {
   bool _sttAvailable = false;
   bool _sttInitialized = false;
 
-  /// Fires once when audio finishes naturally (not on stop/skip).
-  Stream<void> get onPlayComplete => _player.onPlayerComplete;
+  final StreamController<void> _webCompleteController =
+      StreamController<void>.broadcast();
 
-  Future<void> speak(String text) async {
-    await _player.stop();
-    final encoded = Uri.encodeComponent(text);
-    await _player.play(
-      UrlSource(
-        'https://translate.google.com/translate_tts'
-        '?ie=UTF-8&q=$encoded&tl=en&client=tw-ob',
-      ),
-    );
+  SpeechService() {
+    if (kIsWeb) {
+      setupWebTtsComplete(_webCompleteController);
+    }
   }
 
-  Future<void> stopSpeaking() async => _player.stop();
+  /// Fires once when audio finishes naturally (not on stop/skip).
+  Stream<void> get onPlayComplete =>
+      kIsWeb ? _webCompleteController.stream : _player.onPlayerComplete;
+
+  Future<void> speak(String text) async {
+    if (kIsWeb) {
+      speakOnWeb(text);
+    } else {
+      await _player.stop();
+      final encoded = Uri.encodeComponent(text);
+      await _player.play(
+        UrlSource(
+          'https://translate.google.com/translate_tts'
+          '?ie=UTF-8&q=$encoded&tl=en&client=tw-ob',
+        ),
+      );
+    }
+  }
+
+  Future<void> stopSpeaking() async {
+    if (kIsWeb) {
+      stopSpeakingOnWeb();
+    } else {
+      await _player.stop();
+    }
+  }
 
   bool get isListening => _stt.isListening;
 
@@ -86,5 +109,6 @@ class SpeechService {
   void dispose() {
     _player.dispose();
     _stt.stop();
+    _webCompleteController.close();
   }
 }

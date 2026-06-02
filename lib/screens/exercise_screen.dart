@@ -593,21 +593,22 @@ class SceneCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF111111),
-        borderRadius: BorderRadius.circular(18),
-        border: Border(
-          top: const BorderSide(color: _kGreen, width: 2),
-          left: BorderSide(color: Colors.white.withValues(alpha: 0.06), width: 1),
-          right: BorderSide(color: Colors.white.withValues(alpha: 0.06), width: 1),
-          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06), width: 1),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF111111),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.06),
+                width: 1,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Avatar circular con borde verde ──
@@ -685,6 +686,24 @@ class SceneCardWidget extends StatelessWidget {
             ),
           ],
         ),
+      ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 2,
+              decoration: const BoxDecoration(
+                color: _kGreen,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(18),
+                  topRight: Radius.circular(18),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
