@@ -1,46 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
+import 'core/app_theme.dart';
+import 'core/app_colors.dart';
+import 'providers/auth_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const BarberEnglishApp());
+  runApp(const ProviderScope(child: BarberEnglishApp()));
 }
 
-class BarberEnglishApp extends StatelessWidget {
+class BarberEnglishApp extends ConsumerWidget {
   const BarberEnglishApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
+
     return MaterialApp(
       title: 'Barber English',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1A53A1)),
-        textTheme: GoogleFonts.outfitTextTheme(),
-        useMaterial3: true,
+      theme: AppTheme.theme,
+      home: authState.when(
+        loading: () => const _SplashScreen(),
+        error: (_, _) => const LoginScreen(),
+        data: (user) => user != null ? const HomeScreen() : const LoginScreen(),
       ),
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              backgroundColor: Color(0xFF0A1628),
-              body: Center(
-                child: CircularProgressIndicator(color: Color(0xFF00E5FF)),
-              ),
-            );
-          }
-          if (snapshot.hasData) {
-            return const HomeScreen();
-          }
-          return const LoginScreen();
-        },
+    );
+  }
+}
+
+class _SplashScreen extends StatelessWidget {
+  const _SplashScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: AppTheme.backgroundDecoration,
+        child: const Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
       ),
     );
   }
