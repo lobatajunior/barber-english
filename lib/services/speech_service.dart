@@ -3,7 +3,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'tts_web.dart' if (dart.library.io) 'tts_stub.dart';
 
-const _kWhisperApiKey = '';
+const _kWhisperApiKey = String.fromEnvironment('WHISPER_KEY', defaultValue: '');
 
 class SpeechService {
   final AudioPlayer _player = AudioPlayer();
