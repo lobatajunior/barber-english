@@ -6,6 +6,7 @@ import '../core/app_colors.dart';
 import '../core/app_theme.dart';
 import '../models/lesson.dart';
 import '../providers/progress_provider.dart';
+import '../providers/gamification_provider.dart';
 import '../widgets/opciones_widget.dart';
 import '../widgets/pronunciacion_widget.dart';
 import '../widgets/parejas_widget.dart';
@@ -36,6 +37,15 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
   int _index = 0;
   bool _resolved = false;
   bool _showIntro = true;
+  bool _showCompletion = false;
+
+  // XP tracking for completion screen
+  int _nivelAlEmpezar = -1; // -1 = not yet captured
+  int _nivelAlTerminar = 1;
+  String _nombreNivelNuevo = 'Apprentice Barber';
+  int _xpEjerciciosTotal = 0;    // +10 per exercise resolved
+  int _xpPronunciacionTotal = 0; // +50 per perfect pronunciation
+  int _xpRachaGanado = 0;        // 0 or 20
 
   List<Map<String, dynamic>> get _exercises => widget.lesson.exercises;
   Map<String, dynamic> get _current => _exercises[_index];
@@ -45,7 +55,22 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
       widget.lesson.motivacionEs != null;
 
   void _onResolved() {
-    if (!_resolved) setState(() => _resolved = true);
+    if (!_resolved) {
+      // Capture the nivel before any exercise XP is added (only on first call)
+      if (_nivelAlEmpezar == -1) {
+        _nivelAlEmpezar = ref.read(gamificationProvider).nivel;
+      }
+      setState(() {
+        _resolved = true;
+        _xpEjerciciosTotal += 10;
+      });
+      ref.read(gamificationProvider.notifier).addXP(10);
+    }
+  }
+
+  void _onPerfecto() {
+    setState(() => _xpPronunciacionTotal += 50);
+    ref.read(gamificationProvider.notifier).addXP(50);
   }
 
   void _advance() {
@@ -60,83 +85,30 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
   }
 
   Future<void> _complete() async {
-    await ref
-        .read(progressProvider.notifier)
-        .completeLesson(widget.sectionId, widget.lesson.id);
-    if (mounted) _showCompletionDialog();
-  }
+    // Capture starting nivel if no exercises were resolved before completion
+    if (_nivelAlEmpezar == -1) {
+      _nivelAlEmpezar = ref.read(gamificationProvider).nivel;
+    }
 
-  void _showCompletionDialog() {
-    final messages = [
-      '¡Excelente trabajo!',
-      '¡Increíble, lo lograste!',
-      '¡Eres un crack en inglés!',
-      '¡Genial, dominas esta lección!',
-    ];
-    final msg = messages[Random().nextInt(messages.length)];
+    // Award lesson completion XP (synchronous state update)
+    ref.read(gamificationProvider.notifier).addXP(100);
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        backgroundColor: const Color.fromARGB(255, 163, 176, 222),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: BorderSide(
-            color: AppColors.primary.withValues(alpha: 0.5),
-            width: 2,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.emoji_events_rounded, color: AppColors.gold, size: 80),
-            const SizedBox(height: 16),
-            Text(
-              '¡LECCIÓN COMPLETADA!',
-              style: GoogleFonts.outfit(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              msg,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(color: Colors.white60, fontSize: 16),
-            ),
-            const SizedBox(height: 28),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.success,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Text(
-                  '¡A POR OTRA!',
-                  style: GoogleFonts.outfit(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    // Check and award daily streak bonus
+    final rachaBonus = await ref.read(gamificationProvider.notifier).checkRacha();
+    if (!mounted) return;
+
+    final gam = ref.read(gamificationProvider);
+
+    // Save lesson progress
+    await ref.read(progressProvider.notifier).completeLesson(widget.sectionId, widget.lesson.id);
+    if (!mounted) return;
+
+    setState(() {
+      _xpRachaGanado = rachaBonus;
+      _nivelAlTerminar = gam.nivel;
+      _nombreNivelNuevo = gam.nombreNivel;
+      _showCompletion = true;
+    });
   }
 
   Widget _buildIntroScreen() {
@@ -158,11 +130,12 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                 ),
               ),
               const Spacer(),
-              // Emoji + title
+              // Avatar mascota completo, sin recorte
               Center(
-                child: Text(
-                  lesson.emoji,
-                  style: const TextStyle(fontSize: 64),
+                child: Image.asset(
+                  'assets/mascota.png',
+                  height: 150,
+                  fit: BoxFit.contain,
                 ),
               ),
               const SizedBox(height: 16),
@@ -309,6 +282,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
           ejercicio: _current,
           onResuelto: _onResolved,
           onContinuar: _advance,
+          onPerfecto: _onPerfecto,
         );
       case 'parejas':
         return ParejasWidget(
@@ -359,6 +333,20 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_showCompletion) {
+      return _CompletionView(
+        lessonTitle: widget.lesson.title,
+        lessonEmoji: widget.lesson.emoji,
+        onNext: () => Navigator.of(context).pop(),
+        xpEjercicios: _xpEjerciciosTotal,
+        xpPronunciacion: _xpPronunciacionTotal,
+        xpRacha: _xpRachaGanado,
+        nivelAntes: _nivelAlEmpezar.clamp(1, 5),
+        nivelDespues: _nivelAlTerminar,
+        nombreNivelNuevo: _nombreNivelNuevo,
+      );
+    }
+
     if (_exercises.isEmpty) {
       return Scaffold(
         body: Container(
@@ -560,14 +548,445 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SceneCardWidget
-// Muestra el contexto de la frase: avatar circular con borde verde, quién habla,
-// frase en inglés y traducción al español.
-//
-// Campos del ejercicio que consume:
-//   quien_habla        → etiqueta verde arriba (ej. "El cliente dice")
-//   pregunta | frase   → frase en inglés (negrita blanca)
-//   traduccion_pregunta → frase en español (fondo verde suave + 🇪🇸)
+// CompletionView — pantalla de celebración al acabar la lección
+// ─────────────────────────────────────────────────────────────────────────────
+class _CompletionView extends StatefulWidget {
+  final String lessonTitle;
+  final String lessonEmoji;
+  final VoidCallback onNext;
+  final int xpEjercicios;      // +10 × N exercises
+  final int xpPronunciacion;   // +50 × N perfect pronunciations
+  final int xpRacha;           // 0 or 20
+  final int nivelAntes;        // nivel before lesson started
+  final int nivelDespues;      // nivel after all XP awarded
+  final String nombreNivelNuevo;
+
+  const _CompletionView({
+    required this.lessonTitle,
+    required this.lessonEmoji,
+    required this.onNext,
+    required this.xpEjercicios,
+    required this.xpPronunciacion,
+    required this.xpRacha,
+    required this.nivelAntes,
+    required this.nivelDespues,
+    required this.nombreNivelNuevo,
+  });
+
+  @override
+  State<_CompletionView> createState() => _CompletionViewState();
+}
+
+class _CompletionViewState extends State<_CompletionView>
+    with TickerProviderStateMixin {
+  late AnimationController _entradaCtrl;
+  late Animation<double> _scale;
+  late Animation<double> _fade;
+
+  late AnimationController _levelUpCtrl;
+  late Animation<double> _levelUpScale;
+  late Animation<double> _levelUpFade;
+
+  static const _kCelebGreen = Color(0xFF00E676);
+  static const _kCelebBg = Color(0xFF080808);
+  static const _kGold = Color(0xFFFFD600);
+
+  int get _xpTotal => widget.xpEjercicios + widget.xpPronunciacion + 100 + widget.xpRacha;
+  bool get _subioDeNivel => widget.nivelDespues > widget.nivelAntes;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _entradaCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 750),
+    );
+    _scale = CurvedAnimation(parent: _entradaCtrl, curve: Curves.elasticOut);
+    _fade = CurvedAnimation(parent: _entradaCtrl, curve: Curves.easeIn);
+    _entradaCtrl.forward();
+
+    _levelUpCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+    _levelUpScale = CurvedAnimation(parent: _levelUpCtrl, curve: Curves.elasticOut);
+    _levelUpFade = CurvedAnimation(parent: _levelUpCtrl, curve: Curves.easeIn);
+
+    if (_subioDeNivel) {
+      Future.delayed(const Duration(milliseconds: 1600), () {
+        if (mounted) _levelUpCtrl.forward();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _entradaCtrl.dispose();
+    _levelUpCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: _kCelebBg,
+      body: Stack(
+        children: [
+          const Positioned.fill(
+            child: IgnorePointer(child: _CompletionConfetti()),
+          ),
+
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(28, 0, 28, 36),
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
+
+                  // Trofeo con entrada elástica
+                  ScaleTransition(
+                    scale: _scale,
+                    child: FadeTransition(
+                      opacity: _fade,
+                      child: const Text('🏆', style: TextStyle(fontSize: 76)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  FadeTransition(
+                    opacity: _fade,
+                    child: Text(
+                      '¡Lección completada!',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.outfit(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        height: 1.2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  FadeTransition(
+                    opacity: _fade,
+                    child: Text(
+                      '${widget.lessonEmoji}  ${widget.lessonTitle}',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.outfit(
+                        color: Colors.white38,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // XP Badge — animated counter + breakdown
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(
+                        color: _kCelebGreen.withValues(alpha: 0.40),
+                        width: 1.5,
+                      ),
+                      color: _kCelebGreen.withValues(alpha: 0.06),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _kCelebGreen.withValues(alpha: 0.14),
+                          blurRadius: 36,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        // Animated total counter
+                        TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0, end: _xpTotal.toDouble()),
+                          duration: const Duration(milliseconds: 1300),
+                          curve: Curves.easeOutCubic,
+                          builder: (_, xp, __) => Text(
+                            '+${xp.round()} XP',
+                            style: GoogleFonts.outfit(
+                              color: _kCelebGreen,
+                              fontSize: 48,
+                              fontWeight: FontWeight.w900,
+                              height: 1.0,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'XP ganados esta lección',
+                          style: GoogleFonts.outfit(
+                            color: _kCelebGreen.withValues(alpha: 0.50),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        // Divider
+                        Divider(color: _kCelebGreen.withValues(alpha: 0.18), height: 1),
+                        const SizedBox(height: 14),
+
+                        // Breakdown rows
+                        _XpRow(label: 'Ejercicios completados', xp: widget.xpEjercicios),
+                        if (widget.xpPronunciacion > 0)
+                          _XpRow(
+                            label: 'Pronunciación perfecta ⭐',
+                            xp: widget.xpPronunciacion,
+                          ),
+                        _XpRow(label: 'Lección completa', xp: 100, highlight: true),
+                        if (widget.xpRacha > 0)
+                          _XpRow(label: 'Racha diaria 🔥', xp: widget.xpRacha),
+                      ],
+                    ),
+                  ),
+
+                  // Level-up banner (appears after XP counter finishes)
+                  if (_subioDeNivel) ...[
+                    const SizedBox(height: 20),
+                    ScaleTransition(
+                      scale: _levelUpScale,
+                      child: FadeTransition(
+                        opacity: _levelUpFade,
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(18),
+                            gradient: LinearGradient(
+                              colors: [
+                                _kGold.withValues(alpha: 0.22),
+                                _kGold.withValues(alpha: 0.08),
+                              ],
+                            ),
+                            border: Border.all(
+                              color: _kGold.withValues(alpha: 0.55),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                '⭐ ¡SUBISTE DE NIVEL! ⭐',
+                                style: GoogleFonts.outfit(
+                                  color: _kGold,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.nombreNivelNuevo,
+                                style: GoogleFonts.outfit(
+                                  color: Colors.white.withValues(alpha: 0.85),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 32),
+
+                  // Siguiente lección button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: widget.onNext,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _kCelebGreen,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        elevation: 8,
+                        shadowColor: _kCelebGreen.withValues(alpha: 0.4),
+                      ),
+                      child: Text(
+                        'Siguiente lección →',
+                        style: GoogleFonts.outfit(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 17,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _XpRow extends StatelessWidget {
+  final String label;
+  final int xp;
+  final bool highlight;
+
+  const _XpRow({required this.label, required this.xp, this.highlight = false});
+
+  static const _kCelebGreen = Color(0xFF00E676);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 7),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.outfit(
+              color: highlight ? Colors.white70 : Colors.white38,
+              fontSize: 12,
+              fontWeight: highlight ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+          Text(
+            '+$xp XP',
+            style: GoogleFonts.outfit(
+              color: highlight
+                  ? _kCelebGreen
+                  : _kCelebGreen.withValues(alpha: 0.65),
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Confetti en bucle para la pantalla de celebración
+// ─────────────────────────────────────────────────────────────────────────────
+class _CompletionConfetti extends StatefulWidget {
+  const _CompletionConfetti();
+
+  @override
+  State<_CompletionConfetti> createState() => _CompletionConfettiState();
+}
+
+class _CompletionConfettiState extends State<_CompletionConfetti>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late List<_CParticle> _particles;
+
+  static const _colors = [
+    Color(0xFF00E676),
+    Color(0xFFFFD600),
+    Color(0xFFFF5252),
+    Colors.white,
+    Color(0xFF40C4FF),
+    Color(0xFFFF80AB),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    final rnd = Random();
+    _particles = List.generate(60, (_) => _CParticle(
+      x: rnd.nextDouble(),
+      speed: 0.25 + rnd.nextDouble() * 0.55,
+      phase: rnd.nextDouble(),
+      sway: (rnd.nextDouble() - 0.5) * 2,
+      freq: 1.0 + rnd.nextDouble() * 3.0,
+      color: _colors[rnd.nextInt(_colors.length)],
+      w: 5.0 + rnd.nextDouble() * 7,
+      h: 4.0 + rnd.nextDouble() * 5,
+      angle: rnd.nextDouble() * 2 * pi,
+      spin: (rnd.nextDouble() - 0.5) * 8,
+    ));
+    _ctrl = AnimationController(vsync: this, duration: const Duration(seconds: 4))
+      ..repeat();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (_, __) => CustomPaint(
+        painter: _CConfettiPainter(_ctrl.value, _particles),
+        child: const SizedBox.expand(),
+      ),
+    );
+  }
+}
+
+class _CParticle {
+  final double x, speed, phase, sway, freq, w, h, angle, spin;
+  final Color color;
+  const _CParticle({
+    required this.x,
+    required this.speed,
+    required this.phase,
+    required this.sway,
+    required this.freq,
+    required this.color,
+    required this.w,
+    required this.h,
+    required this.angle,
+    required this.spin,
+  });
+}
+
+class _CConfettiPainter extends CustomPainter {
+  final double progress;
+  final List<_CParticle> particles;
+  _CConfettiPainter(this.progress, this.particles);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (final p in particles) {
+      // Cada partícula tiene su propia fase para que el bucle sea continuo
+      final t = ((progress * p.speed + p.phase) % 1.0);
+      final opacity = t < 0.85 ? 1.0 : (1.0 - (t - 0.85) / 0.15);
+      if (opacity <= 0) continue;
+      final x = p.x * size.width + p.sway * sin(progress * p.freq * pi * 2) * 28;
+      final y = -12.0 + (size.height + 30) * t;
+      canvas.save();
+      canvas.translate(x, y);
+      canvas.rotate(p.angle + progress * p.spin);
+      canvas.drawRect(
+        Rect.fromCenter(center: Offset.zero, width: p.w, height: p.h),
+        Paint()..color = p.color.withValues(alpha: opacity * 0.75),
+      );
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(_CConfettiPainter old) => true;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SceneCardWidget — avatar + speaker label + Spanish translation
+// Para 'parejas' solo muestra avatar + speaker label (sin texto de palabras).
 // ─────────────────────────────────────────────────────────────────────────────
 class SceneCardWidget extends StatelessWidget {
   final Map<String, dynamic> ejercicio;
@@ -579,17 +998,13 @@ class SceneCardWidget extends StatelessWidget {
     required this.pose,
   });
 
-  String get _phraseEn {
-    final p = ejercicio['pregunta']?.toString() ?? '';
-    if (p.isNotEmpty) return p;
-    return ejercicio['frase']?.toString() ?? '';
-  }
-
   String get _phraseEs =>
       ejercicio['traduccion_pregunta']?.toString() ?? '';
 
   String get _speaker =>
       ejercicio['quien_habla']?.toString() ?? '';
+
+  bool get _showText => ejercicio['tipo'] != 'parejas';
 
   @override
   Widget build(BuildContext context) {
@@ -609,84 +1024,66 @@ class SceneCardWidget extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Avatar circular con borde verde ──
-            _AvatarCircle(pose: pose),
-            const SizedBox(width: 14),
-
-            // ── Contenido derecho ──
-            Expanded(
-              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Quién habla
-                  if (_speaker.isNotEmpty) ...[
-                    Text(
-                      _speaker,
-                      style: GoogleFonts.outfit(
-                        color: _kGreen,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                  ],
-
-                  // Frase en inglés
-                  if (_phraseEn.isNotEmpty) ...[
-                    Text(
-                      _phraseEn,
-                      style: GoogleFonts.outfit(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        height: 1.35,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-
-                  // Traducción en español
-                  if (_phraseEs.isNotEmpty)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 7,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _kGreen.withValues(alpha: 0.10),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: _kGreen.withValues(alpha: 0.20),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('🇪🇸 ', style: TextStyle(fontSize: 13)),
-                          Expanded(
-                            child: Text(
-                              _phraseEs,
-                              style: GoogleFonts.outfit(
-                                color: _kGreen.withValues(alpha: 0.85),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                height: 1.4,
-                              ),
+                  _AvatarCircle(pose: pose),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Quién habla
+                        if (_speaker.isNotEmpty) ...[
+                          Text(
+                            _speaker,
+                            style: GoogleFonts.outfit(
+                              color: _kGreen,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.8,
                             ),
                           ),
+                          const SizedBox(height: 6),
                         ],
-                      ),
+                        // Traducción en español (todos los tipos excepto parejas)
+                        if (_showText && _phraseEs.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 7,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _kGreen.withValues(alpha: 0.10),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: _kGreen.withValues(alpha: 0.20),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('🇪🇸 ', style: TextStyle(fontSize: 13)),
+                                Expanded(
+                                  child: Text(
+                                    _phraseEs,
+                                    style: GoogleFonts.outfit(
+                                      color: _kGreen.withValues(alpha: 0.85),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
                     ),
+                  ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
           ),
           Positioned(
             top: 0,
@@ -715,53 +1112,16 @@ class _AvatarCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: _kGreen, width: 2.5),
-            boxShadow: [
-              BoxShadow(
-                color: _kGreen.withValues(alpha: 0.25),
-                blurRadius: 12,
-                spreadRadius: 1,
-              ),
-            ],
-            color: const Color(0xFF1A1A1A),
-          ),
-          child: ClipOval(
-            child: Image.asset(
-              pose,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => Image.asset(
-                'assets/mascota.png',
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+    return SizedBox(
+      width: 72,
+      child: Image.asset(
+        pose,
+        fit: BoxFit.contain,
+        errorBuilder: (_, _, _) => Image.asset(
+          'assets/mascota.png',
+          fit: BoxFit.contain,
         ),
-        // Icono 💈 pequeño abajo a la derecha
-        Positioned(
-          bottom: -4,
-          right: -4,
-          child: Container(
-            width: 22,
-            height: 22,
-            decoration: BoxDecoration(
-              color: const Color(0xFF111111),
-              shape: BoxShape.circle,
-              border: Border.all(color: _kGreen, width: 1.5),
-            ),
-            child: const Center(
-              child: Text('💈', style: TextStyle(fontSize: 11)),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

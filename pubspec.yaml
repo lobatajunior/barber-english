@@ -17,7 +17,6 @@ dependencies:
   firebase_auth: ^6.5.1
   cloud_firestore: 6.4.1
   flutter_riverpod: ^2.5.1
-  speech_to_text: ^6.6.2
 
 dev_dependencies:
   flutter_test:

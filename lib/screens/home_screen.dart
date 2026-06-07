@@ -10,6 +10,7 @@ import '../data/barber_zone_data.dart';
 import '../data/street_english_data.dart';
 import '../providers/auth_provider.dart';
 import '../providers/progress_provider.dart';
+import '../providers/gamification_provider.dart';
 import 'section_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -83,13 +84,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     return 'assets/pose6.png';
   }
 
-  String _userLevel(int total) {
-    if (total < 8) return 'A1';
-    if (total < 20) return 'A2';
-    if (total < 40) return 'B1';
-    return 'B2';
-  }
-
   String _greeting(User? user) {
     if (user == null || user.isAnonymous) return '¡Hola, Barber!';
     final name = (user.email ?? '').split('@').first;
@@ -101,6 +95,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final user = ref.watch(currentUserProvider);
     final progress = ref.watch(progressProvider);
     final total = progress.total;
+    final gam = ref.watch(gamificationProvider);
 
     return Scaffold(
       body: Container(
@@ -110,10 +105,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             children: [
               _TopBar(
                 greeting: _greeting(user),
-                level: _userLevel(total),
+                nivel: gam.nivel,
                 lessonCount: total,
                 onLogout: () => FirebaseAuth.instance.signOut(),
               ),
+              _XpBar(gam: gam),
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -125,7 +121,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         const SizedBox(height: 4),
                         _MascotHero(
                           pose: _mascotPose(total),
-                          lessonCount: total,
+                          xpTotal: gam.xpTotal,
                           floatAnim: _floatAnim,
                           pulseAnim: _pulseAnim,
                         ),
@@ -162,13 +158,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
 class _TopBar extends StatelessWidget {
   final String greeting;
-  final String level;
+  final int nivel;
   final int lessonCount;
   final VoidCallback onLogout;
 
   const _TopBar({
     required this.greeting,
-    required this.level,
+    required this.nivel,
     required this.lessonCount,
     required this.onLogout,
   });
@@ -233,7 +229,7 @@ class _TopBar extends StatelessWidget {
               ),
             ),
             child: Text(
-              'Nv. $level',
+              'Nv. $nivel',
               style: GoogleFonts.outfit(
                 color: AppColors.primary,
                 fontSize: 12,
@@ -256,13 +252,13 @@ class _TopBar extends StatelessWidget {
 
 class _MascotHero extends StatelessWidget {
   final String pose;
-  final int lessonCount;
+  final int xpTotal;
   final Animation<double> floatAnim;
   final Animation<double> pulseAnim;
 
   const _MascotHero({
     required this.pose,
-    required this.lessonCount,
+    required this.xpTotal,
     required this.floatAnim,
     required this.pulseAnim,
   });
@@ -328,8 +324,8 @@ class _MascotHero extends StatelessWidget {
               ),
             ),
           ),
-          // Lesson count badge (top-right of mascot)
-          if (lessonCount > 0)
+          // XP badge (top-right of mascot)
+          if (xpTotal > 0)
             Positioned(
               top: 8,
               right: 32,
@@ -347,7 +343,7 @@ class _MascotHero extends StatelessWidget {
                   ],
                 ),
                 child: Text(
-                  '🏆 $lessonCount',
+                  '⚡ $xpTotal XP',
                   style: GoogleFonts.outfit(
                     color: Colors.white,
                     fontSize: 11,
@@ -357,6 +353,99 @@ class _MascotHero extends StatelessWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+// ── XP progress bar ──────────────────────────────────────────────────────────
+
+class _XpBar extends StatelessWidget {
+  final GamificationState gam;
+
+  const _XpBar({required this.gam});
+
+  @override
+  Widget build(BuildContext context) {
+    if (gam.isLoading) return const SizedBox.shrink();
+    final nivel5 = gam.nivel >= 5;
+    final xpEnNivel = gam.xpTotal - gam.xpInicioNivel;
+    final xpNecesario = gam.xpFinNivel - gam.xpInicioNivel;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.primary.withValues(alpha: 0.15),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Text('⚡', style: TextStyle(fontSize: 13)),
+                    const SizedBox(width: 6),
+                    Text(
+                      gam.nombreNivel,
+                      style: GoogleFonts.outfit(
+                        color: AppColors.primary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                if (gam.rachaDias > 0)
+                  Row(
+                    children: [
+                      const Text('🔥', style: TextStyle(fontSize: 12)),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${gam.rachaDias} ${gam.rachaDias == 1 ? "día" : "días"}',
+                        style: GoogleFonts.outfit(
+                          color: const Color(0xFFFF9800),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+            const SizedBox(height: 7),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: gam.progresoBarra,
+                backgroundColor: Colors.white.withValues(alpha: 0.08),
+                valueColor:
+                    const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                minHeight: 5,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                nivel5
+                    ? '${gam.xpTotal} XP · Nivel máximo 🏆'
+                    : '$xpEnNivel / $xpNecesario XP para siguiente nivel',
+                style: GoogleFonts.outfit(
+                  color: Colors.white30,
+                  fontSize: 10,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

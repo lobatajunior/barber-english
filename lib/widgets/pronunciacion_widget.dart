@@ -16,12 +16,14 @@ class PronunciacionWidget extends ConsumerStatefulWidget {
   final Map<String, dynamic> ejercicio;
   final VoidCallback onResuelto;
   final VoidCallback onContinuar;
+  final VoidCallback? onPerfecto; // called when pronunciation score == 100
 
   const PronunciacionWidget({
     super.key,
     required this.ejercicio,
     required this.onResuelto,
     required this.onContinuar,
+    this.onPerfecto,
   });
 
   @override
@@ -34,10 +36,12 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   bool _isPlaying = false;
   bool _modelPlayed = false;
   bool _isListening = false;
+  bool _micUnavailable = false;
   double? _score;
   String _spokenText = '';
   bool _resolved = false;
   StreamSubscription<void>? _completeSub;
+  Timer? _audioTimeoutTimer;
   late AnimationController _micPulseCtrl;
 
   String get _target =>
@@ -52,13 +56,13 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
       vsync: this,
       duration: const Duration(milliseconds: 1400),
     );
-    // Auto-reproduce el modelo al entrar (CAMBIO 3-1)
     WidgetsBinding.instance.addPostFrameCallback((_) => _speakModel());
   }
 
   @override
   void dispose() {
     _completeSub?.cancel();
+    _audioTimeoutTimer?.cancel();
     _micPulseCtrl.dispose();
     super.dispose();
   }
@@ -69,9 +73,23 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
     final speech = ref.read(speechServiceProvider);
 
     _completeSub?.cancel();
+    _audioTimeoutTimer?.cancel();
     setState(() => _isPlaying = true);
 
     _completeSub = speech.onPlayComplete.listen((_) {
+      if (!mounted) return;
+      _audioTimeoutTimer?.cancel();
+      _completeSub?.cancel();
+      _completeSub = null;
+      setState(() {
+        _isPlaying = false;
+        _modelPlayed = true;
+      });
+    });
+
+    // Fallback: si el audio falla silenciosamente (ej. Google TTS bloqueado),
+    // desbloquear el micrófono igualmente tras 6 segundos.
+    _audioTimeoutTimer = Timer(const Duration(seconds: 6), () {
       if (!mounted) return;
       _completeSub?.cancel();
       _completeSub = null;
@@ -85,16 +103,9 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   }
 
   // ── Grabar pronunciación ───────────────────────────────────────────────────
-  Future<void> _toggleListening() async {
+  Future<void> _startListening() async {
+    if (_isListening) return;
     final speech = ref.read(speechServiceProvider);
-
-    if (_isListening) {
-      await speech.stopListening();
-      _micPulseCtrl.stop();
-      _micPulseCtrl.reset();
-      setState(() => _isListening = false);
-      return;
-    }
 
     setState(() {
       _isListening = true;
@@ -106,6 +117,9 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
     final started = await speech.startListening(
       onResult: (words) {
         final score = speech.calculateScore(words, _target);
+        debugPrint('STT words: $words');
+        debugPrint('Target: $_target');
+        debugPrint('Score: $score');
         if (!mounted) return;
         _micPulseCtrl.stop();
         _micPulseCtrl.reset();
@@ -116,6 +130,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
           if (score >= 70 && !_resolved) {
             _resolved = true;
             widget.onResuelto();
+            if (score >= 100) widget.onPerfecto?.call();
           }
         });
       },
@@ -126,6 +141,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
           setState(() => _isListening = false);
         }
       },
+      target: _target,
     );
 
     if (!started && mounted) {
@@ -133,7 +149,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
       _micPulseCtrl.reset();
       setState(() {
         _isListening = false;
-        _spokenText = 'Micrófono no disponible en este dispositivo';
+        _micUnavailable = true;
       });
     }
   }
@@ -142,6 +158,11 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
         _score = null;
         _spokenText = '';
       });
+
+  void _retryMic() {
+    setState(() => _micUnavailable = false);
+    _startListening();
+  }
 
   void _continuar() {
     if (!_resolved) {
@@ -214,40 +235,98 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
 
         const SizedBox(height: 28),
 
-        // CAMBIO 3-4/5: Botón micrófono con círculos pulsantes
-        _MicButton(
-          isListening: _isListening,
-          isEnabled: _modelPlayed && !_isPlaying,
-          pulseCtrl: _micPulseCtrl,
-          onTap: (_modelPlayed && !_isPlaying) ? _toggleListening : null,
-        ),
-        const SizedBox(height: 10),
-        Text(
-          _isListening
-              ? '🔴  Escuchando... toca para parar'
-              : (_modelPlayed
-                  ? '🎙️  Ahora pronuncia tú'
-                  : 'Espera el modelo de pronunciación...'),
-          textAlign: TextAlign.center,
-          style: GoogleFonts.outfit(
-            color: _isListening
-                ? _kGreen
-                : (_modelPlayed ? Colors.white70 : Colors.white30),
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        // Zona fija: el IndexedStack reserva desde el inicio el espacio máximo
+        // de ambos hijos, evitando que la pantalla se alargue al aparecer el feedback.
+        IndexedStack(
+          index: _score != null ? 1 : 0,
+          alignment: Alignment.topCenter,
+          children: [
+            // ── 0: Zona micrófono ───────────────────────────────────────────
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _MicButton(
+                  isListening: _isListening,
+                  isEnabled: _modelPlayed && !_isPlaying,
+                  pulseCtrl: _micPulseCtrl,
+                  onTap: (!_isListening && _modelPlayed && !_isPlaying)
+                      ? _startListening
+                      : null,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  _isListening
+                      ? '🔴  Escuchando...'
+                      : (_modelPlayed
+                          ? '🎙️  Ahora pronuncia tú'
+                          : 'Espera el modelo de pronunciación...'),
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.outfit(
+                    color: _isListening
+                        ? _kGreen
+                        : (_modelPlayed ? Colors.white70 : Colors.white30),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (_micUnavailable) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'No se pudo activar el micrófono. Intenta de nuevo.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.outfit(
+                      color: _kRed,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _retryMic,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withValues(alpha: 0.10),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        'Reintentar',
+                        style: GoogleFonts.outfit(
+                            fontWeight: FontWeight.w700, fontSize: 14),
+                      ),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 14),
+                TextButton(
+                  onPressed: _continuar,
+                  child: Text(
+                    'Saltar →',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white38,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
-        // CAMBIO 4: Panel de feedback (aparece al tener score)
-        if (_score != null) ...[
-          const SizedBox(height: 28),
-          _FeedbackPanel(
-            score: _score!,
-            spokenText: _spokenText,
-            onRetry: _retry,
-            onContinuar: _continuar,
-          ),
-        ],
+            // ── 1: Panel de feedback ────────────────────────────────────────
+            // score ?? 0 solo afecta al layout cuando aún no hay resultado;
+            // el panel nunca es visible (index 0 activo) hasta que _score != null.
+            _FeedbackPanel(
+              score: _score ?? 0,
+              spokenText: _spokenText,
+              onRetry: _retry,
+              onContinuar: _continuar,
+            ),
+          ],
+        ),
       ],
     );
   }

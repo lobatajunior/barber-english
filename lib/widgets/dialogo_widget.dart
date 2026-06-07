@@ -24,9 +24,6 @@ class _DialogoWidgetState extends ConsumerState<DialogoWidget> {
   late List<String> _shuffled;
 
   String get _correcta => widget.ejercicio['respuesta_correcta'].toString();
-  String get _clienteDice => widget.ejercicio['cliente_dice']?.toString() ?? '';
-  String? get _traduccionCliente => widget.ejercicio['traduccion_cliente']?.toString();
-  String? get _traduccionRespuesta => widget.ejercicio['traduccion_respuesta']?.toString();
 
   @override
   void initState() {
@@ -50,63 +47,6 @@ class _DialogoWidgetState extends ConsumerState<DialogoWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Burbuja del cliente ──────────────────────────────────────────────
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: AppColors.teal.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.teal.withValues(alpha: 0.4)),
-              ),
-              child: const Center(
-                child: Text('👤', style: TextStyle(fontSize: 18)),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: AppColors.teal.withValues(alpha: 0.1),
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(16),
-                        bottomLeft: Radius.circular(16),
-                        bottomRight: Radius.circular(16),
-                      ),
-                      border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
-                    ),
-                    child: Text(
-                      _clienteDice,
-                      style: GoogleFonts.outfit(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  if (_traduccionCliente != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 5, left: 4),
-                      child: Text(
-                        _traduccionCliente!,
-                        style: GoogleFonts.outfit(color: Colors.white38, fontSize: 12),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 24),
-
         // ── Etiqueta "tu turno" ──────────────────────────────────────────────
         Row(
           children: [
@@ -176,28 +116,6 @@ class _DialogoWidgetState extends ConsumerState<DialogoWidget> {
           );
         }),
 
-        // ── Traducción de la respuesta correcta ─────────────────────────────
-        if (_resolved && _traduccionRespuesta != null) ...[
-          const SizedBox(height: 8),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: AppColors.success.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
-            ),
-            child: Text(
-              _traduccionRespuesta!,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(
-                color: AppColors.success,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
       ],
     );
   }
