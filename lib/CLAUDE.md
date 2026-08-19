@@ -64,14 +64,7 @@ void speakText(String text) {
 ---
 
 ## TIPOS DE EJERCICIOS DISPONIBLES
-1. escuchar — reproducir audio y mostrar palabra
-2. pronunciacion — escuchar modelo + grabar usuario
-3. parejas — conectar inglés con español
-4. ordenar — ordenar palabras para formar frase
-5. completar — rellenar espacio en blanco
-6. traducir — traducir frase al inglés
-7. dialogo — conversación completa con cliente
-8. opciones — selección múltiple 4 opciones
+escuchar, opciones, pronunciar, parejas, completar, ordenar
 
 ---
 
@@ -93,7 +86,10 @@ Orden obligatorio por palabra nueva:
 3. SOLO entonces usar en otros ejercicios
 
 ### REGLA 2 — Palabras nuevas por lección
-Máximo 5 palabras nuevas por lección.
+A1: 2 palabras nuevas
+A2: 2 palabras nuevas
+B1: 2 palabras nuevas
+B2: 2 palabras nuevas
 Cada palabra nueva lleva badge: es_palabra_nueva: true
 
 ### REGLA 3 — Distractores
@@ -107,12 +103,38 @@ Cada lección incluye repaso de lecciones anteriores
 en los ejercicios 1-3 (Bloque 1).
 
 ### REGLA 5 — Estructura obligatoria 20 ejercicios
-- Bloque 1 (Ej 01-03): Repaso lecciones anteriores
-- Bloque 2 (Ej 04-13): Palabras nuevas
-  escuchar 🆕 → pronunciar (por cada palabra)
-- Bloque 3 (Ej 14-19): Consolidación
-  parejas, completar, ordenar, pronunciar frases
-- Bloque 4 (Ej 20): Diálogo final 🏆
+
+Bloque 1 (01-03) Repaso:
+  01 opciones  — repaso palabras anteriores
+  02 parejas   — repaso palabras anteriores
+  03 escuchar  — repaso palabras anteriores
+
+Bloque 2 (04-13) Palabras nuevas:
+  04 escuchar  — palabra1 🆕
+  05 pronunciar — palabra1
+  06 parejas   — palabra1
+  07 escuchar  — palabra2 🆕
+  08 pronunciar — palabra2
+  09 parejas   — palabras1 y 2
+  10 escuchar  — palabra3 🆕
+  11 pronunciar — palabra3
+  12 opciones  — las 3 palabras
+  13 parejas   — las 3 palabras
+
+Bloque 3 (14-19) Consolidación:
+  14 completar  — frase simple
+  15 ordenar    — frase simple
+  16 opciones   — contexto
+  17 completar  — frase rica
+  18 ordenar    — frase compleja
+  19 pronunciar — frase completa
+
+Bloque 4 (20) Diálogo final:
+  20 dialogo — Santiago y Barbara, máx 4 intercambios,
+               solo palabras enseñadas hasta esa lección
+
+REGLA ADICIONAL: nunca 2 escuchares seguidos,
+nunca más de 2 del mismo tipo consecutivos.
 
 ---
 

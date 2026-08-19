@@ -52,24 +52,6 @@ class _SectionScreenState extends ConsumerState<SectionScreen>
     final levelLessons = widget.section.lessonsForLevel(lesson.level);
     final index = levelLessons.indexOf(lesson);
 
-    // Secuencial dentro del nivel A1
-    if (lesson.isFree && index > 0) {
-      final prev = levelLessons[index - 1];
-      if (!completed.contains(prev.id)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Completa la lección anterior primero',
-              style: GoogleFonts.outfit(),
-            ),
-            backgroundColor: AppColors.surface,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        return;
-      }
-    }
-
     if (lesson.exercises.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -386,12 +368,7 @@ class _SectionScreenState extends ConsumerState<SectionScreen>
                         final isCompleted = completed.contains(lesson.id);
                         final isPremiumLocked = !lesson.isFree;
 
-                        // Dentro de A1: desbloqueo secuencial
-                        bool isLocked = false;
-                        if (lesson.isFree && idx > 0) {
-                          final prev = lessons[idx - 1];
-                          isLocked = !completed.contains(prev.id);
-                        }
+                        const bool isLocked = false;
 
                         return LessonCard(
                           lesson: lesson,
