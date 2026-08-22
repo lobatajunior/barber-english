@@ -6,10 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Run (web is the primary target)
-flutter run -d chrome --dart-define=WHISPER_KEY=<key>
+flutter run -d chrome
 
 # Build web
-flutter build web --dart-define=WHISPER_KEY=<key>
+flutter build web
 
 # Check for build errors after creating/editing a lesson
 flutter build web 2>&1 | grep -E "error:|Error:" | head -20
@@ -21,7 +21,7 @@ flutter analyze
 flutter test
 ```
 
-The `WHISPER_KEY` is required for the Whisper STT feature in `pronunciacion` exercises. It is injected via `--dart-define` and read via `String.fromEnvironment('WHISPER_KEY', ...)` in `lib/services/speech_service.dart`. Without it, Whisper calls fail silently (empty transcription).
+The Whisper API key required for the STT feature in `pronunciacion` exercises is hardcoded as the `_kWhisperApiKey` const in `lib/services/speech_service.dart` (git-ignored, so it never reaches git history). No `--dart-define` flag is needed to build or run. Note this key still ends up in plaintext in the public `build/web/main.dart.js` bundle once deployed — hardcoding only keeps it out of git, not out of the shipped site.
 
 ## Architecture
 
