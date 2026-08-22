@@ -6,10 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Run (web is the primary target)
-flutter run -d chrome --dart-define=OPENAI_API_KEY=<key>
+flutter run -d chrome --dart-define=WHISPER_KEY=<key>
 
 # Build web
-flutter build web --dart-define=OPENAI_API_KEY=<key>
+flutter build web --dart-define=WHISPER_KEY=<key>
 
 # Check for build errors after creating/editing a lesson
 flutter build web 2>&1 | grep -E "error:|Error:" | head -20
@@ -21,7 +21,7 @@ flutter analyze
 flutter test
 ```
 
-The `OPENAI_API_KEY` is required for the Whisper STT feature in `pronunciacion` exercises. It is injected via `--dart-define` and read in `lib/services/speech_service.dart`.
+The `WHISPER_KEY` is required for the Whisper STT feature in `pronunciacion` exercises. It is injected via `--dart-define` and read via `String.fromEnvironment('WHISPER_KEY', ...)` in `lib/services/speech_service.dart`. Without it, Whisper calls fail silently (empty transcription).
 
 ## Architecture
 
