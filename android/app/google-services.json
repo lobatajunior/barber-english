@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:625038868457:android:61ced8eb21bcdbbaff1578",
+        "mobilesdk_app_id": "1:625038868457:android:813dbe422745f62eff1578",
         "android_client_info": {
-          "package_name": "com.example.barber_english"
+          "package_name": "com.barberenglish.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "625038868457-aqms8o6vb66l7gacmafeobmb9efvtkh2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCI3YFqRL-2TsyLEMrkh6vuoZeBo1K9bF8"
@@ -20,7 +25,55 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "625038868457-aqms8o6vb66l7gacmafeobmb9efvtkh2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "625038868457-378993ap98m1h5hv9m9hji9nrcboiuf5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.barberEnglish"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625038868457:android:61ced8eb21bcdbbaff1578",
+        "android_client_info": {
+          "package_name": "com.example.barber_english"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "625038868457-aqms8o6vb66l7gacmafeobmb9efvtkh2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI3YFqRL-2TsyLEMrkh6vuoZeBo1K9bF8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "625038868457-aqms8o6vb66l7gacmafeobmb9efvtkh2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "625038868457-378993ap98m1h5hv9m9hji9nrcboiuf5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.barberEnglish"
+              }
+            }
+          ]
         }
       }
     }

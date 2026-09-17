@@ -1,4 +1,4 @@
-package com.example.barber_english
+package com.barberenglish.app
 
 import io.flutter.embedding.android.FlutterActivity
 
