@@ -1,7 +1,7 @@
 name: barber_english
 description: "Aprende inglés para barberos - Barber English"
 publish_to: 'none'
-version: 2.0.0+3
+version: 2.0.0+4
 
 environment:
   sdk: ^3.12.0
@@ -17,11 +17,13 @@ dependencies:
   firebase_auth: ^6.5.1
   cloud_firestore: 6.4.1
   flutter_riverpod: ^2.5.1
+  speech_to_text: ^7.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -33,3 +35,8 @@ flutter:
     - assets/pose4.png
     - assets/pose5.png
     - assets/pose6.png
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/mascota.png"
