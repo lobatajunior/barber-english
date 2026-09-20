@@ -1,0 +1,3 @@
+// Copia este archivo como api_keys.dart y pon tu clave real.
+// api_keys.dart esta en .gitignore y nunca debe subirse.
+const kWhisperApiKey = 'PON_AQUI_TU_CLAVE';

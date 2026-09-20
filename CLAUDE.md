@@ -21,7 +21,7 @@ flutter analyze
 flutter test
 ```
 
-The Whisper API key required for the STT feature in `pronunciacion` exercises is hardcoded as the `_kWhisperApiKey` const in `lib/services/speech_service.dart` (git-ignored, so it never reaches git history). No `--dart-define` flag is needed to build or run. Note this key still ends up in plaintext in the public `build/web/main.dart.js` bundle once deployed — hardcoding only keeps it out of git, not out of the shipped site.
+The Whisper API key required for the STT feature in `pronunciacion` exercises lives in the `kWhisperApiKey` const in `lib/services/api_keys.dart` (git-ignored, so it never reaches git history; copy `api_keys.dart.example` to create it). No `--dart-define` flag is needed to build or run. Note this key still ends up in plaintext in the public `build/web/main.dart.js` bundle once deployed — hardcoding only keeps it out of git, not out of the shipped site.
 
 ## Architecture
 

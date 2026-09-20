@@ -45,7 +45,7 @@ app.*.map.json
 /android/app/release
 
 # API keys — file exists locally with real key, never commit
-lib/services/speech_service.dart
+lib/services/api_keys.dart
 
 # Android release signing — keystore credentials, never commit
 android/key.properties
