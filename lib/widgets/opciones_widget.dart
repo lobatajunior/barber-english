@@ -7,11 +7,13 @@ import '../providers/progress_provider.dart';
 class OpcionesWidget extends ConsumerStatefulWidget {
   final Map<String, dynamic> ejercicio;
   final VoidCallback onResuelto;
+  final VoidCallback? onFallo;
 
   const OpcionesWidget({
     super.key,
     required this.ejercicio,
     required this.onResuelto,
+    this.onFallo,
   });
 
   @override
@@ -40,6 +42,7 @@ class _OpcionesWidgetState extends ConsumerState<OpcionesWidget> {
         widget.onResuelto();
       }
     });
+    if (!isCorrect) widget.onFallo?.call();
     // Cancel any previous speech and speak the tapped option exactly once
     ref.read(speechServiceProvider).speak(opt);
   }

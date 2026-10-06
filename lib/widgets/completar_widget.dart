@@ -7,11 +7,13 @@ import '../providers/progress_provider.dart';
 class CompletarWidget extends ConsumerStatefulWidget {
   final Map<String, dynamic> ejercicio;
   final VoidCallback onResuelto;
+  final VoidCallback? onFallo;
 
   const CompletarWidget({
     super.key,
     required this.ejercicio,
     required this.onResuelto,
+    this.onFallo,
   });
 
   @override
@@ -46,6 +48,7 @@ class _CompletarWidgetState extends ConsumerState<CompletarWidget> {
         _selected = opt;
         _wrong = true;
       });
+      widget.onFallo?.call();
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) setState(() { _selected = null; _wrong = false; });
       });

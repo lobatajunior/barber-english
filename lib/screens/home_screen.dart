@@ -358,6 +358,38 @@ class _MascotHero extends StatelessWidget {
   }
 }
 
+// ── Animated streak flame ────────────────────────────────────────────────────
+
+class _PulsingFire extends StatefulWidget {
+  const _PulsingFire();
+
+  @override
+  State<_PulsingFire> createState() => _PulsingFireState();
+}
+
+class _PulsingFireState extends State<_PulsingFire>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 700),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final curve = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
+    return ScaleTransition(
+      scale: Tween<double>(begin: 0.9, end: 1.3).animate(curve),
+      child: const Text('🔥', style: TextStyle(fontSize: 12)),
+    );
+  }
+}
+
 // ── XP progress bar ──────────────────────────────────────────────────────────
 
 class _XpBar extends StatelessWidget {
@@ -406,7 +438,7 @@ class _XpBar extends StatelessWidget {
                 if (gam.rachaDias > 0)
                   Row(
                     children: [
-                      const Text('🔥', style: TextStyle(fontSize: 12)),
+                      const _PulsingFire(),
                       const SizedBox(width: 4),
                       Text(
                         '${gam.rachaDias} ${gam.rachaDias == 1 ? "día" : "días"}',

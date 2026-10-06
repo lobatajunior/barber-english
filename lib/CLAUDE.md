@@ -63,8 +63,9 @@ void speakText(String text) {
 
 ---
 
-## TIPOS DE EJERCICIOS DISPONIBLES
-escuchar, opciones, pronunciar, parejas, completar, ordenar
+## TIPOS DE EJERCICIOS DISPONIBLES (8)
+escuchar, pronunciacion, parejas, completar, ordenar, opciones, dialogo, dialogo_completo
+(detalle de campos en el CLAUDE.md de la raíz)
 
 ---
 
@@ -82,15 +83,14 @@ escuchar, opciones, pronunciar, parejas, completar, ordenar
 NUNCA usar una palabra en un ejercicio antes de haberla enseñado.
 Orden obligatorio por palabra nueva:
 1. escuchar la palabra sola
-2. pronunciar la palabra sola
+2. pronunciar una ORACIÓN COMPLETA que la contenga
+   (nunca pronunciar la palabra suelta)
 3. SOLO entonces usar en otros ejercicios
 
 ### REGLA 2 — Palabras nuevas por lección
-A1: 2 palabras nuevas
-A2: 2 palabras nuevas
-B1: 2 palabras nuevas
-B2: 2 palabras nuevas
+Máximo 5 palabras/expresiones nuevas por lección (todos los niveles).
 Cada palabra nueva lleva badge: es_palabra_nueva: true
+(en su ejercicio escuchar)
 
 ### REGLA 3 — Distractores
 Los distractores en completar/opciones/ordenar
@@ -103,35 +103,41 @@ Cada lección incluye repaso de lecciones anteriores
 en los ejercicios 1-3 (Bloque 1).
 
 ### REGLA 5 — Estructura obligatoria 20 ejercicios
+(la que siguen L02–L15; L01 y L16 son excepciones)
 
-Bloque 1 (01-03) Repaso:
-  01 opciones  — repaso palabras anteriores
-  02 parejas   — repaso palabras anteriores
-  03 escuchar  — repaso palabras anteriores
+Bloque 1 (01-03) Repaso al abrir la lección:
+  01 parejas       — 3 palabras de lecciones anteriores
+  02 completar     — frase de repaso
+  03 pronunciacion — frase de repaso
 
-Bloque 2 (04-13) Palabras nuevas:
-  04 escuchar  — palabra1 🆕
-  05 pronunciar — palabra1
-  06 parejas   — palabra1
-  07 escuchar  — palabra2 🆕
-  08 pronunciar — palabra2
-  09 parejas   — palabras1 y 2
-  10 escuchar  — palabra3 🆕
-  11 pronunciar — palabra3
-  12 opciones  — las 3 palabras
-  13 parejas   — las 3 palabras
+Bloque 2 (04-14) Palabras nuevas:
+  04 escuchar 🆕    — palabra1 sola
+  05 pronunciacion — ORACIÓN con palabra1
+  06 escuchar 🆕    — palabra2 sola
+  07 pronunciacion — ORACIÓN con palabra2
+  08 escuchar 🆕    — palabra3 sola
+  09 pronunciacion — ORACIÓN con palabra3
+  10 completar     — palabras 1-3
+  11 escuchar 🆕    — palabra4 sola
+  12 pronunciacion — ORACIÓN con palabra4
+  13 escuchar 🆕    — palabra5 sola
+  14 pronunciacion — ORACIÓN con palabra5
 
-Bloque 3 (14-19) Consolidación:
-  14 completar  — frase simple
-  15 ordenar    — frase simple
-  16 opciones   — contexto
-  17 completar  — frase rica
-  18 ordenar    — frase compleja
-  19 pronunciar — frase completa
+Bloque 3 (15-19) Consolidación:
+  15 parejas       — las 5 palabras nuevas
+  16 completar     — frase con palabras nuevas
+  17 ordenar       — frase simple
+  18 ordenar       — frase que mezcla repaso + nuevas
+  19 pronunciacion — frase larga
 
 Bloque 4 (20) Diálogo final:
-  20 dialogo — Santiago y Barbara, máx 4 intercambios,
-               solo palabras enseñadas hasta esa lección
+  20 dialogo — solo palabras enseñadas hasta esa lección
+
+### REGLA 6 — Oraciones de pronunciación
+Pueden usar: la palabra nueva, vocabulario ya enseñado, palabras
+gramaticales básicas que ya usan las lecciones (the, a, on, to, your,
+my, please, and, for, not, this…) y el nombre propio "Junior".
+Sin cifras (la voz y el reconocimiento fallan con "30").
 
 REGLA ADICIONAL: nunca 2 escuchares seguidos,
 nunca más de 2 del mismo tipo consecutivos.
@@ -167,19 +173,45 @@ cartoons, next appointment
 | L03 | lesson_03_the_cut.dart | The Cut | Conv.1 | Haircut, Fade, Sides, Top, Longer |
 | L04 | lesson_04_no_appointment.dart | No Appointment | Conv.2 | Do you have, Wait, Minutes, No problem, Please wait |
 | L05 | lesson_05_the_kid.dart | The Kid | Conv.3 | Son, Move, Patient, Photo, Modern |
-| L06 | lesson_06_numbers.dart | Numbers & Lengths | Conv.1+2 | Number one, Number two, Short, Long, Same |
-| L07 | lesson_07_waiting_time.dart | Waiting Time | Conv.2 | Water, Coffee, Drink, Sit, While |
-| L08 | lesson_08_scissors.dart | Scissors Cut | Conv.2 | Scissors, Classic, Style, Comb, Neat |
-| L09 | lesson_09_hair_wash.dart | Hair Wash | Conv.2 | Wash, Hair, Ready, Fresh, Street |
+| L06 | lesson_06_numbers_lengths.dart | Numbers & Lengths | Conv.1+2 | Number one, Short, Long, Same, Little |
+| L07 | lesson_07_waiting_time.dart | Waiting Time | Conv.2 | Water, Coffee, Drink, While, Something |
+| L08 | lesson_08_scissors_cut.dart | Scissors Cut | Conv.2 | Scissors, Classic, Style, Comb, Neat |
+| L09 | lesson_09_hair_wash.dart | Hair Wash | Conv.2 | Wash, Hair, Fresh, Ready, Street |
 | L10 | lesson_10_be_patient.dart | Be Patient | Conv.3 | Still, Look down, Turn, Head, Careful |
-| L11 | lesson_11_the_photo.dart | The Photo | Conv.3 | Like, Similar, Possible, Little, Different |
+| L11 | lesson_11_the_photo.dart | The Photo | Conv.3 | Like, Similar, Possible, Different, Close |
 | L12 | lesson_12_beard_basics.dart | Beard Basics | Conv.1 | Beard, Sideburns, Shape, Clean, Line |
 | L13 | lesson_13_style_talk.dart | Style Talk | Conv.1 | Volume, Texture, Product, Natural, Messy |
-| L14 | lesson_14_the_finish.dart | The Finish | Conv.1+2+3 | Ready, Done, Look, Happy, Next time |
-| L15 | lesson_15_goodbye.dart | See You Next Time | Conv.1+2+3 | Goodbye, See you, Next, Appointment, Thank you |
-| L16 | lesson_16_full_review.dart | Full Review A1 | Conv.1+2+3 | Repaso completo de las 320 palabras A1 |
+| L14 | lesson_14_the_finish.dart | The Finish | Conv.1+2+3 | Done, Look, Great, New, Happy |
+| L15 | lesson_15_see_you_next_time.dart | See You Next Time | Conv.1+2+3 | Goodbye, See you, Next time, Thank you, Pleasure |
+| L16 | lesson_16_full_review.dart | Full Review A1 | Conv.1+2+3 | Repaso de las 75 palabras de L01–L15 (sin palabras nuevas) |
 
 Total A1: 16 lecciones × 20 ejercicios = 320 ejercicios
+(la fuente de verdad son los comentarios de cabecera de cada archivo de lección)
+
+---
+
+## STREET ENGLISH — REGLAS PROPIAS
+
+Las REGLAS PEDAGÓGICAS de arriba (20 ejercicios, escuchar → pronunciar,
+máx. 5 palabras, máx. 2 del mismo tipo seguidos) son de BARBER ZONE.
+Street English sigue sus propias reglas:
+
+- 12 ejercicios por lección.
+- Solo tipos: pronunciacion y ordenar.
+- Vocabulario SOLO de la lista maestra `lib/data/street_english_vocab.dart`
+  (`streetEnglishVocab`). Si una palabra no está, se añade a la lista primero.
+  Pronombres (I, you, he, she, we, they) y auxiliares (don't, doesn't) se
+  aceptan como palabras gramaticales.
+- Cada lección enseña una regla gramatical, explicada en `descripcionEs`.
+- Archivos: `lib/data/lessons/street_english/a1/`, registrados en
+  `street_english_data.dart`. Constantes con prefijo `streetLesson`.
+
+### MAPA DE LECCIONES A1 — STREET ENGLISH
+
+| # | Archivo | Título | Regla | Palabras nuevas |
+|---|---------|--------|-------|-----------------|
+| L01 | lesson_01_present_simple.dart | Present Simple | Presente afirmativo (he/she + s) | work, live, like, want, every, day, here, food |
+| L02 | lesson_02_present_negative.dart | Present Negative | Presente negativo (don't / doesn't + verbo) | need, have, time, money, water, now |
 
 ---
 

@@ -1,3 +1,4 @@
+import 'dart:async' show StreamSubscription;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/progress_service.dart';
 import '../services/speech_service.dart';
@@ -35,20 +36,33 @@ class ProgressNotifier extends StateNotifier<ProgressState> {
 
   static const _sections = ['barber_zone', 'street_english'];
 
+  final List<StreamSubscription<Set<int>>> _subs = [];
+
   ProgressNotifier(this._service, this._userId)
       : super(const ProgressState(isLoading: true)) {
-    _load();
+    _watch();
   }
 
-  Future<void> _load() async {
-    final results = await Future.wait(
-      _sections.map((s) => _service.loadProgress(_userId, s)),
-    );
-    state = ProgressState(
-      completed: {
-        for (var i = 0; i < _sections.length; i++) _sections[i]: results[i],
-      },
-    );
+  // Cache first, then server updates, one listener per section.
+  void _watch() {
+    for (final section in _sections) {
+      _subs.add(_service.watchProgress(_userId, section).listen((lessons) {
+        final updated = Map<String, Set<int>>.from(state.completed);
+        updated[section] = lessons;
+        state = ProgressState(
+          completed: updated,
+          isLoading: updated.length < _sections.length,
+        );
+      }));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final sub in _subs) {
+      sub.cancel();
+    }
+    super.dispose();
   }
 
   Future<void> completeLesson(String sectionId, int lessonId) async {

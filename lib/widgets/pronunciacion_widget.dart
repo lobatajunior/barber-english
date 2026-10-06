@@ -17,6 +17,7 @@ class PronunciacionWidget extends ConsumerStatefulWidget {
   final VoidCallback onResuelto;
   final VoidCallback onContinuar;
   final VoidCallback? onPerfecto; // called when pronunciation score == 100
+  final VoidCallback? onFallo; // called when a result comes back under 70
 
   const PronunciacionWidget({
     super.key,
@@ -24,6 +25,7 @@ class PronunciacionWidget extends ConsumerStatefulWidget {
     required this.onResuelto,
     required this.onContinuar,
     this.onPerfecto,
+    this.onFallo,
   });
 
   @override
@@ -133,6 +135,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
             if (score >= 100) widget.onPerfecto?.call();
           }
         });
+        if (score < 70 && !_resolved) widget.onFallo?.call();
       },
       onDone: () {
         if (mounted) {
@@ -164,13 +167,8 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
     _startListening();
   }
 
-  void _continuar() {
-    if (!_resolved) {
-      _resolved = true;
-      widget.onResuelto();
-    }
-    widget.onContinuar();
-  }
+  // Saltar sin llegar al 70 % no cuenta como resuelto: no da XP.
+  void _continuar() => widget.onContinuar();
 
   // ── Build ──────────────────────────────────────────────────────────────────
   @override

@@ -86,17 +86,17 @@ const lesson03TheCut = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Haircut" ─────────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Haircut" ─────────────────────────────────
     // Disponibles L03: Haircut
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Haircut',
-      'respuesta_correcta': 'Haircut',
-      'fonetica': '[ JEAR-kat ]',
-      'traduccion_pregunta': 'Corte de cabello',
-      'contexto_es': 'Es la palabra que más escucharás en tu silla',
+      'frase': 'Good morning, a haircut, please',
+      'respuesta_correcta': 'Good morning, a haircut, please',
+      'fonetica': '[ gud MOR-ning, a JEAR-kat, pliis ]',
+      'traduccion_pregunta': 'Buenos días, un corte, por favor',
+      'contexto_es': 'La frase que más escucharás en tu silla',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "Fade" ──────────────────────────────────────
@@ -112,16 +112,16 @@ const lesson03TheCut = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Fade" ────────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Fade" ────────────────────────────────────
     // Disponibles L03: Haircut · Fade
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítelo tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Fade',
-      'respuesta_correcta': 'Fade',
-      'fonetica': '[ FEID ]',
-      'traduccion_pregunta': 'Degradado',
+      'frase': 'A fade haircut, please',
+      'respuesta_correcta': 'A fade haircut, please',
+      'fonetica': '[ a FEID JEAR-kat, pliis ]',
+      'traduccion_pregunta': 'Un corte degradado, por favor',
       'contexto_es': 'Pronuncia con confianza — es tu especialidad',
     },
 
@@ -138,17 +138,17 @@ const lesson03TheCut = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Sides" ───────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Sides" ───────────────────────────────────
     // Disponibles L03: Haircut · Fade · Sides
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Sides',
-      'respuesta_correcta': 'Sides',
-      'fonetica': '[ SAIDS ]',
-      'traduccion_pregunta': 'Lados',
-      'contexto_es': 'Siempre va junto con "fade on the sides"',
+      'frase': 'A fade on the sides, please',
+      'respuesta_correcta': 'A fade on the sides, please',
+      'fonetica': '[ a FEID on de SAIDS, pliis ]',
+      'traduccion_pregunta': 'Degradado a los lados, por favor',
+      'contexto_es': '"Fade on the sides" siempre va junto',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -178,17 +178,17 @@ const lesson03TheCut = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Top" ─────────────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Top" ─────────────────────────────────────
     // Disponibles L03: Haircut · Fade · Sides · Top
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Top',
-      'respuesta_correcta': 'Top',
-      'fonetica': '[ TOP ]',
-      'traduccion_pregunta': 'Arriba',
-      'contexto_es': 'Siempre va junto con "longer on top"',
+      'frase': 'Fade on the sides, not on top',
+      'respuesta_correcta': 'Fade on the sides, not on top',
+      'fonetica': '[ FEID on de SAIDS, not on TOP ]',
+      'traduccion_pregunta': 'Degradado a los lados, arriba no',
+      'contexto_es': 'El cliente separa los lados de arriba',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Longer" ────────────────────────────────────
@@ -208,16 +208,16 @@ const lesson03TheCut = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Longer" ──────────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Longer" ──────────────────────────────────
     // Disponibles L03: las 5 nuevas
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Longer',
-      'respuesta_correcta': 'Longer',
-      'fonetica': '[ LON-ger ]',
-      'traduccion_pregunta': 'Más largo',
+      'frase': 'A fade haircut, longer on top',
+      'respuesta_correcta': 'A fade haircut, longer on top',
+      'fonetica': '[ a FEID JEAR-kat, LON-ger on TOP ]',
+      'traduccion_pregunta': 'Un degradado, más largo arriba',
       'contexto_es': 'Siempre la oirás: "longer on top"',
     },
 

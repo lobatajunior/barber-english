@@ -83,16 +83,16 @@ const lesson10BePatient = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Still" ───────────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Still" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Still',
-      'respuesta_correcta': 'Still',
-      'fonetica': '[ STIL ]',
-      'traduccion_pregunta': 'Quieto / Sin moverse',
-      'contexto_es': '"Be still" — dos palabras que te salvan el corte',
+      'frase': 'Sit down and be still, please',
+      'respuesta_correcta': 'Sit down and be still, please',
+      'fonetica': '[ SIT daun and bi STIL, pliis ]',
+      'traduccion_pregunta': 'Siéntate y quédate quieto, por favor',
+      'contexto_es': 'Dos palabras que te salvan el corte',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "Look down" ────────────────────────────────
@@ -107,16 +107,16 @@ const lesson10BePatient = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Look down" ───────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Look down" ───────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Look down',
-      'respuesta_correcta': 'Look down',
-      'fonetica': '[ luk DAUN ]',
-      'traduccion_pregunta': 'Mira hacia abajo',
-      'contexto_es': 'Usarás esta frase muchas veces con niños y adultos',
+      'frase': 'Be still and look down, please',
+      'respuesta_correcta': 'Be still and look down, please',
+      'fonetica': '[ bi STIL and luk DAUN, pliis ]',
+      'traduccion_pregunta': 'Quieto y mira hacia abajo, por favor',
+      'contexto_es': 'La usarás con niños y adultos',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "Turn" ──────────────────────────────────────
@@ -131,16 +131,16 @@ const lesson10BePatient = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Turn" ────────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Turn" ────────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Turn',
-      'respuesta_correcta': 'Turn',
-      'fonetica': '[ TORN ]',
-      'traduccion_pregunta': 'Voltea / Gira',
-      'contexto_es': '"Turn your head" — voltea la cabeza',
+      'frase': 'Please turn a little',
+      'respuesta_correcta': 'Please turn a little',
+      'fonetica': '[ pliis TORN a LI-tel ]',
+      'traduccion_pregunta': 'Gira un poco, por favor',
+      'contexto_es': 'Para trabajar el otro lado',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -168,16 +168,16 @@ const lesson10BePatient = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Head" ────────────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Head" ────────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Head',
-      'respuesta_correcta': 'Head',
-      'fonetica': '[ JED ]',
-      'traduccion_pregunta': 'Cabeza',
-      'contexto_es': '"Turn your head" — la instrucción más usada en la silla',
+      'frase': 'Turn your head, please',
+      'respuesta_correcta': 'Turn your head, please',
+      'fonetica': '[ TORN ior JED, pliis ]',
+      'traduccion_pregunta': 'Voltea la cabeza, por favor',
+      'contexto_es': 'La instrucción más usada en la silla',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Careful" ───────────────────────────────────
@@ -196,16 +196,16 @@ const lesson10BePatient = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Careful" ─────────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Careful" ─────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Careful',
-      'respuesta_correcta': 'Careful',
-      'fonetica': '[ KEIR-ful ]',
-      'traduccion_pregunta': 'Con cuidado',
-      'contexto_es': '"Careful!" — avisa antes de acercarte con la herramienta',
+      'frase': "Careful! Be still, don't move",
+      'respuesta_correcta': "Careful! Be still, don't move",
+      'fonetica': '[ KEIR-ful! bi STIL, dont MUUV ]',
+      'traduccion_pregunta': '¡Cuidado! Quieto, no te muevas',
+      'contexto_es': 'Avisa antes de acercarte con la navaja',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L10 ───────────────────────────────

@@ -7,11 +7,13 @@ import '../providers/progress_provider.dart';
 class DialogoWidget extends ConsumerStatefulWidget {
   final Map<String, dynamic> ejercicio;
   final VoidCallback onResuelto;
+  final VoidCallback? onFallo;
 
   const DialogoWidget({
     super.key,
     required this.ejercicio,
     required this.onResuelto,
+    this.onFallo,
   });
 
   @override
@@ -39,6 +41,8 @@ class _DialogoWidgetState extends ConsumerState<DialogoWidget> {
       setState(() => _resolved = true);
       ref.read(speechServiceProvider).speak(_correcta);
       widget.onResuelto();
+    } else {
+      widget.onFallo?.call();
     }
   }
 

@@ -85,15 +85,26 @@ class GamificationService {
 
   // ─── Persistence ──────────────────────────────────────────────────────────
 
-  Future<GamData> load(String? userId) async {
+  // Emits the cached document immediately (persistence) and again whenever the
+  // server sends something different. Falls back to SharedPreferences when the
+  // document doesn't exist or the listener errors.
+  Stream<GamData> watch(String? userId) async* {
     if (userId != null) {
       try {
-        final doc = await _db.collection('users').doc(userId).get();
-        if (doc.exists && doc.data() != null) {
-          return GamData.fromMap(doc.data()!);
+        await for (final doc in _db.collection('users').doc(userId).snapshots()) {
+          if (doc.exists && doc.data() != null) {
+            yield GamData.fromMap(doc.data()!);
+          } else {
+            yield await _loadLocal();
+          }
         }
+        return;
       } catch (_) {}
     }
+    yield await _loadLocal();
+  }
+
+  Future<GamData> _loadLocal() async {
     final prefs = await SharedPreferences.getInstance();
     return GamData(
       xpTotal: prefs.getInt('gam_xp') ?? 0,
@@ -104,18 +115,24 @@ class GamificationService {
   }
 
   Future<void> save(String? userId, GamData data) async {
+    // Fire the Firestore write first: its local echo reaches the snapshot
+    // listener right away, so a stale server event can't overwrite fresh state
+    // while we wait on SharedPreferences. Not awaited: the future only completes
+    // on server ack, so offline it would hang the caller forever.
+    if (userId != null) {
+      try {
+        _db
+            .collection('users')
+            .doc(userId)
+            .set(data.toMap(), SetOptions(merge: true))
+            .catchError((_) {});
+      } catch (_) {}
+    }
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('gam_xp', data.xpTotal);
     await prefs.setInt('gam_racha', data.rachaDias);
     await prefs.setString('gam_fecha', data.ultimaFecha);
     await prefs.setInt('gam_nivel', data.nivel);
-    if (userId != null) {
-      try {
-        await _db
-            .collection('users')
-            .doc(userId)
-            .set(data.toMap(), SetOptions(merge: true));
-      } catch (_) {}
-    }
   }
 }

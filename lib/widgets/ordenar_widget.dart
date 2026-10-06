@@ -7,11 +7,13 @@ import '../providers/progress_provider.dart';
 class OrdenarWidget extends ConsumerStatefulWidget {
   final Map<String, dynamic> ejercicio;
   final VoidCallback onResuelto;
+  final VoidCallback? onFallo;
 
   const OrdenarWidget({
     super.key,
     required this.ejercicio,
     required this.onResuelto,
+    this.onFallo,
   });
 
   @override
@@ -59,6 +61,7 @@ class _OrdenarWidgetState extends ConsumerState<OrdenarWidget> {
       widget.onResuelto();
     } else {
       setState(() => _wrongFlash = true);
+      widget.onFallo?.call();
       Future.delayed(const Duration(milliseconds: 600), () {
         if (mounted) {
           setState(() {

@@ -88,17 +88,17 @@ const lesson06NumbersLengths = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Number one" ─────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Number one" ─────────────────────────────
     // Disponibles L06: Number one
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítelo tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Number one',
-      'respuesta_correcta': 'Number one',
-      'fonetica': '[ NOM-ber WAN ]',
-      'traduccion_pregunta': 'Número uno',
-      'contexto_es': '¿Desde qué número te gustaría hacerte tu corte?',
+      'frase': 'Number one on the sides, please',
+      'respuesta_correcta': 'Number one on the sides, please',
+      'fonetica': '[ NOM-ber WAN on de SAIDS, pliis ]',
+      'traduccion_pregunta': 'Número uno a los lados, por favor',
+      'contexto_es': 'El cliente te dice qué número de máquina',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "Short" ─────────────────────────────────────
@@ -113,17 +113,17 @@ const lesson06NumbersLengths = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Short" ───────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Short" ───────────────────────────────────
     // Disponibles L06: Number one · Short
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Short',
-      'respuesta_correcta': 'Short',
-      'fonetica': '[ SHORT ]',
-      'traduccion_pregunta': 'Corto',
-      'contexto_es': '"Short on the sides" — una de las frases más escuchadas en tu silla',
+      'frase': 'Short on the sides, please',
+      'respuesta_correcta': 'Short on the sides, please',
+      'fonetica': '[ SHORT on de SAIDS, pliis ]',
+      'traduccion_pregunta': 'Corto a los lados, por favor',
+      'contexto_es': 'Una de las frases más escuchadas en tu silla',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "Long" ──────────────────────────────────────
@@ -138,17 +138,17 @@ const lesson06NumbersLengths = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Long" ────────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Long" ────────────────────────────────────
     // Disponibles L06: Number one · Short · Long
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Long',
-      'respuesta_correcta': 'Long',
-      'fonetica': '[ LONG ]',
-      'traduccion_pregunta': 'Largo',
-      'contexto_es': '"Long on top" — siempre lo escucharás junto con "short on the sides"',
+      'frase': 'Short on the sides, long on top',
+      'respuesta_correcta': 'Short on the sides, long on top',
+      'fonetica': '[ SHORT on de SAIDS, LONG on TOP ]',
+      'traduccion_pregunta': 'Corto a los lados, largo arriba',
+      'contexto_es': '"Long" y "short" casi siempre van juntos',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -176,17 +176,17 @@ const lesson06NumbersLengths = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Same" ────────────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Same" ────────────────────────────────────
     // Disponibles L06: Number one · Short · Long · Same
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Same',
-      'respuesta_correcta': 'Same',
-      'fonetica': '[ SEIM ]',
-      'traduccion_pregunta': 'Igual',
-      'contexto_es': '"Same as last time" — el cliente de confianza que repite siempre',
+      'frase': 'The same haircut, please',
+      'respuesta_correcta': 'The same haircut, please',
+      'fonetica': '[ de SEIM JEAR-kat, pliis ]',
+      'traduccion_pregunta': 'El mismo corte, por favor',
+      'contexto_es': 'El cliente de confianza que repite siempre',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Little" ────────────────────────────────────
@@ -205,17 +205,17 @@ const lesson06NumbersLengths = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Little" ──────────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Little" ──────────────────────────────────
     // Disponibles L06: las 5 nuevas
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Little',
-      'respuesta_correcta': 'Little',
-      'fonetica': '[ LI-tel ]',
-      'traduccion_pregunta': 'Poco / Un poco',
-      'contexto_es': '"A little shorter" — más amable que pedir "very short"',
+      'frase': 'A little long on top, please',
+      'respuesta_correcta': 'A little long on top, please',
+      'fonetica': '[ a LI-tel LONG on TOP, pliis ]',
+      'traduccion_pregunta': 'Un poco largo arriba, por favor',
+      'contexto_es': '"A little" suaviza el pedido',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L06 ───────────────────────────────

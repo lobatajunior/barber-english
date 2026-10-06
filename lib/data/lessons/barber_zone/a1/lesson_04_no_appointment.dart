@@ -87,16 +87,16 @@ const lesson04NoAppointment = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Do you have" ────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Do you have" ────────────────────────────
     // Disponibles L04: Do you have
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Do you have',
-      'respuesta_correcta': 'Do you have',
-      'fonetica': '[ du iu JAV ]',
-      'traduccion_pregunta': '¿Tiene usted?',
+      'frase': 'Good morning! Do you have an appointment?',
+      'respuesta_correcta': 'Good morning! Do you have an appointment?',
+      'fonetica': '[ gud MOR-ning! du iu JAV an a-POINT-ment ]',
+      'traduccion_pregunta': '¡Buenos días! ¿Tiene cita?',
       'contexto_es': 'La pregunta clave para organizar tu agenda',
     },
 
@@ -113,16 +113,16 @@ const lesson04NoAppointment = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Wait" ────────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Wait" ────────────────────────────────────
     // Disponibles L04: Do you have · Wait
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Wait',
-      'respuesta_correcta': 'Wait',
-      'fonetica': '[ WEIT ]',
-      'traduccion_pregunta': 'Esperar',
+      'frase': 'No appointment? Take a seat and wait',
+      'respuesta_correcta': 'No appointment? Take a seat and wait',
+      'fonetica': '[ nou a-POINT-ment? teik a SIIT and WEIT ]',
+      'traduccion_pregunta': '¿Sin cita? Tome asiento y espere',
       'contexto_es': 'Suena amable, no como una orden',
     },
 
@@ -139,17 +139,17 @@ const lesson04NoAppointment = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Minutes" ─────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Minutes" ─────────────────────────────────
     // Disponibles L04: Do you have · Wait · Minutes
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Minutes',
-      'respuesta_correcta': 'Minutes',
-      'fonetica': '[ MI-nets ]',
-      'traduccion_pregunta': 'Minutos',
-      'contexto_es': 'Siempre va con un número: "30 minutes"',
+      'frase': 'Take a seat, wait a few minutes',
+      'respuesta_correcta': 'Take a seat, wait a few minutes',
+      'fonetica': '[ teik a SIIT, WEIT a fiu MI-nets ]',
+      'traduccion_pregunta': 'Tome asiento, espere unos minutos',
+      'contexto_es': 'Le dices al cliente sin cita que falta poco',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -179,17 +179,17 @@ const lesson04NoAppointment = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "No problem" ─────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "No problem" ─────────────────────────────
     // Disponibles L04: Do you have · Wait · Minutes · No problem
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítelo tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'No problem',
-      'respuesta_correcta': 'No problem',
-      'fonetica': '[ nou PROB-lem ]',
-      'traduccion_pregunta': 'No hay problema',
-      'contexto_es': 'Suena relajado — el cliente se siente mejor al escucharlo',
+      'frase': 'No appointment? No problem, take a seat',
+      'respuesta_correcta': 'No appointment? No problem, take a seat',
+      'fonetica': '[ nou a-POINT-ment? nou PROB-lem, teik a SIIT ]',
+      'traduccion_pregunta': '¿Sin cita? No hay problema, tome asiento',
+      'contexto_es': 'Suena relajado — el cliente se siente mejor',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Please wait" ──────────────────────────────
@@ -209,16 +209,16 @@ const lesson04NoAppointment = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Please wait" ────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Please wait" ────────────────────────────
     // Disponibles L04: las 5 nuevas
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítelo tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Please wait',
-      'respuesta_correcta': 'Please wait',
-      'fonetica': '[ pliis WEIT ]',
-      'traduccion_pregunta': 'Por favor espere',
+      'frase': 'Of course! Take a seat, please wait',
+      'respuesta_correcta': 'Of course! Take a seat, please wait',
+      'fonetica': '[ of KORS! teik a SIIT, pliis WEIT ]',
+      'traduccion_pregunta': '¡Claro! Tome asiento, por favor espere',
       'contexto_es': 'Más educado que solo decir "wait"',
     },
 

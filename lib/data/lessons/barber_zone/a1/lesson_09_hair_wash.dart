@@ -85,16 +85,16 @@ const lesson09HairWash = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Wash" ────────────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Wash" ────────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Wash',
-      'respuesta_correcta': 'Wash',
-      'fonetica': '[ WOSH ]',
-      'traduccion_pregunta': 'Lavar',
-      'contexto_es': 'El servicio adicional que más valoran los clientes',
+      'frase': 'A wash after the haircut?',
+      'respuesta_correcta': 'A wash after the haircut?',
+      'fonetica': '[ a WOSH AF-ter de JEAR-kat ]',
+      'traduccion_pregunta': '¿Un lavado después del corte?',
+      'contexto_es': 'El servicio adicional que más valoran',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "Hair" ──────────────────────────────────────
@@ -109,16 +109,16 @@ const lesson09HairWash = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Hair" ────────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Hair" ────────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Hair',
-      'respuesta_correcta': 'Hair',
-      'fonetica': '[ JEIR ]',
-      'traduccion_pregunta': 'Cabello',
-      'contexto_es': '"Haircut" ya lo sabías — ahora aprende "hair" solo',
+      'frase': 'Please wash my hair',
+      'respuesta_correcta': 'Please wash my hair',
+      'fonetica': '[ pliis WOSH mai JEIR ]',
+      'traduccion_pregunta': 'Por favor, láveme el cabello',
+      'contexto_es': '"Haircut" ya lo sabías — ahora "hair" solo',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "Fresh" ─────────────────────────────────────
@@ -133,16 +133,16 @@ const lesson09HairWash = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Fresh" ───────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Fresh" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Fresh',
-      'respuesta_correcta': 'Fresh',
-      'fonetica': '[ FRESH ]',
-      'traduccion_pregunta': 'Fresco',
-      'contexto_es': '"Fresh" = limpio, renovado, listo para brillar',
+      'frase': 'Wash your hair, fresh and neat',
+      'respuesta_correcta': 'Wash your hair, fresh and neat',
+      'fonetica': '[ WOSH ior JEIR, FRESH and NIIT ]',
+      'traduccion_pregunta': 'Lavar tu cabello, fresco y prolijo',
+      'contexto_es': '"Fresh" = limpio y renovado',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -170,16 +170,16 @@ const lesson09HairWash = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Ready" ───────────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Ready" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Ready',
-      'respuesta_correcta': 'Ready',
-      'fonetica': '[ RE-di ]',
-      'traduccion_pregunta': 'Listo',
-      'contexto_es': '"Ready!" — la palabra que más les gusta escuchar a tus clientes',
+      'frase': 'Ready! Your hair is fresh',
+      'respuesta_correcta': 'Ready! Your hair is fresh',
+      'fonetica': '[ RE-di! ior JEIR is FRESH ]',
+      'traduccion_pregunta': '¡Listo! Tu cabello está fresco',
+      'contexto_es': 'La palabra que más les gusta oír',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Street" ────────────────────────────────────
@@ -198,16 +198,16 @@ const lesson09HairWash = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Street" ──────────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Street" ──────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Street',
-      'respuesta_correcta': 'Street',
-      'fonetica': '[ STRIIT ]',
-      'traduccion_pregunta': 'Calle',
-      'contexto_es': '"Fresh for the street" — la frase con la que el cliente se va feliz',
+      'frase': 'Fresh and ready for the street',
+      'respuesta_correcta': 'Fresh and ready for the street',
+      'fonetica': '[ FRESH and RE-di for de STRIIT ]',
+      'traduccion_pregunta': 'Fresco y listo para la calle',
+      'contexto_es': 'El cliente se va feliz',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L09 ───────────────────────────────

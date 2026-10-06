@@ -1,3 +1,4 @@
+import 'dart:async' show Timer;
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,6 +19,35 @@ import '../widgets/escuchar_widget.dart';
 import '../widgets/dialogo_completo_widget.dart';
 
 const _kGreen = Color(0xFF00FF87);
+const _kAmber = Color(0xFFFFB300);
+
+enum _Reaccion { ninguna, acierto, fallo }
+
+const _kPoseAcierto = 'assets/pose4.png'; // pulgar arriba
+const _kPoseFallo = 'assets/pose3.png'; // señalando
+const _kPoseCompleta = 'assets/pose2.png'; // celebrando
+
+const _kFrasesAcierto = [
+  '¡Excelente!',
+  '¡Perfecto!',
+  '¡Así se hace!',
+  '¡Muy bien!',
+  '¡Genial!',
+];
+const _kFrasesFallo = [
+  '¡Inténtalo de nuevo!',
+  '¡Casi!',
+  '¡Tú puedes!',
+  '¡No te rindas!',
+];
+
+// Intentos fallidos permitidos por ejercicio antes de mostrar la respuesta.
+const _kMaxIntentos = 2;
+
+// XP por pronunciación correcta (≥ 70 %). Es el único tipo que da XP por
+// ejercicio; 30 mantiene ~300 XP por lección (7 × 30 + 100) como antes, cuando
+// los 20 ejercicios daban +10 cada uno.
+const _kXpPronunciacion = 30;
 
 class ExerciseScreen extends ConsumerStatefulWidget {
   final Lesson lesson;
@@ -38,17 +68,56 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
   bool _resolved = false;
   bool _showIntro = true;
   bool _showCompletion = false;
+  bool _completing = false;
 
   // XP tracking for completion screen
   int _nivelAlEmpezar = -1; // -1 = not yet captured
   int _nivelAlTerminar = 1;
   String _nombreNivelNuevo = 'Apprentice Barber';
-  int _xpEjerciciosTotal = 0;    // +10 per exercise resolved
+  int _xpEjerciciosTotal = 0;    // +_kXpPronunciacion per pronunciation resolved
   int _xpPronunciacionTotal = 0; // +50 per perfect pronunciation
   int _xpRachaGanado = 0;        // 0 or 20
 
+  // Reacción de la mascota / mensaje / XP volando (se reinician en cada ejercicio)
+  final _rng = Random();
+  _Reaccion _reaccion = _Reaccion.ninguna;
+  String _mensaje = '';
+  int _intentosFallidos = 0;
+  bool _revelando = false; // mostrando la respuesta tras agotar intentos
+  Timer? _revealTimer;
+  int _xpFlySeq = 0;
+  bool _xpFlyVisible = false;
+
+  @override
+  void dispose() {
+    _revealTimer?.cancel();
+    super.dispose();
+  }
+
   List<Map<String, dynamic>> get _exercises => widget.lesson.exercises;
   Map<String, dynamic> get _current => _exercises[_index];
+
+  String get _poseActual {
+    switch (_reaccion) {
+      case _Reaccion.acierto:
+        return _kPoseAcierto;
+      case _Reaccion.fallo:
+        return _kPoseFallo;
+      case _Reaccion.ninguna:
+        return _poseForTipo(_current['tipo']?.toString());
+    }
+  }
+
+  String get _respuestaCorrecta {
+    final r = _current['respuesta_correcta']?.toString() ?? '';
+    if (_current['tipo'] == 'completar') {
+      final frase = _current['frase']?.toString() ?? '';
+      if (frase.contains('___')) return frase.replaceAll('___', r);
+    }
+    return r;
+  }
+
+  String _frase(List<String> frases) => frases[_rng.nextInt(frases.length)];
 
   bool get _hasIntro =>
       widget.lesson.descripcionEs != null ||
@@ -60,11 +129,41 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
       if (_nivelAlEmpezar == -1) {
         _nivelAlEmpezar = ref.read(gamificationProvider).nivel;
       }
+      // Solo pronunciación da XP y su animación; el resto solo avanza.
+      final daXp = _current['tipo'] == 'pronunciacion';
       setState(() {
         _resolved = true;
-        _xpEjerciciosTotal += 10;
+        _reaccion = _Reaccion.acierto;
+        _mensaje = _frase(_kFrasesAcierto);
+        if (daXp) {
+          _xpEjerciciosTotal += _kXpPronunciacion;
+          _xpFlySeq++;
+          _xpFlyVisible = true;
+        }
       });
-      ref.read(gamificationProvider.notifier).addXP(10);
+      if (daXp) {
+        ref.read(gamificationProvider.notifier).addXP(_kXpPronunciacion);
+      }
+    }
+  }
+
+  // Un intento fallido. El primero hace reaccionar a la mascota; al llegar a
+  // _kMaxIntentos se muestra la respuesta correcta y se avanza sola.
+  void _onFallo() {
+    if (_resolved || _revelando) return;
+    _intentosFallidos++;
+    if (_intentosFallidos == 1) {
+      setState(() {
+        _reaccion = _Reaccion.fallo;
+        _mensaje = _frase(_kFrasesFallo);
+      });
+    }
+    if (_intentosFallidos >= _kMaxIntentos) {
+      setState(() => _revelando = true);
+      _revealTimer?.cancel();
+      _revealTimer = Timer(const Duration(milliseconds: 3000), () {
+        if (mounted) _advance();
+      });
     }
   }
 
@@ -74,6 +173,14 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
   }
 
   void _advance() {
+    _revealTimer?.cancel();
+    // La pose vuelve a la del tipo de ejercicio y se limpian los intentos.
+    setState(() {
+      _reaccion = _Reaccion.ninguna;
+      _mensaje = '';
+      _intentosFallidos = 0;
+      _revelando = false;
+    });
     if (_index < _exercises.length - 1) {
       setState(() {
         _index++;
@@ -85,6 +192,10 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
   }
 
   Future<void> _complete() async {
+    // Evita sumar +100 XP de nuevo si se pulsa FINALIZAR varias veces.
+    if (_completing) return;
+    _completing = true;
+
     // Capture starting nivel if no exercises were resolved before completion
     if (_nivelAlEmpezar == -1) {
       _nivelAlEmpezar = ref.read(gamificationProvider).nivel;
@@ -93,16 +204,29 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
     // Award lesson completion XP (synchronous state update)
     ref.read(gamificationProvider.notifier).addXP(100);
 
-    // Check and award daily streak bonus
-    final rachaBonus = await ref.read(gamificationProvider.notifier).checkRacha();
+    // Racha y progreso actualizan el estado en memoria antes de guardar. El
+    // guardado lleva tope y try/catch: pase lo que pase se muestra el resumen,
+    // para que FINALIZAR nunca se quede sin respuesta.
+    const tope = Duration(seconds: 5);
+    var rachaBonus = 0;
+    try {
+      rachaBonus =
+          await ref.read(gamificationProvider.notifier).checkRacha().timeout(tope);
+    } catch (e) {
+      debugPrint('checkRacha falló: $e');
+    }
+    if (!mounted) return;
+    try {
+      await ref
+          .read(progressProvider.notifier)
+          .completeLesson(widget.sectionId, widget.lesson.id)
+          .timeout(tope);
+    } catch (e) {
+      debugPrint('completeLesson falló: $e');
+    }
     if (!mounted) return;
 
     final gam = ref.read(gamificationProvider);
-
-    // Save lesson progress
-    await ref.read(progressProvider.notifier).completeLesson(widget.sectionId, widget.lesson.id);
-    if (!mounted) return;
-
     setState(() {
       _xpRachaGanado = rachaBonus;
       _nivelAlTerminar = gam.nivel;
@@ -275,6 +399,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
           key: key,
           ejercicio: _current,
           onResuelto: _onResolved,
+          onFallo: _onFallo,
         );
       case 'pronunciacion':
         return PronunciacionWidget(
@@ -283,6 +408,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
           onResuelto: _onResolved,
           onContinuar: _advance,
           onPerfecto: _onPerfecto,
+          onFallo: _onFallo,
         );
       case 'parejas':
         return ParejasWidget(
@@ -295,24 +421,28 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
           key: key,
           ejercicio: _current,
           onResuelto: _onResolved,
+          onFallo: _onFallo,
         );
       case 'ordenar':
         return OrdenarWidget(
           key: key,
           ejercicio: _current,
           onResuelto: _onResolved,
+          onFallo: _onFallo,
         );
       case 'traducir':
         return TraducirWidget(
           key: key,
           ejercicio: _current,
           onResuelto: _onResolved,
+          onFallo: _onFallo,
         );
       case 'dialogo':
         return DialogoWidget(
           key: key,
           ejercicio: _current,
           onResuelto: _onResolved,
+          onFallo: _onFallo,
         );
       case 'escuchar':
         return EscucharWidget(
@@ -385,7 +515,9 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
     return Scaffold(
       body: Container(
         decoration: AppTheme.backgroundDecoration,
-        child: SafeArea(
+        child: Stack(
+          children: [
+          SafeArea(
           child: Column(
             children: [
               // — Progress bar + close —
@@ -473,12 +605,21 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                     children: [
                       SceneCardWidget(
                         ejercicio: _current,
-                        pose: _poseForTipo(_current['tipo']?.toString()),
+                        pose: _poseActual,
+                        mensaje: _mensaje,
+                        mensajeEsAcierto: _reaccion == _Reaccion.acierto,
                       ),
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 250),
-                        child: _buildExercise(),
+                        // Sin interacción mientras se muestra la respuesta.
+                        child: IgnorePointer(
+                          key: ValueKey('$_index-${_current['tipo']}'),
+                          ignoring: _revelando,
+                          child: _buildExercise(),
+                        ),
                       ),
+                      if (_revelando)
+                        _RespuestaReveladaBanner(respuesta: _respuestaCorrecta),
                     ],
                   ),
                 ),
@@ -541,6 +682,139 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                 ),
             ],
           ),
+          ),
+          if (_xpFlyVisible)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: _FloatingXp(
+                  key: ValueKey(_xpFlySeq),
+                  xp: _kXpPronunciacion,
+                  onEnd: () {
+                    if (mounted) setState(() => _xpFlyVisible = false);
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// "+N XP" que sube y desaparece al acertar una pronunciación
+// ─────────────────────────────────────────────────────────────────────────────
+class _FloatingXp extends StatefulWidget {
+  final int xp;
+  final VoidCallback onEnd;
+  const _FloatingXp({super.key, required this.xp, required this.onEnd});
+
+  @override
+  State<_FloatingXp> createState() => _FloatingXpState();
+}
+
+class _FloatingXpState extends State<_FloatingXp>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward().whenComplete(() {
+        if (mounted) widget.onEnd();
+      });
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (_, _) {
+        final t = _ctrl.value;
+        final rise = Curves.easeOut.transform(t) * 120;
+        final opacity = t < 0.6 ? 1.0 : (1 - (t - 0.6) / 0.4).clamp(0.0, 1.0);
+        final scale = 0.6 + Curves.elasticOut.transform((t / 0.35).clamp(0.0, 1.0)) * 0.4;
+        return Align(
+          alignment: const Alignment(0, 0.15),
+          child: Transform.translate(
+            offset: Offset(0, -rise),
+            child: Opacity(
+              opacity: opacity,
+              child: Transform.scale(
+                scale: scale,
+                child: Text(
+                  '+${widget.xp} XP',
+                  style: GoogleFonts.outfit(
+                    color: _kGreen,
+                    fontSize: 38,
+                    fontWeight: FontWeight.w900,
+                    shadows: [
+                      Shadow(
+                        color: _kGreen.withValues(alpha: 0.6),
+                        blurRadius: 18,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Respuesta correcta mostrada tras agotar los intentos
+// ─────────────────────────────────────────────────────────────────────────────
+class _RespuestaReveladaBanner extends StatelessWidget {
+  final String respuesta;
+  const _RespuestaReveladaBanner({required this.respuesta});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: _kAmber.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: _kAmber.withValues(alpha: 0.45)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              'La respuesta correcta era:',
+              style: GoogleFonts.outfit(
+                color: _kAmber,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.6,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              respuesta,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.outfit(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -554,7 +828,7 @@ class _CompletionView extends StatefulWidget {
   final String lessonTitle;
   final String lessonEmoji;
   final VoidCallback onNext;
-  final int xpEjercicios;      // +10 × N exercises
+  final int xpEjercicios;      // +_kXpPronunciacion × N pronunciations
   final int xpPronunciacion;   // +50 × N perfect pronunciations
   final int xpRacha;           // 0 or 20
   final int nivelAntes;        // nivel before lesson started
@@ -649,7 +923,15 @@ class _CompletionViewState extends State<_CompletionView>
                     scale: _scale,
                     child: FadeTransition(
                       opacity: _fade,
-                      child: const Text('🏆', style: TextStyle(fontSize: 76)),
+                      child: Image.asset(
+                        _kPoseCompleta,
+                        height: 150,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, _, _) => const Text(
+                          '🏆',
+                          style: TextStyle(fontSize: 76),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -736,7 +1018,7 @@ class _CompletionViewState extends State<_CompletionView>
                         const SizedBox(height: 14),
 
                         // Breakdown rows
-                        _XpRow(label: 'Ejercicios completados', xp: widget.xpEjercicios),
+                        _XpRow(label: 'Pronunciaciones correctas', xp: widget.xpEjercicios),
                         if (widget.xpPronunciacion > 0)
                           _XpRow(
                             label: 'Pronunciación perfecta ⭐',
@@ -801,7 +1083,7 @@ class _CompletionViewState extends State<_CompletionView>
 
                   const SizedBox(height: 32),
 
-                  // Siguiente lección button
+                  // Volver al menú de lecciones (no avanza a la siguiente)
                   SizedBox(
                     width: double.infinity,
                     height: 56,
@@ -817,7 +1099,7 @@ class _CompletionViewState extends State<_CompletionView>
                         shadowColor: _kCelebGreen.withValues(alpha: 0.4),
                       ),
                       child: Text(
-                        'Siguiente lección →',
+                        'Volver a las lecciones',
                         style: GoogleFonts.outfit(
                           color: Colors.black,
                           fontWeight: FontWeight.w900,
@@ -991,11 +1273,15 @@ class _CConfettiPainter extends CustomPainter {
 class SceneCardWidget extends StatelessWidget {
   final Map<String, dynamic> ejercicio;
   final String pose;
+  final String mensaje; // reacción al resultado; vacío = sin mensaje
+  final bool mensajeEsAcierto;
 
   const SceneCardWidget({
     super.key,
     required this.ejercicio,
     required this.pose,
+    this.mensaje = '',
+    this.mensajeEsAcierto = true,
   });
 
   String get _phraseEs =>
@@ -1045,6 +1331,26 @@ class SceneCardWidget extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                         ],
+                        // Reacción al resultado (acierto / primer fallo)
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          alignment: Alignment.topLeft,
+                          child: mensaje.isEmpty
+                              ? const SizedBox(width: double.infinity)
+                              : Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Text(
+                                    mensaje,
+                                    style: GoogleFonts.outfit(
+                                      color: mensajeEsAcierto
+                                          ? _kGreen
+                                          : _kAmber,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ),
+                        ),
                         // Traducción en español (todos los tipos excepto parejas)
                         if (_showText && _phraseEs.isNotEmpty)
                           Container(
@@ -1114,12 +1420,16 @@ class _AvatarCircle extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 72,
-      child: Image.asset(
-        pose,
-        fit: BoxFit.contain,
-        errorBuilder: (_, _, _) => Image.asset(
-          'assets/mascota.png',
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: Image.asset(
+          pose,
+          key: ValueKey(pose),
           fit: BoxFit.contain,
+          errorBuilder: (_, _, _) => Image.asset(
+            'assets/mascota.png',
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );

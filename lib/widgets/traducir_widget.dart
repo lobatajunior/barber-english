@@ -7,11 +7,13 @@ import '../providers/progress_provider.dart';
 class TraducirWidget extends ConsumerStatefulWidget {
   final Map<String, dynamic> ejercicio;
   final VoidCallback onResuelto;
+  final VoidCallback? onFallo;
 
   const TraducirWidget({
     super.key,
     required this.ejercicio,
     required this.onResuelto,
+    this.onFallo,
   });
 
   @override
@@ -60,6 +62,7 @@ class _TraducirWidgetState extends ConsumerState<TraducirWidget> {
       widget.onResuelto();
     } else {
       setState(() => _wrongFlash = true);
+      widget.onFallo?.call();
       Future.delayed(const Duration(milliseconds: 600), () {
         if (mounted) {
           setState(() {

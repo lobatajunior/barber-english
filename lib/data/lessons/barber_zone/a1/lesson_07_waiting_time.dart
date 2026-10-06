@@ -85,16 +85,16 @@ const lesson07WaitingTime = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Water" ───────────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Water" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Water',
-      'respuesta_correcta': 'Water',
-      'fonetica': '[ WO-ter ]',
-      'traduccion_pregunta': 'Agua',
-      'contexto_es': '"Water?" — dos sílabas que hacen sentir al cliente como en casa',
+      'frase': 'Please take a seat. Water?',
+      'respuesta_correcta': 'Please take a seat. Water?',
+      'fonetica': '[ pliis teik a SIIT. WO-ter ]',
+      'traduccion_pregunta': 'Tome asiento, por favor. ¿Agua?',
+      'contexto_es': 'Haces sentir al cliente como en casa',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "Coffee" ────────────────────────────────────
@@ -109,16 +109,16 @@ const lesson07WaitingTime = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Coffee" ──────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Coffee" ──────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Coffee',
-      'respuesta_correcta': 'Coffee',
-      'fonetica': '[ KO-fi ]',
-      'traduccion_pregunta': 'Café',
-      'contexto_es': '"Water or coffee?" — la pregunta que distingue a los mejores barberos',
+      'frase': 'No problem, water or coffee?',
+      'respuesta_correcta': 'No problem, water or coffee?',
+      'fonetica': '[ nou PROB-lem, WO-ter or KO-fi ]',
+      'traduccion_pregunta': 'No hay problema, ¿agua o café?',
+      'contexto_es': 'La pregunta que distingue a los mejores barberos',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "Drink" ─────────────────────────────────────
@@ -133,16 +133,16 @@ const lesson07WaitingTime = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Drink" ───────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Drink" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Drink',
-      'respuesta_correcta': 'Drink',
-      'fonetica': '[ DRINK ]',
-      'traduccion_pregunta': 'Tomar algo / Bebida',
-      'contexto_es': '"Something to drink?" — la pregunta más amable de la barbería',
+      'frase': 'Coffee or water to drink?',
+      'respuesta_correcta': 'Coffee or water to drink?',
+      'fonetica': '[ KO-fi or WO-ter tu DRINK ]',
+      'traduccion_pregunta': '¿Café o agua para tomar?',
+      'contexto_es': 'La pregunta más amable de la barbería',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -170,16 +170,16 @@ const lesson07WaitingTime = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "While" ───────────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "While" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'While',
-      'respuesta_correcta': 'While',
-      'fonetica': '[ WAIL ]',
-      'traduccion_pregunta': 'Mientras',
-      'contexto_es': '"While you wait" — haces que la espera se sienta más corta',
+      'frase': 'Water or coffee while you wait?',
+      'respuesta_correcta': 'Water or coffee while you wait?',
+      'fonetica': '[ WO-ter or KO-fi wail iu WEIT ]',
+      'traduccion_pregunta': '¿Agua o café mientras espera?',
+      'contexto_es': 'Haces que la espera se sienta más corta',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Something" ────────────────────────────────
@@ -198,16 +198,16 @@ const lesson07WaitingTime = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Something" ──────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Something" ──────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Something',
-      'respuesta_correcta': 'Something',
-      'fonetica': '[ SOM-zing ]',
-      'traduccion_pregunta': 'Algo',
-      'contexto_es': '"Something to drink while you wait?" — la frase del barbero que cuida a sus clientes',
+      'frase': 'Take a seat. Something to drink?',
+      'respuesta_correcta': 'Take a seat. Something to drink?',
+      'fonetica': '[ teik a SIIT. SOM-zing tu DRINK ]',
+      'traduccion_pregunta': 'Tome asiento. ¿Algo de tomar?',
+      'contexto_es': 'El barbero que cuida a sus clientes',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L07 ───────────────────────────────

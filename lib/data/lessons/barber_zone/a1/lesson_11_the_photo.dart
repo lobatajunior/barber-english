@@ -85,16 +85,16 @@ const lesson11ThePhoto = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Like" ────────────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Like" ────────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Like',
-      'respuesta_correcta': 'Like',
-      'fonetica': '[ LAIK ]',
-      'traduccion_pregunta': 'Como / Así',
-      'contexto_es': '"Like this" o "like the photo" — así lo pide el cliente',
+      'frase': 'A haircut like this photo',
+      'respuesta_correcta': 'A haircut like this photo',
+      'fonetica': '[ a JEAR-kat laik dis FOU-tou ]',
+      'traduccion_pregunta': 'Un corte como esta foto',
+      'contexto_es': 'Así lo pide el cliente con el móvil en la mano',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "Similar" ───────────────────────────────────
@@ -109,16 +109,16 @@ const lesson11ThePhoto = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Similar" ─────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Similar" ─────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Similar',
-      'respuesta_correcta': 'Similar',
-      'fonetica': '[ SI-mi-lar ]',
-      'traduccion_pregunta': 'Similar / Parecido',
-      'contexto_es': '"Similar to the photo" — gestionas las expectativas del cliente',
+      'frase': 'Similar to the photo, no problem',
+      'respuesta_correcta': 'Similar to the photo, no problem',
+      'fonetica': '[ SI-mi-lar tu de FOU-tou, nou PROB-lem ]',
+      'traduccion_pregunta': 'Parecido a la foto, no hay problema',
+      'contexto_es': 'Gestionas las expectativas del cliente',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "Possible" ──────────────────────────────────
@@ -133,16 +133,16 @@ const lesson11ThePhoto = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Possible" ────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Possible" ────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Possible',
-      'respuesta_correcta': 'Possible',
-      'fonetica': '[ PO-si-bol ]',
-      'traduccion_pregunta': 'Posible',
-      'contexto_es': '"Possible!" — una sola palabra que tranquiliza al cliente',
+      'frase': 'Like this photo? Of course, possible!',
+      'respuesta_correcta': 'Like this photo? Of course, possible!',
+      'fonetica': '[ laik dis FOU-tou? of KORS, PO-si-bol ]',
+      'traduccion_pregunta': '¿Como esta foto? ¡Claro, es posible!',
+      'contexto_es': 'Tranquilizas al cliente',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -170,16 +170,16 @@ const lesson11ThePhoto = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Different" ───────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Different" ───────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Different',
-      'respuesta_correcta': 'Different',
-      'fonetica': '[ DI-fer-ent ]',
-      'traduccion_pregunta': 'Diferente',
-      'contexto_es': '"A little different" — honestidad que genera confianza',
+      'frase': 'Similar, but a little different',
+      'respuesta_correcta': 'Similar, but a little different',
+      'fonetica': '[ SI-mi-lar, bat a LI-tel DI-fer-ent ]',
+      'traduccion_pregunta': 'Parecido, pero un poco diferente',
+      'contexto_es': 'Honestidad que genera confianza',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Close" ─────────────────────────────────────
@@ -198,16 +198,16 @@ const lesson11ThePhoto = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Close" ───────────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Close" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Close',
-      'respuesta_correcta': 'Close',
-      'fonetica': '[ KLOUS ]',
-      'traduccion_pregunta': 'Pegado / Muy corto',
-      'contexto_es': '"Not too close" — no demasiado pegado, un poco más largo',
+      'frase': 'Short on the sides, not too close',
+      'respuesta_correcta': 'Short on the sides, not too close',
+      'fonetica': '[ SHORT on de SAIDS, not tu KLOUS ]',
+      'traduccion_pregunta': 'Corto a los lados, no muy pegado',
+      'contexto_es': 'No demasiado pegado, un poco más largo',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L11 ───────────────────────────────

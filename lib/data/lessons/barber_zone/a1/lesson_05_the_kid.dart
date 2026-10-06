@@ -88,17 +88,17 @@ const lesson05TheKid = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Son" ─────────────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Son" ─────────────────────────────────────
     // Disponibles L05: Son
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Son',
-      'respuesta_correcta': 'Son',
-      'fonetica': '[ SON ]',
-      'traduccion_pregunta': 'Hijo',
-      'contexto_es': 'El papá habla de su hijo — "my son"',
+      'frase': 'Good morning! A haircut for my son',
+      'respuesta_correcta': 'Good morning! A haircut for my son',
+      'fonetica': '[ gud MOR-ning! a JEAR-kat for mai SON ]',
+      'traduccion_pregunta': '¡Buenos días! Un corte para mi hijo',
+      'contexto_es': 'El papá o la mamá trae al niño',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "Move" ──────────────────────────────────────
@@ -114,17 +114,17 @@ const lesson05TheKid = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Move" ────────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Move" ────────────────────────────────────
     // Disponibles L05: Son · Move
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Move',
-      'respuesta_correcta': 'Move',
-      'fonetica': '[ MUUV ]',
-      'traduccion_pregunta': 'Moverse',
-      'contexto_es': 'Sabrás cuándo usarla en tu silla',
+      'frase': "Sit down, please, don't move",
+      'respuesta_correcta': "Sit down, please, don't move",
+      'fonetica': '[ SIT daun, pliis, dont MUUV ]',
+      'traduccion_pregunta': 'Siéntate, por favor, no te muevas',
+      'contexto_es': 'Firme pero amable con el niño',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "Patient" ───────────────────────────────────
@@ -140,17 +140,17 @@ const lesson05TheKid = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Patient" ─────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Patient" ─────────────────────────────────
     // Disponibles L05: Son · Move · Patient
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Patient',
-      'respuesta_correcta': 'Patient',
-      'fonetica': '[ PEI-shent ]',
-      'traduccion_pregunta': 'Paciente',
-      'contexto_es': 'Siempre va bien con "please be patient"',
+      'frase': "Please be patient, don't move",
+      'respuesta_correcta': "Please be patient, don't move",
+      'fonetica': '[ pliis bi PEI-shent, dont MUUV ]',
+      'traduccion_pregunta': 'Por favor ten paciencia, no te muevas',
+      'contexto_es': 'Calma al niño antes de empezar',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -180,17 +180,17 @@ const lesson05TheKid = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Photo" ───────────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Photo" ───────────────────────────────────
     // Disponibles L05: Son · Move · Patient · Photo
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Photo',
-      'respuesta_correcta': 'Photo',
-      'fonetica': '[ FOU-tou ]',
-      'traduccion_pregunta': 'Foto',
-      'contexto_es': 'Cuando el cliente te enseña la foto del corte',
+      'frase': 'This photo, please, for my son',
+      'respuesta_correcta': 'This photo, please, for my son',
+      'fonetica': '[ dis FOU-tou, pliis, for mai SON ]',
+      'traduccion_pregunta': 'Esta foto, por favor, para mi hijo',
+      'contexto_es': 'Cuando te enseñan la foto del corte',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Modern" ────────────────────────────────────
@@ -210,17 +210,17 @@ const lesson05TheKid = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Modern" ──────────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Modern" ──────────────────────────────────
     // Disponibles L05: las 5 nuevas
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Modern',
-      'respuesta_correcta': 'Modern',
-      'fonetica': '[ MOD-ern ]',
-      'traduccion_pregunta': 'Moderno',
-      'contexto_es': 'El estilo más solicitado por los jóvenes',
+      'frase': 'A modern haircut for my son',
+      'respuesta_correcta': 'A modern haircut for my son',
+      'fonetica': '[ a MOD-ern JEAR-kat for mai SON ]',
+      'traduccion_pregunta': 'Un corte moderno para mi hijo',
+      'contexto_es': 'El estilo más pedido por los jóvenes',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L05 ───────────────────────────────

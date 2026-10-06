@@ -87,16 +87,16 @@ const lesson08ScissorsCut = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Scissors" ────────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Scissors" ────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Scissors',
-      'respuesta_correcta': 'Scissors',
-      'fonetica': '[ SI-sors ]',
-      'traduccion_pregunta': 'Tijera',
-      'contexto_es': '"Scissors only" — solo tijera, sin máquina',
+      'frase': 'A haircut with scissors, please',
+      'respuesta_correcta': 'A haircut with scissors, please',
+      'fonetica': '[ a JEAR-kat wiz SI-sors, pliis ]',
+      'traduccion_pregunta': 'Un corte con tijera, por favor',
+      'contexto_es': 'Solo tijera, sin máquina',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "Classic" ───────────────────────────────────
@@ -111,16 +111,16 @@ const lesson08ScissorsCut = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Classic" ─────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Classic" ─────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Classic',
-      'respuesta_correcta': 'Classic',
-      'fonetica': '[ KLA-sik ]',
-      'traduccion_pregunta': 'Clásico',
-      'contexto_es': '"Classic haircut" — el corte que nunca falla',
+      'frase': 'A classic haircut, scissors only',
+      'respuesta_correcta': 'A classic haircut, scissors only',
+      'fonetica': '[ a KLA-sik JEAR-kat, SI-sors OUN-li ]',
+      'traduccion_pregunta': 'Un corte clásico, solo tijera',
+      'contexto_es': 'El corte que nunca falla',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "Style" ─────────────────────────────────────
@@ -135,16 +135,16 @@ const lesson08ScissorsCut = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Style" ───────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Style" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Style',
-      'respuesta_correcta': 'Style',
-      'fonetica': '[ STAIL ]',
-      'traduccion_pregunta': 'Estilo',
-      'contexto_es': '"Classic style" — estilo clásico, elegante y prolijo',
+      'frase': 'A classic style, not too short',
+      'respuesta_correcta': 'A classic style, not too short',
+      'fonetica': '[ a KLA-sik STAIL, not tu SHORT ]',
+      'traduccion_pregunta': 'Un estilo clásico, no muy corto',
+      'contexto_es': 'Así lo pide el cliente de la Conversación 2',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -172,16 +172,16 @@ const lesson08ScissorsCut = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Comb" ────────────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Comb" ────────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Comb',
-      'respuesta_correcta': 'Comb',
-      'fonetica': '[ KOUM ]',
-      'traduccion_pregunta': 'Peine',
-      'contexto_es': 'La "b" en "comb" no se pronuncia — recuérdalo',
+      'frase': 'Scissors and comb, classic style',
+      'respuesta_correcta': 'Scissors and comb, classic style',
+      'fonetica': '[ SI-sors and KOUM, KLA-sik STAIL ]',
+      'traduccion_pregunta': 'Tijera y peine, estilo clásico',
+      'contexto_es': 'La "b" de "comb" no se pronuncia',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Neat" ──────────────────────────────────────
@@ -200,16 +200,16 @@ const lesson08ScissorsCut = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Neat" ────────────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Neat" ────────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Neat',
-      'respuesta_correcta': 'Neat',
-      'fonetica': '[ NIIT ]',
-      'traduccion_pregunta': 'Prolijo / Bien hecho',
-      'contexto_es': '"Neat style" — así describes el resultado perfecto al cliente',
+      'frase': 'Classic style, neat on the sides',
+      'respuesta_correcta': 'Classic style, neat on the sides',
+      'fonetica': '[ KLA-sik STAIL, NIIT on de SAIDS ]',
+      'traduccion_pregunta': 'Estilo clásico, prolijo a los lados',
+      'contexto_es': 'Así describes el resultado perfecto',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L08 ───────────────────────────────

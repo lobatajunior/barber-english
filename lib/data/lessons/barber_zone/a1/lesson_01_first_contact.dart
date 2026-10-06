@@ -35,17 +35,17 @@ const lesson01FirstContact = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 02 · PRONUNCIACIÓN ─ "Good morning" ───────────────────────────────
+    // ── EJ 02 · PRONUNCIACIÓN FRASE ─ "Good morning" ───────────────────────────────
     // Disponibles: Good morning
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repite tú en voz alta',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Good morning',
-      'respuesta_correcta': 'Good morning',
-      'fonetica': '[ gud MOR-ning ]',
-      'traduccion_pregunta': 'Buenos días',
-      'contexto_es': 'Repite hasta que suene natural',
+      'frase': 'Good morning to you!',
+      'respuesta_correcta': 'Good morning to you!',
+      'fonetica': '[ gud MOR-ning tu IU ]',
+      'traduccion_pregunta': '¡Buenos días a ti!',
+      'contexto_es': 'Tu primer saludo del día — con energía',
     },
 
     // ── EJ 03 · ESCUCHAR ─ "Appointment" ─────────────────────────────────────
@@ -61,17 +61,17 @@ const lesson01FirstContact = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 04 · PRONUNCIACIÓN ─ "Appointment" ────────────────────────────────
+    // ── EJ 04 · PRONUNCIACIÓN FRASE ─ "Appointment" ────────────────────────────────
     // Disponibles: Good morning · Appointment
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora pronúnciala tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Appointment',
-      'respuesta_correcta': 'Appointment',
-      'fonetica': '[ a-POINT-ment ]',
-      'traduccion_pregunta': 'Cita',
-      'contexto_es': 'La palabra más importante de tu barbería',
+      'frase': 'Good morning, I have an appointment',
+      'respuesta_correcta': 'Good morning, I have an appointment',
+      'fonetica': '[ gud MOR-ning, ai jav an a-POINT-ment ]',
+      'traduccion_pregunta': 'Buenos días, tengo una cita',
+      'contexto_es': 'Así llega el cliente que reservó',
     },
 
     // ── EJ 05 · PAREJAS ───────────────────────────────────────────────────────
@@ -100,16 +100,16 @@ const lesson01FirstContact = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Welcome" ────────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Welcome" ────────────────────────────────────
     // Disponibles: Good morning · Appointment · Welcome
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Welcome',
-      'respuesta_correcta': 'Welcome',
-      'fonetica': '[ WEL-kom ]',
-      'traduccion_pregunta': 'Bienvenido',
+      'frase': 'Welcome! Good morning to you',
+      'respuesta_correcta': 'Welcome! Good morning to you',
+      'fonetica': '[ WEL-kom! gud MOR-ning tu IU ]',
+      'traduccion_pregunta': '¡Bienvenido! Buenos días',
       'contexto_es': 'Hazlo sonar cálido y profesional',
     },
 
@@ -126,17 +126,17 @@ const lesson01FirstContact = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Come in" ────────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Come in" ────────────────────────────────────
     // Disponibles: Good morning · Appointment · Welcome · Come in
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítelo tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Come in',
-      'respuesta_correcta': 'Come in',
-      'fonetica': '[ kom IN ]',
-      'traduccion_pregunta': 'Pase / Entra',
-      'contexto_es': 'Muy usada cuando abres la puerta',
+      'frase': 'Good morning! Welcome, come in',
+      'respuesta_correcta': 'Good morning! Welcome, come in',
+      'fonetica': '[ gud MOR-ning! WEL-kom, kom IN ]',
+      'traduccion_pregunta': '¡Buenos días! Bienvenido, pase',
+      'contexto_es': 'Lo dices mientras abres la puerta',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────────
@@ -166,16 +166,16 @@ const lesson01FirstContact = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Of course" ──────────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Of course" ──────────────────────────────────
     // Disponibles: Good morning · Appointment · Welcome · Come in · Of course
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítelo tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Of course',
-      'respuesta_correcta': 'Of course',
-      'fonetica': '[ of KORS ]',
-      'traduccion_pregunta': 'Claro / Por supuesto',
+      'frase': 'An appointment? Of course, come in',
+      'respuesta_correcta': 'An appointment? Of course, come in',
+      'fonetica': '[ an a-POINT-ment? of KORS, kom IN ]',
+      'traduccion_pregunta': '¿Una cita? Claro, pase',
       'contexto_es': 'Suena seguro y profesional',
     },
 

@@ -83,16 +83,16 @@ const lesson13StyleTalk = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Volume" ──────────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Volume" ──────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Volume',
-      'respuesta_correcta': 'Volume',
-      'fonetica': '[ VOL-yum ]',
-      'traduccion_pregunta': 'Volumen',
-      'contexto_es': '"More volume on top" — más cuerpo arriba',
+      'frase': 'More volume on top, please',
+      'respuesta_correcta': 'More volume on top, please',
+      'fonetica': '[ mor VOL-yum on TOP, pliis ]',
+      'traduccion_pregunta': 'Más volumen arriba, por favor',
+      'contexto_es': 'Más cuerpo arriba',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "Texture" ───────────────────────────────────
@@ -107,16 +107,16 @@ const lesson13StyleTalk = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Texture" ─────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Texture" ─────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Texture',
-      'respuesta_correcta': 'Texture',
-      'fonetica': '[ TEKS-cher ]',
-      'traduccion_pregunta': 'Textura',
-      'contexto_es': '"Texture perfect for your hair" — lo que decía el cliente de Conv. 1',
+      'frase': 'Volume and texture on top',
+      'respuesta_correcta': 'Volume and texture on top',
+      'fonetica': '[ VOL-yum and TEKS-cher on TOP ]',
+      'traduccion_pregunta': 'Volumen y textura arriba',
+      'contexto_es': 'Lo que pedía el cliente de la Conversación 1',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "Product" ───────────────────────────────────
@@ -131,16 +131,16 @@ const lesson13StyleTalk = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Product" ─────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Product" ─────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Product',
-      'respuesta_correcta': 'Product',
-      'fonetica': '[ PRO-dakt ]',
-      'traduccion_pregunta': 'Producto',
-      'contexto_es': '"No product" — algunos clientes prefieren el look natural',
+      'frase': 'Texture on top, no product',
+      'respuesta_correcta': 'Texture on top, no product',
+      'fonetica': '[ TEKS-cher on TOP, nou PRO-dakt ]',
+      'traduccion_pregunta': 'Textura arriba, sin producto',
+      'contexto_es': 'Algunos clientes prefieren el look natural',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -168,16 +168,16 @@ const lesson13StyleTalk = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Natural" ─────────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Natural" ─────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Natural',
-      'respuesta_correcta': 'Natural',
-      'fonetica': '[ NAT-shu-ral ]',
-      'traduccion_pregunta': 'Natural',
-      'contexto_es': '"Natural texture, no product" — la tendencia actual en barbería',
+      'frase': 'Natural style, no product, please',
+      'respuesta_correcta': 'Natural style, no product, please',
+      'fonetica': '[ NAT-shu-ral STAIL, nou PRO-dakt, pliis ]',
+      'traduccion_pregunta': 'Estilo natural, sin producto, por favor',
+      'contexto_es': 'La tendencia actual en barbería',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Messy" ─────────────────────────────────────
@@ -196,16 +196,16 @@ const lesson13StyleTalk = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Messy" ───────────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Messy" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Messy',
-      'respuesta_correcta': 'Messy',
-      'fonetica': '[ ME-si ]',
-      'traduccion_pregunta': 'Desenfadado / Despeinado natural',
-      'contexto_es': '"Messy style, natural, no product" — la descripción del look moderno',
+      'frase': 'A messy style, natural texture',
+      'respuesta_correcta': 'A messy style, natural texture',
+      'fonetica': '[ a ME-si STAIL, NAT-shu-ral TEKS-cher ]',
+      'traduccion_pregunta': 'Un estilo despeinado, textura natural',
+      'contexto_es': 'La descripción del look moderno',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L13 ───────────────────────────────

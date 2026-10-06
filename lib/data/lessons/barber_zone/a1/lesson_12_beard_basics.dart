@@ -84,16 +84,16 @@ const lesson12BeardBasics = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Beard" ───────────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Beard" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Beard',
-      'respuesta_correcta': 'Beard',
-      'fonetica': '[ BIRD ]',
-      'traduccion_pregunta': 'Barba',
-      'contexto_es': '"Beard trim, please" — perfila la barba, por favor',
+      'frase': 'A haircut and beard, please',
+      'respuesta_correcta': 'A haircut and beard, please',
+      'fonetica': '[ a JEAR-kat and BIRD, pliis ]',
+      'traduccion_pregunta': 'Corte y barba, por favor',
+      'contexto_es': 'El servicio completo',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "Sideburns" ────────────────────────────────
@@ -108,16 +108,16 @@ const lesson12BeardBasics = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Sideburns" ───────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Sideburns" ───────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'El cliente dice',
-      'frase': 'Sideburns',
-      'respuesta_correcta': 'Sideburns',
-      'fonetica': '[ SAID-borns ]',
-      'traduccion_pregunta': 'Patillas',
-      'contexto_es': '"Shape the sideburns" — perfilar las patillas',
+      'frase': 'Beard and sideburns, please',
+      'respuesta_correcta': 'Beard and sideburns, please',
+      'fonetica': '[ BIRD and SAID-borns, pliis ]',
+      'traduccion_pregunta': 'Barba y patillas, por favor',
+      'contexto_es': 'El cliente pide arreglar las patillas',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "Shape" ─────────────────────────────────────
@@ -132,16 +132,16 @@ const lesson12BeardBasics = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Shape" ───────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Shape" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Shape',
-      'respuesta_correcta': 'Shape',
-      'fonetica': '[ SHEIP ]',
-      'traduccion_pregunta': 'Perfilar / Dar forma',
-      'contexto_es': '"Shape" transforma una barba descuidada en una obra de arte',
+      'frase': 'I shape the beard and sideburns',
+      'respuesta_correcta': 'I shape the beard and sideburns',
+      'fonetica': '[ ai SHEIP de BIRD and SAID-borns ]',
+      'traduccion_pregunta': 'Perfilo la barba y las patillas',
+      'contexto_es': 'Le explicas lo que vas a hacer',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -169,16 +169,16 @@ const lesson12BeardBasics = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Clean" ───────────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Clean" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Clean',
-      'respuesta_correcta': 'Clean',
-      'fonetica': '[ KLIIN ]',
-      'traduccion_pregunta': 'Limpio / Impecable',
-      'contexto_es': '"Clean line, clean beard" — el resultado que el cliente espera',
+      'frase': 'Shape the beard, clean and neat',
+      'respuesta_correcta': 'Shape the beard, clean and neat',
+      'fonetica': '[ SHEIP de BIRD, KLIIN and NIIT ]',
+      'traduccion_pregunta': 'Perfilar la barba, limpia y prolija',
+      'contexto_es': 'El resultado que el cliente espera',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Line" ──────────────────────────────────────
@@ -197,16 +197,16 @@ const lesson12BeardBasics = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Line" ────────────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Line" ────────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Line',
-      'respuesta_correcta': 'Line',
-      'fonetica': '[ LAIN ]',
-      'traduccion_pregunta': 'Línea / Perfil',
-      'contexto_es': '"Clean line, clean beard" — la marca del barbero de nivel',
+      'frase': 'Clean line on the beard',
+      'respuesta_correcta': 'Clean line on the beard',
+      'fonetica': '[ KLIIN LAIN on de BIRD ]',
+      'traduccion_pregunta': 'Línea limpia en la barba',
+      'contexto_es': 'La marca del barbero de nivel',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L12 ───────────────────────────────

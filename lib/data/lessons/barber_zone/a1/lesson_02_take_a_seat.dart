@@ -85,17 +85,17 @@ const lesson02TakeASeat = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Sit down" ───────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Sit down" ───────────────────────────────
     // Disponibles L02: Sit down
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Sit down',
-      'respuesta_correcta': 'Sit down',
-      'fonetica': '[ SIT daun ]',
-      'traduccion_pregunta': 'Siéntate',
-      'contexto_es': 'Pronuncia con energía y seguridad',
+      'frase': 'Welcome! Come in and sit down',
+      'respuesta_correcta': 'Welcome! Come in and sit down',
+      'fonetica': '[ WEL-kom! kom IN and SIT daun ]',
+      'traduccion_pregunta': '¡Bienvenido! Pase y siéntese',
+      'contexto_es': 'Invitas al cliente a tu silla',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "My name is" ───────────────────────────────
@@ -111,17 +111,17 @@ const lesson02TakeASeat = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "My name is" ─────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "My name is" ─────────────────────────────
     // Disponibles L02: Sit down · My name is
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítelo tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'My name is',
-      'respuesta_correcta': 'My name is',
-      'fonetica': '[ mai NEIM is ]',
-      'traduccion_pregunta': 'Me llamo',
-      'contexto_es': 'Di tu nombre después — "My name is Junior"',
+      'frase': 'Good morning, my name is Junior',
+      'respuesta_correcta': 'Good morning, my name is Junior',
+      'fonetica': '[ gud MOR-ning, mai NEIM is Junior ]',
+      'traduccion_pregunta': 'Buenos días, me llamo Junior',
+      'contexto_es': 'Di tu propio nombre al practicarla',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "What's your name" ─────────────────────────
@@ -137,16 +137,16 @@ const lesson02TakeASeat = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "What's your name" ───────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "What's your name" ───────────────────────
     // Disponibles L02: Sit down · My name is · What's your name
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': "What's your name",
-      'respuesta_correcta': "What's your name",
-      'fonetica': '[ wots ior NEIM ]',
-      'traduccion_pregunta': '¿Cómo te llamas?',
+      'frase': "Welcome! What's your name?",
+      'respuesta_correcta': "Welcome! What's your name?",
+      'fonetica': '[ WEL-kom! wots ior NEIM ]',
+      'traduccion_pregunta': '¡Bienvenido! ¿Cómo te llamas?',
       'contexto_es': 'Hazlo sonar amigable, no formal',
     },
 
@@ -177,17 +177,17 @@ const lesson02TakeASeat = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Nice to meet you" ───────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Nice to meet you" ───────────────────────
     // Disponibles L02: Sit down · My name is · What's your name · Nice to meet you
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Nice to meet you',
-      'respuesta_correcta': 'Nice to meet you',
-      'fonetica': '[ nais tu miit IU ]',
-      'traduccion_pregunta': 'Mucho gusto',
-      'contexto_es': 'Suena cálido — le hace sentir especial al cliente',
+      'frase': 'Nice to meet you! My name is Junior',
+      'respuesta_correcta': 'Nice to meet you! My name is Junior',
+      'fonetica': '[ nais tu miit IU! mai NEIM is Junior ]',
+      'traduccion_pregunta': '¡Mucho gusto! Me llamo Junior',
+      'contexto_es': 'Suena cálido — el cliente se siente especial',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Take a seat" ──────────────────────────────
@@ -207,17 +207,17 @@ const lesson02TakeASeat = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Take a seat" ────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Take a seat" ────────────────────────────
     // Disponibles L02: las 5 nuevas
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítelo tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Take a seat',
-      'respuesta_correcta': 'Take a seat',
-      'fonetica': '[ teik a SIIT ]',
-      'traduccion_pregunta': 'Tome asiento',
-      'contexto_es': 'Señala la silla mientras lo dices — eso ayuda',
+      'frase': 'Nice to meet you, take a seat',
+      'respuesta_correcta': 'Nice to meet you, take a seat',
+      'fonetica': '[ nais tu miit IU, teik a SIIT ]',
+      'traduccion_pregunta': 'Mucho gusto, tome asiento',
+      'contexto_es': 'Señala la silla mientras lo dices',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L02 ───────────────────────────────

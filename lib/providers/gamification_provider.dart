@@ -1,4 +1,4 @@
-import 'dart:async' show unawaited;
+import 'dart:async' show StreamSubscription, unawaited;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/gamification_service.dart';
 import 'auth_provider.dart';
@@ -28,16 +28,22 @@ class GamificationState {
 class GamificationNotifier extends StateNotifier<GamificationState> {
   GamificationNotifier(this._service, this._userId)
       : super(const GamificationState()) {
-    _load();
+    // Cache first, then server updates.
+    _sub = _service.watch(_userId).listen((data) {
+      _raw = data;
+      state = _fromRaw();
+    });
   }
 
   final GamificationService _service;
   final String? _userId;
   GamData _raw = GamData.empty;
+  late final StreamSubscription<GamData> _sub;
 
-  Future<void> _load() async {
-    _raw = await _service.load(_userId);
-    if (mounted) state = _fromRaw();
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
   }
 
   GamificationState _fromRaw() {

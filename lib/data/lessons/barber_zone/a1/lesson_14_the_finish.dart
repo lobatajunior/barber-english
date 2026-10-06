@@ -84,16 +84,16 @@ const lesson14TheFinish = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Done" ────────────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Done" ────────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Done',
-      'respuesta_correcta': 'Done',
-      'fonetica': '[ DON ]',
-      'traduccion_pregunta': 'Listo / Terminado',
-      'contexto_es': 'Una sola sílaba que el cliente espera con ilusión',
+      'frase': 'Done! Your haircut is ready',
+      'respuesta_correcta': 'Done! Your haircut is ready',
+      'fonetica': '[ DON! ior JEAR-kat is RE-di ]',
+      'traduccion_pregunta': '¡Terminado! Tu corte está listo',
+      'contexto_es': 'Lo que el cliente espera con ilusión',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "Look" ──────────────────────────────────────
@@ -108,16 +108,16 @@ const lesson14TheFinish = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "Look" ────────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "Look" ────────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Look',
-      'respuesta_correcta': 'Look',
-      'fonetica': '[ LUK ]',
-      'traduccion_pregunta': 'Mira / Aspecto',
-      'contexto_es': '"Look great" — el resultado tiene un aspecto excelente',
+      'frase': 'Done! Look, fresh and neat',
+      'respuesta_correcta': 'Done! Look, fresh and neat',
+      'fonetica': '[ DON! LUK, FRESH and NIIT ]',
+      'traduccion_pregunta': '¡Listo! Mira, fresco y prolijo',
+      'contexto_es': 'Le enseñas el resultado',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "Great" ─────────────────────────────────────
@@ -132,16 +132,16 @@ const lesson14TheFinish = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Great" ───────────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Great" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Great',
-      'respuesta_correcta': 'Great',
-      'fonetica': '[ GREIT ]',
-      'traduccion_pregunta': 'Genial / Excelente',
-      'contexto_es': '"Look great" — cuando el cliente se ve en el espejo y sonríe',
+      'frase': 'Done! You look great',
+      'respuesta_correcta': 'Done! You look great',
+      'fonetica': '[ DON! iu luk GREIT ]',
+      'traduccion_pregunta': '¡Listo! Te ves genial',
+      'contexto_es': 'Cuando el cliente se ve en el espejo y sonríe',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -169,16 +169,16 @@ const lesson14TheFinish = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "New" ─────────────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "New" ─────────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'New',
-      'respuesta_correcta': 'New',
-      'fonetica': '[ NIU ]',
-      'traduccion_pregunta': 'Nuevo / Como nuevo',
-      'contexto_es': '"Like new" — el mayor cumplido que puede escuchar un barbero',
+      'frase': 'You look great, like new',
+      'respuesta_correcta': 'You look great, like new',
+      'fonetica': '[ iu luk GREIT, laik NIU ]',
+      'traduccion_pregunta': 'Te ves genial, como nuevo',
+      'contexto_es': 'El mayor cumplido para un barbero',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Happy" ─────────────────────────────────────
@@ -197,16 +197,16 @@ const lesson14TheFinish = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Happy" ───────────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Happy" ───────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Happy',
-      'respuesta_correcta': 'Happy',
-      'fonetica': '[ JA-pi ]',
-      'traduccion_pregunta': 'Contento / Satisfecho',
-      'contexto_es': '"Happy?" — una sola palabra que fideliza al cliente',
+      'frase': 'Look great! Are you happy?',
+      'respuesta_correcta': 'Look great! Are you happy?',
+      'fonetica': '[ luk GREIT! ar iu JA-pi ]',
+      'traduccion_pregunta': '¡Te ves genial! ¿Estás contento?',
+      'contexto_es': 'Una pregunta que fideliza al cliente',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L14 ───────────────────────────────

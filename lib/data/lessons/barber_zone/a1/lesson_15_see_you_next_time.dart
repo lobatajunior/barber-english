@@ -84,16 +84,16 @@ const lesson15SeeYouNextTime = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 05 · PRONUNCIACIÓN ─ "Goodbye" ─────────────────────────────────
+    // ── EJ 05 · PRONUNCIACIÓN FRASE ─ "Goodbye" ─────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Goodbye',
-      'respuesta_correcta': 'Goodbye',
-      'fonetica': '[ gud-BAI ]',
-      'traduccion_pregunta': 'Adiós',
-      'contexto_es': '"Goodbye!" — con una sonrisa, la mejor tarjeta de presentación',
+      'frase': 'Done, look great! Goodbye',
+      'respuesta_correcta': 'Done, look great! Goodbye',
+      'fonetica': '[ DON, luk GREIT! gud-BAI ]',
+      'traduccion_pregunta': '¡Listo, te ves genial! Adiós',
+      'contexto_es': 'Con una sonrisa, tu mejor tarjeta',
     },
 
     // ── EJ 06 · ESCUCHAR 🆕 ─ "See you" ───────────────────────────────────
@@ -108,16 +108,16 @@ const lesson15SeeYouNextTime = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 07 · PRONUNCIACIÓN ─ "See you" ─────────────────────────────────
+    // ── EJ 07 · PRONUNCIACIÓN FRASE ─ "See you" ─────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'See you',
-      'respuesta_correcta': 'See you',
-      'fonetica': '[ SI iu ]',
-      'traduccion_pregunta': 'Nos vemos',
-      'contexto_es': '"See you next time" — nos vemos la próxima',
+      'frase': 'Look great! See you, goodbye',
+      'respuesta_correcta': 'Look great! See you, goodbye',
+      'fonetica': '[ luk GREIT! SI iu, gud-BAI ]',
+      'traduccion_pregunta': '¡Te ves genial! Nos vemos, adiós',
+      'contexto_es': 'Despides al cliente con buena energía',
     },
 
     // ── EJ 08 · ESCUCHAR 🆕 ─ "Next time" ────────────────────────────────
@@ -132,16 +132,16 @@ const lesson15SeeYouNextTime = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 09 · PRONUNCIACIÓN ─ "Next time" ───────────────────────────────
+    // ── EJ 09 · PRONUNCIACIÓN FRASE ─ "Next time" ───────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Next time',
-      'respuesta_correcta': 'Next time',
-      'fonetica': '[ NEKST taim ]',
-      'traduccion_pregunta': 'La próxima vez',
-      'contexto_es': 'Dos palabras que valen más que cualquier tarjeta de fidelidad',
+      'frase': 'See you next time, goodbye',
+      'respuesta_correcta': 'See you next time, goodbye',
+      'fonetica': '[ SI iu NEKST taim, gud-BAI ]',
+      'traduccion_pregunta': 'Nos vemos la próxima vez, adiós',
+      'contexto_es': 'Vale más que cualquier tarjeta de fidelidad',
     },
 
     // ── EJ 10 · COMPLETAR ─────────────────────────────────────────────────
@@ -169,16 +169,16 @@ const lesson15SeeYouNextTime = Lesson(
       'es_palabra_nueva': true,
     },
 
-    // ── EJ 12 · PRONUNCIACIÓN ─ "Thank you" ───────────────────────────────
+    // ── EJ 12 · PRONUNCIACIÓN FRASE ─ "Thank you" ───────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Thank you',
-      'respuesta_correcta': 'Thank you',
-      'fonetica': '[ ZANK iu ]',
-      'traduccion_pregunta': 'Gracias',
-      'contexto_es': '"Thank you!" — el cliente también te lo dice a ti',
+      'frase': 'Thank you! See you next time',
+      'respuesta_correcta': 'Thank you! See you next time',
+      'fonetica': '[ ZANK iu! SI iu NEKST taim ]',
+      'traduccion_pregunta': '¡Gracias! Nos vemos la próxima vez',
+      'contexto_es': 'El cliente también te lo dice a ti',
     },
 
     // ── EJ 13 · ESCUCHAR 🆕 ─ "Pleasure" ──────────────────────────────────
@@ -197,16 +197,16 @@ const lesson15SeeYouNextTime = Lesson(
     // BLOQUE 3 — Consolidación (EJ 14–19)
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── EJ 14 · PRONUNCIACIÓN ─ "Pleasure" ────────────────────────────────
+    // ── EJ 14 · PRONUNCIACIÓN FRASE ─ "Pleasure" ────────────────────────────────
     {
       'tipo': 'pronunciacion',
-      'instruccion': 'Ahora repítela tú',
+      'instruccion': 'Ahora dilo en una frase completa',
       'quien_habla': 'Tú le dices',
-      'frase': 'Pleasure',
-      'respuesta_correcta': 'Pleasure',
-      'fonetica': '[ PLE-zher ]',
-      'traduccion_pregunta': 'Un gusto / Un placer',
-      'contexto_es': '"A pleasure!" — el toque final que convierte una visita en una experiencia',
+      'frase': 'Thank you, a pleasure! Goodbye',
+      'respuesta_correcta': 'Thank you, a pleasure! Goodbye',
+      'fonetica': '[ ZANK iu, a PLE-zher! gud-BAI ]',
+      'traduccion_pregunta': 'Gracias, ¡un placer! Adiós',
+      'contexto_es': 'El toque final de una buena visita',
     },
 
     // ── EJ 15 · PAREJAS ─ repaso total L15 ───────────────────────────────
