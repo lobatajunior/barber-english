@@ -200,7 +200,7 @@ Street English sigue sus propias reglas:
 - Solo tipos: pronunciacion y ordenar.
 - Vocabulario SOLO de la lista maestra `lib/data/street_english_vocab.dart`
   (`streetEnglishVocab`). Si una palabra no está, se añade a la lista primero.
-  Pronombres (I, you, he, she, we, they) y auxiliares (don't, doesn't) se
+  Pronombres (I, you, he, she, we, they) y auxiliares (do, does, don't, doesn't) se
   aceptan como palabras gramaticales.
 - Cada lección enseña una regla gramatical, explicada en `descripcionEs`.
 - Archivos: `lib/data/lessons/street_english/a1/`, registrados en
@@ -212,6 +212,8 @@ Street English sigue sus propias reglas:
 |---|---------|--------|-------|-----------------|
 | L01 | lesson_01_present_simple.dart | Present Simple | Presente afirmativo (he/she + s) | work, live, like, want, every, day, here, food |
 | L02 | lesson_02_present_negative.dart | Present Negative | Presente negativo (don't / doesn't + verbo) | need, have, time, money, water, now |
+| L03 | lesson_03_present_question.dart | Present Questions | Preguntas (Do / Does + sujeto + verbo sin s) | do, does (auxiliares) |
+| L04 | lesson_04_questions_answers.dart | Questions & Answers | Respuestas cortas y largas (Yes, I do / No, I don't) | yes, no |
 
 ---
 

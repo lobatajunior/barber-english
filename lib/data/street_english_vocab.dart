@@ -6,4 +6,5 @@ const streetEnglishVocab = {
   'tiempo': ['now', 'today', 'tomorrow', 'yesterday', 'always', 'usually', 'often', 'sometimes', 'never', 'already', 'still', 'again', 'soon', 'later', 'morning', 'afternoon', 'evening', 'night', 'weekend', 'every'],
   'pasado': ['was', 'were', 'had', 'did', 'went', 'came', 'got', 'made', 'took', 'saw', 'said', 'told', 'met', 'thought', 'found', 'felt'],
   'lugar': ['here'],
+  'respuestas': ['yes', 'no'],
 };
