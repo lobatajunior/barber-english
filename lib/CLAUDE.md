@@ -214,6 +214,7 @@ Street English sigue sus propias reglas:
 | L02 | lesson_02_present_negative.dart | Present Negative | Presente negativo (don't / doesn't + verbo) | need, have, time, money, water, now |
 | L03 | lesson_03_present_question.dart | Present Questions | Preguntas (Do / Does + sujeto + verbo sin s) | do, does (auxiliares) |
 | L04 | lesson_04_questions_answers.dart | Questions & Answers | Respuestas cortas y largas (Yes, I do / No, I don't) | yes, no |
+| L05 | lesson_05_review_block1.dart | Review Block 1 | Repaso: afirmativo, negativo, pregunta y respuesta | ninguna (repaso) |
 
 ---
 
