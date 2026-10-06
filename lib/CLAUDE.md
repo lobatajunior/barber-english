@@ -215,6 +215,7 @@ Street English sigue sus propias reglas:
 | L03 | lesson_03_present_question.dart | Present Questions | Preguntas (Do / Does + sujeto + verbo sin s) | do, does (auxiliares) |
 | L04 | lesson_04_questions_answers.dart | Questions & Answers | Respuestas cortas y largas (Yes, I do / No, I don't) | yes, no |
 | L05 | lesson_05_review_block1.dart | Review Block 1 | Repaso: afirmativo, negativo, pregunta y respuesta | ninguna (repaso) |
+| L06 | lesson_06_past_was_were.dart | Past: Was / Were | Pasado de to be (was con I/he/she, were con you/we/they) | was, were, tired, happy, good, bad, yesterday (+ at) |
 
 ---
 

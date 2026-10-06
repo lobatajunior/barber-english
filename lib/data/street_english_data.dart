@@ -4,6 +4,7 @@ import 'lessons/street_english/a1/lesson_02_present_negative.dart';
 import 'lessons/street_english/a1/lesson_03_present_question.dart';
 import 'lessons/street_english/a1/lesson_04_questions_answers.dart';
 import 'lessons/street_english/a1/lesson_05_review_block1.dart';
+import 'lessons/street_english/a1/lesson_06_past_was_were.dart';
 
 final streetEnglishLessons = <Lesson>[
   streetLesson01PresentSimple,
@@ -11,4 +12,5 @@ final streetEnglishLessons = <Lesson>[
   streetLesson03PresentQuestion,
   streetLesson04QuestionsAnswers,
   streetLesson05ReviewBlock1,
+  streetLesson06PastWasWere,
 ];

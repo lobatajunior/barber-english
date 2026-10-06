@@ -175,6 +175,16 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   Widget build(BuildContext context) {
     return Column(
       children: [
+        if (_target.isNotEmpty)
+          Text(
+            _target,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         // CAMBIO 3-2: Fonética siempre visible
         if (_phonetica.isNotEmpty)
           Container(
