@@ -5,6 +5,6 @@ const streetEnglishVocab = {
   'conectores': ['or', 'if', 'then', 'also', 'although', 'however', 'when', 'while', 'maybe', 'probably', 'for example', 'before', 'after', 'first', 'finally', 'actually', 'and', 'but', 'because', 'so'],
   'tiempo': ['now', 'today', 'tomorrow', 'yesterday', 'always', 'usually', 'often', 'sometimes', 'never', 'already', 'still', 'again', 'soon', 'later', 'morning', 'afternoon', 'evening', 'night', 'weekend', 'every', 'last'],
   'pasado': ['was', 'were', 'had', 'did', 'went', 'came', 'got', 'made', 'took', 'saw', 'said', 'told', 'met', 'thought', 'found', 'felt', 'worked', 'lived', 'liked', 'wanted', 'needed'],
-  'lugar': ['here', 'at'],
+  'lugar': ['here', 'at', 'to'],
   'respuestas': ['yes', 'no'],
 };
