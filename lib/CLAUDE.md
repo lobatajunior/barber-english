@@ -218,6 +218,7 @@ Street English sigue sus propias reglas:
 | L06 | lesson_06_past_was_were.dart | Past: Was / Were | Pasado de to be (was con I/he/she, were con you/we/they) | was, were, tired, happy, good, bad, yesterday, last (+ at) |
 | L07 | lesson_07_past_regular_verbs.dart | Past: Regular Verbs | Pasado regular (verbo + -ed, igual para todas las personas) | worked, lived, liked, wanted, needed |
 | L08 | lesson_08_past_irregular_verbs.dart | Past: Irregular Verbs | Pasado irregular (go→went, get→got, see→saw, say→said, come→came) | went, got, saw, said, came (+ to, her) |
+| L09 | lesson_09_past_negative.dart | Past Negative | Pasado negativo (didn't + verbo base) | didn't |
 
 ---
 
