@@ -5,13 +5,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../core/app_colors.dart';
 import '../core/app_theme.dart';
 import '../models/section.dart';
-import '../models/lesson.dart';
 import '../data/barber_zone_data.dart';
 import '../data/street_english_data.dart';
 import '../providers/auth_provider.dart';
 import '../providers/progress_provider.dart';
 import '../providers/gamification_provider.dart';
 import 'section_screen.dart';
+import 'street_english_menu_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -135,7 +135,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => SectionScreen(section: s),
+                                builder: (_) => s.id == 'street_english'
+                                    ? StreetEnglishMenuScreen(section: s)
+                                    : SectionScreen(section: s),
                               ),
                             ),
                           ),
@@ -537,308 +539,165 @@ class _SectionCard extends StatelessWidget {
     final done = section.completedCount(completed);
     final total = section.totalLessons;
     final ratio = section.progressRatio(completed);
-    final a1Done = section
-        .lessonsForLevel(Level.A1)
-        .where((l) => completed.contains(l.id))
-        .length;
-    final a1Total = section.lessonsForLevel(Level.A1).length;
     final isStarted = done > 0;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 20),
+        margin: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              section.accentColor.withValues(alpha: 0.14),
+              section.accentColor.withValues(alpha: 0.12),
               const Color(0xFF191919),
               const Color(0xFF111111),
             ],
             stops: const [0.0, 0.45, 1.0],
           ),
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: section.accentColor.withValues(alpha: 0.38),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: section.accentColor.withValues(alpha: 0.20),
-              blurRadius: 36,
-              spreadRadius: 0,
-              offset: const Offset(0, 12),
-            ),
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.50),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+              color: section.accentColor.withValues(alpha: 0.14),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Card header ──────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.fromLTRB(22, 26, 22, 20),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Emoji in circle
-                    Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        color: section.accentColor.withValues(alpha: 0.14),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: section.accentColor.withValues(alpha: 0.45),
-                          width: 1.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: section.accentColor.withValues(alpha: 0.25),
-                            blurRadius: 16,
-                            spreadRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          section.emoji,
-                          style: const TextStyle(fontSize: 28),
-                        ),
-                      ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Header: emoji + name + counter ─────────────────────────
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: section.accentColor.withValues(alpha: 0.14),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: section.accentColor.withValues(alpha: 0.45),
+                      width: 1.5,
                     ),
-                    const SizedBox(width: 16),
-                    // Title + subtitle + description
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 4),
-                          Text(
-                            section.name.toUpperCase(),
-                            style: GoogleFonts.outfit(
-                              color: section.accentColor,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            section.subtitle,
-                            style: GoogleFonts.outfit(
-                              color: Colors.white54,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          if (section.description.isNotEmpty) ...[
-                            const SizedBox(height: 7),
-                            Text(
-                              section.description,
-                              style: GoogleFonts.outfit(
-                                color: Colors.white.withValues(alpha: 0.28),
-                                fontSize: 11,
-                                height: 1.45,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      section.emoji,
+                      style: const TextStyle(fontSize: 20),
                     ),
-                    const SizedBox(width: 10),
-                    // Lesson counter badge
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        const SizedBox(height: 2),
-                        Text(
-                          '$done',
-                          style: GoogleFonts.outfit(
-                            color: section.accentColor,
-                            fontSize: 38,
-                            fontWeight: FontWeight.w900,
-                            height: 1,
-                          ),
-                        ),
-                        Text(
-                          '/ $total',
-                          style: GoogleFonts.outfit(
-                            color: Colors.white30,
-                            fontSize: 12,
-                            height: 1.3,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Accent divider
-              Container(
-                height: 1,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      section.accentColor.withValues(alpha: 0.40),
-                      Colors.transparent,
-                    ],
                   ),
                 ),
-              ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    section.name.toUpperCase(),
+                    style: GoogleFonts.outfit(
+                      color: section.accentColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                Text(
+                  '$done/$total',
+                  style: GoogleFonts.outfit(
+                    color: section.accentColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
 
-              // ── Progress + CTA ────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.fromLTRB(22, 20, 22, 26),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Progress label row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'PROGRESO  ·  $done / $total lecciones',
-                          style: GoogleFonts.outfit(
-                            color: Colors.white38,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.8,
-                          ),
-                        ),
-                        Text(
-                          '${(ratio * 100).round()}%',
-                          style: GoogleFonts.outfit(
-                            color: section.accentColor.withValues(alpha: 0.85),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
+            // ── Thin progress bar ──────────────────────────────────────
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: ratio.clamp(0.0, 1.0),
+                backgroundColor: Colors.white.withValues(alpha: 0.07),
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(section.accentColor),
+                minHeight: 4,
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            // ── Compact progress + small CTA ───────────────────────────
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '$done/$total lecciones · ${(ratio * 100).round()}%',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white38,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 36,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        section.accentColor,
+                        section.accentColor.withValues(alpha: 0.72),
                       ],
                     ),
-                    const SizedBox(height: 9),
-
-                    // Custom gradient progress bar
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.07),
-                              borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(18),
+                      onTap: onTap,
+                      splashColor: Colors.white.withValues(alpha: 0.18),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              isStarted
+                                  ? Icons.play_circle_rounded
+                                  : Icons.rocket_launch_rounded,
+                              color: Colors.white,
+                              size: 16,
                             ),
-                          ),
-                          FractionallySizedBox(
-                            widthFactor: ratio.clamp(0.0, 1.0),
-                            child: Container(
-                              height: 10,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    section.accentColor,
-                                    section.accentColor.withValues(alpha: 0.65),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: section.accentColor.withValues(alpha: 0.55),
-                                    blurRadius: 8,
-                                    spreadRadius: 0,
-                                  ),
-                                ],
+                            const SizedBox(width: 6),
+                            Text(
+                              isStarted ? 'CONTINUAR' : 'EMPEZAR',
+                              style: GoogleFonts.outfit(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 7),
-                    Text(
-                      'A1 GRATIS  ·  $a1Done/$a1Total completadas',
-                      style: GoogleFonts.outfit(
-                        color: Colors.white24,
-                        fontSize: 10,
-                      ),
-                    ),
-                    const SizedBox(height: 22),
-
-                    // CTA button — pill-shaped with gradient
-                    Container(
-                      width: double.infinity,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            section.accentColor,
-                            section.accentColor.withValues(alpha: 0.72),
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.arrow_forward_rounded,
+                              color: Colors.white,
+                              size: 14,
+                            ),
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: [
-                          BoxShadow(
-                            color: section.accentColor.withValues(alpha: 0.42),
-                            blurRadius: 22,
-                            spreadRadius: 0,
-                            offset: const Offset(0, 7),
-                          ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(28),
-                          onTap: onTap,
-                          splashColor: Colors.white.withValues(alpha: 0.18),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                isStarted
-                                    ? Icons.play_circle_rounded
-                                    : Icons.rocket_launch_rounded,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                isStarted ? 'CONTINUAR' : 'EMPEZAR',
-                                style: GoogleFonts.outfit(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.5,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Icon(
-                                Icons.arrow_forward_rounded,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                            ],
-                          ),
-                        ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );
