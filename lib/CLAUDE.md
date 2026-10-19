@@ -219,6 +219,7 @@ Street English sigue sus propias reglas:
 | L07 | lesson_07_past_regular_verbs.dart | Past: Regular Verbs | Pasado regular (verbo + -ed, igual para todas las personas) | worked, lived, liked, wanted, needed |
 | L08 | lesson_08_past_irregular_verbs.dart | Past: Irregular Verbs | Pasado irregular (go→went, get→got, see→saw, say→said, come→came) | went, got, saw, said, came (+ to, her) |
 | L09 | lesson_09_past_negative.dart | Past Negative | Pasado negativo (didn't + verbo base) | didn't |
+| L10 | lesson_10_past_question.dart | Past Questions | Pasado interrogativo (Did + sujeto + verbo base) | did (auxiliar) |
 
 ---
 
