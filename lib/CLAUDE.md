@@ -220,6 +220,7 @@ Street English sigue sus propias reglas:
 | L08 | lesson_08_past_irregular_verbs.dart | Past: Irregular Verbs | Pasado irregular (go→went, get→got, see→saw, say→said, come→came) | went, got, saw, said, came (+ to, her) |
 | L09 | lesson_09_past_negative.dart | Past Negative | Pasado negativo (didn't + verbo base) | didn't |
 | L10 | lesson_10_past_question.dart | Past Questions | Pasado interrogativo (Did + sujeto + verbo base) | did (auxiliar) |
+| L11 | lesson_11_review_block2.dart | Review Block 2 | Repaso del pasado: was/were, regulares, irregulares, negativo y pregunta | ninguna (repaso; weren't aparece en EJ 12) |
 
 ---
 

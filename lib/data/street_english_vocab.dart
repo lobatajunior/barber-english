@@ -4,7 +4,7 @@ const streetEnglishVocab = {
   'verbos': ['be', 'have', 'do', 'go', 'come', 'get', 'make', 'take', 'give', 'know', 'think', 'want', 'need', 'like', 'love', 'work', 'live', 'say', 'tell', 'ask', 'feel', 'try', 'help', 'call', 'use', 'find', 'look', 'see', 'talk', 'understand'],
   'conectores': ['or', 'if', 'then', 'also', 'although', 'however', 'when', 'while', 'maybe', 'probably', 'for example', 'before', 'after', 'first', 'finally', 'actually', 'and', 'but', 'because', 'so'],
   'tiempo': ['now', 'today', 'tomorrow', 'yesterday', 'always', 'usually', 'often', 'sometimes', 'never', 'already', 'still', 'again', 'soon', 'later', 'morning', 'afternoon', 'evening', 'night', 'weekend', 'every', 'last'],
-  'pasado': ['was', 'were', 'had', 'did', 'went', 'came', 'got', 'made', 'took', 'saw', 'said', 'told', 'met', 'thought', 'found', 'felt', 'worked', 'lived', 'liked', 'wanted', 'needed', "didn't"],
+  'pasado': ['was', 'were', 'had', 'did', 'went', 'came', 'got', 'made', 'took', 'saw', 'said', 'told', 'met', 'thought', 'found', 'felt', 'worked', 'lived', 'liked', 'wanted', 'needed', "didn't", "weren't"],
   'lugar': ['here', 'at', 'to'],
   'respuestas': ['yes', 'no'],
 };
