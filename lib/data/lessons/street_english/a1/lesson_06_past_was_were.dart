@@ -3,9 +3,9 @@ import '../../../../models/lesson.dart';
 // STREET ENGLISH · L06 — Pasado simple: was / were
 // Regla: was con I / he / she. Were con you / we / they.
 //
-// Palabras de REPASO (L01-L05): work · every · day · here
+// Palabras de REPASO (L01-L05): work · here
 //
-// Palabras NUEVAS L06: was · were · tired · happy · good · bad · yesterday
+// Palabras NUEVAS L06: was · were · tired · happy · good · bad · yesterday · last
 //                      (+ "at" como palabra gramatical)
 //
 // Estructura Street English: 12 ejercicios, solo pronunciacion y ordenar.
@@ -19,7 +19,7 @@ const streetLesson06PastWasWere = Lesson(
   descripcionEs:
       'El pasado del verbo "to be". Usa "was" con I, he y she '
       '("I was tired yesterday"). Usa "were" con you, we y they '
-      '("They were tired every day").',
+      '("They were tired last week").',
   motivacionEs:
       '¡Ya puedes hablar del pasado! Was para I/he/she, were para you/we/they. ⏪',
   exercises: [
@@ -65,10 +65,10 @@ const streetLesson06PastWasWere = Lesson(
       'tipo': 'pronunciacion',
       'instruccion': 'Pronuncia la frase',
       'quien_habla': 'Tú dices',
-      'frase': 'They were tired every day.',
-      'respuesta_correcta': 'They were tired every day.',
-      'fonetica': '[ dei uer TAI-erd E-vri DEI ]',
-      'traduccion_pregunta': 'Ellos estaban cansados todos los días.',
+      'frase': 'They were tired last week.',
+      'respuesta_correcta': 'They were tired last week.',
+      'fonetica': '[ dei uer TAI-erd last UIIK ]',
+      'traduccion_pregunta': 'Ellos estaban cansados la semana pasada.',
       'contexto_es': 'Con "they" se usa were',
     },
 
@@ -137,10 +137,10 @@ const streetLesson06PastWasWere = Lesson(
       'tipo': 'pronunciacion',
       'instruccion': 'Pronuncia la frase',
       'quien_habla': 'Tú dices',
-      'frase': 'She was happy every day.',
-      'respuesta_correcta': 'She was happy every day.',
-      'fonetica': '[ shi uos JA-pi E-vri DEI ]',
-      'traduccion_pregunta': 'Ella estaba feliz todos los días.',
+      'frase': 'She was happy last year.',
+      'respuesta_correcta': 'She was happy last year.',
+      'fonetica': '[ shi uos JA-pi last IIR ]',
+      'traduccion_pregunta': 'Ella estaba feliz el año pasado.',
       'contexto_es': 'Repaso: she + was',
     },
 
@@ -149,10 +149,10 @@ const streetLesson06PastWasWere = Lesson(
       'tipo': 'ordenar',
       'instruccion': 'Ordena las palabras',
       'quien_habla': 'Tú dices',
-      'frase': 'They were tired every day.',
-      'traduccion_pregunta': 'Ellos estaban cansados todos los días.',
-      'palabras': ['were', 'They', 'tired', 'every', 'day'],
-      'respuesta_correcta': 'They were tired every day',
+      'frase': 'They were tired last week.',
+      'traduccion_pregunta': 'Ellos estaban cansados la semana pasada.',
+      'palabras': ['were', 'They', 'tired', 'last', 'week'],
+      'respuesta_correcta': 'They were tired last week',
       'contexto_es': 'They + were',
     },
 
