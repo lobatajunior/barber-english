@@ -34,7 +34,11 @@ class ProgressNotifier extends StateNotifier<ProgressState> {
   final ProgressService _service;
   final String? _userId;
 
-  static const _sections = ['barber_zone', 'street_english'];
+  static const _sections = [
+    'barber_zone',
+    'street_english',
+    'street_english_vocab',
+  ];
 
   final List<StreamSubscription<Set<int>>> _subs = [];
 

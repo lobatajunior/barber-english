@@ -225,6 +225,30 @@ Street English sigue sus propias reglas:
 | L13 | lesson_13_review_block3.dart | Review Block 3 | Repaso: Where/What/When/Who en presente (do) y pasado (did) | ninguna (repaso) |
 | L14 | lesson_14_review_general_a1.dart | General Review A1 | Repaso general: presente, pasado y preguntas WH | ninguna (repaso; there aparece en EJ 03) |
 
+Las reglas de arriba (12 ejercicios, solo pronunciacion y ordenar) son de
+STREET ENGLISH · GRAMMAR. VOCAB tiene las suyas:
+
+### STREET ENGLISH · VOCAB — REGLAS PROPIAS
+
+- Archivo único: `lib/data/street_english_vocab_lessons.dart`
+  (`streetEnglishVocabLessons`), 20 bloques = 20 lecciones.
+- Cada bloque es UNA lección con UN solo ejercicio de tipo `parejas`
+  con 5 parejas (`parejas_ingles` / `parejas_espanol`).
+- Progreso en su propia sección: id `street_english_vocab`
+  (`users/{uid}/progress/street_english_vocab`), registrada en
+  `ProgressNotifier._sections`.
+- Palabras SOLO de la lista maestra `streetEnglishVocab` (añadirlas primero).
+- ⚠️ Limitación de `ParejasWidget`: guarda las palabras emparejadas en un
+  solo Set (inglés + español juntos). Dentro de un bloque NO puede haber
+  palabras repetidas, ni una palabra inglesa idéntica a su traducción
+  ("idea"/"idea") — el bloque nunca se completaría.
+
+| Bloques | Tipo | Contenido |
+|---------|------|-----------|
+| 1-6 | Verbos | los 30 verbos de la lista maestra |
+| 7-14 | Sustantivos | sustantivos de la lista + music, party, trip, city, country, street |
+| 15-20 | Adjetivos | adjetivos de la lista + hungry, hot, cold, fast, slow |
+
 ---
 
 ## FONÉTICA EN ESPAÑOL — REFERENCIA

@@ -4,25 +4,36 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/app_colors.dart';
 import '../core/app_theme.dart';
 import '../models/section.dart';
+import '../data/street_english_vocab_lessons.dart';
 import '../providers/progress_provider.dart';
 import 'section_screen.dart';
 
 /// Submenú de Street English: cuadrícula 2x3 de subsecciones.
-/// Solo GRAMMAR tiene contenido (las lecciones de streetEnglishLessons);
-/// el resto muestra "Próximamente".
+/// GRAMMAR abre las lecciones de streetEnglishLessons (la sección recibida),
+/// VOCAB abre los 20 bloques de parejas; el resto muestra "Próximamente".
 class StreetEnglishMenuScreen extends ConsumerWidget {
   final AppSection section;
 
   const StreetEnglishMenuScreen({super.key, required this.section});
 
-  static const _subsections = [
-    (emoji: '📖', name: 'GRAMMAR', hasContent: true),
-    (emoji: '🃏', name: 'VOCAB', hasContent: false),
-    (emoji: '🎉', name: 'SOCIAL', hasContent: false),
-    (emoji: '✈️', name: 'TRAVEL', hasContent: false),
-    (emoji: '💘', name: 'FLIRT', hasContent: false),
-    (emoji: '🌤️', name: 'SMALL TALK', hasContent: false),
-  ];
+  // Progreso propio: users/{uid}/progress/street_english_vocab
+  static const vocabSection = AppSection(
+    id: 'street_english_vocab',
+    name: 'Vocab',
+    subtitle: 'Vocabulario de Street English',
+    emoji: '🃏',
+    accentColor: AppColors.neon,
+    lessons: streetEnglishVocabLessons,
+  );
+
+  List<({String emoji, String name, AppSection? target})> get _subsections => [
+        (emoji: '📖', name: 'GRAMMAR', target: section),
+        (emoji: '🃏', name: 'VOCAB', target: vocabSection),
+        (emoji: '🎉', name: 'SOCIAL', target: null),
+        (emoji: '✈️', name: 'TRAVEL', target: null),
+        (emoji: '💘', name: 'FLIRT', target: null),
+        (emoji: '🌤️', name: 'SMALL TALK', target: null),
+      ];
 
   void _showComingSoon(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -37,9 +48,6 @@ class StreetEnglishMenuScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(progressProvider);
-    final completed = progress.forSection(section.id);
-    final done = section.completedCount(completed);
-    final total = section.totalLessons;
 
     return Scaffold(
       body: Container(
@@ -86,21 +94,26 @@ class StreetEnglishMenuScreen extends ConsumerWidget {
                   childAspectRatio: 1.05,
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                   children: _subsections.map((sub) {
+                    final target = sub.target;
+                    final done = target == null
+                        ? 0
+                        : target.completedCount(progress.forSection(target.id));
                     return _SubsectionCell(
                       emoji: sub.emoji,
                       name: sub.name,
-                      hasContent: sub.hasContent,
-                      progressLabel:
-                          sub.hasContent ? '$done/$total' : 'Próximamente',
-                      onTap: sub.hasContent
-                          ? () => Navigator.push(
+                      hasContent: target != null,
+                      progressLabel: target == null
+                          ? 'Próximamente'
+                          : '$done/${target.totalLessons}',
+                      onTap: target == null
+                          ? () => _showComingSoon(context)
+                          : () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) =>
-                                      SectionScreen(section: section),
+                                      SectionScreen(section: target),
                                 ),
-                              )
-                          : () => _showComingSoon(context),
+                              ),
                     );
                   }).toList(),
                 ),
