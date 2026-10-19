@@ -7,4 +7,5 @@ const streetEnglishVocab = {
   'pasado': ['was', 'were', 'had', 'did', 'went', 'came', 'got', 'made', 'took', 'saw', 'said', 'told', 'met', 'thought', 'found', 'felt', 'worked', 'lived', 'liked', 'wanted', 'needed', "didn't", "weren't"],
   'lugar': ['here', 'at', 'to'],
   'respuestas': ['yes', 'no'],
+  'preguntas': ['where', 'what', 'who'],
 };

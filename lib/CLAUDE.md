@@ -221,6 +221,7 @@ Street English sigue sus propias reglas:
 | L09 | lesson_09_past_negative.dart | Past Negative | Pasado negativo (didn't + verbo base) | didn't |
 | L10 | lesson_10_past_question.dart | Past Questions | Pasado interrogativo (Did + sujeto + verbo base) | did (auxiliar) |
 | L11 | lesson_11_review_block2.dart | Review Block 2 | Repaso del pasado: was/were, regulares, irregulares, negativo y pregunta | ninguna (repaso; weren't aparece en EJ 12) |
+| L12 | lesson_12_wh_questions.dart | Wh- Questions | Where/What/When + did + sujeto + verbo base; Who sujeto sin did | where, what, when, who |
 
 ---
 

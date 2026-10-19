@@ -10,6 +10,7 @@ import 'lessons/street_english/a1/lesson_08_past_irregular_verbs.dart';
 import 'lessons/street_english/a1/lesson_09_past_negative.dart';
 import 'lessons/street_english/a1/lesson_10_past_question.dart';
 import 'lessons/street_english/a1/lesson_11_review_block2.dart';
+import 'lessons/street_english/a1/lesson_12_wh_questions.dart';
 
 final streetEnglishLessons = <Lesson>[
   streetLesson01PresentSimple,
@@ -23,4 +24,5 @@ final streetEnglishLessons = <Lesson>[
   streetLesson09PastNegative,
   streetLesson10PastQuestion,
   streetLesson11ReviewBlock2,
+  streetLesson12WhQuestions,
 ];
