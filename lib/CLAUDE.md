@@ -231,23 +231,22 @@ STREET ENGLISH · GRAMMAR. VOCAB tiene las suyas:
 ### STREET ENGLISH · VOCAB — REGLAS PROPIAS
 
 - Archivo único: `lib/data/street_english_vocab_lessons.dart`
-  (`streetEnglishVocabLessons`), 20 bloques = 20 lecciones.
-- Cada bloque es UNA lección con UN solo ejercicio de tipo `parejas`
-  con 5 parejas (`parejas_ingles` / `parejas_espanol`).
+  (`streetEnglishVocabLessons`), 15 bloques = 15 lecciones de 10 palabras.
+- Cada bloque tiene 4 ejercicios:
+  1. `parejas` palabras 1-5 · 2. `parejas` palabras 6-10
+  3. `pronunciacion` palabras 1-5 · 4. `pronunciacion` palabras 6-10
+  La pronunciación va en grupos de 5 (`frase` = "work, food, tired, go, happy",
+  `fonetica` = "[ UORK · FUUD · … ]"): la grabación se corta tras 1 s de
+  silencio (`SILENCE_MS` en `tts_web.dart`), con 10 palabras se cortaría.
+- Bloques 3, 6, 9, 12 = repaso de los dos anteriores; 15 = repaso general.
 - Progreso en su propia sección: id `street_english_vocab`
   (`users/{uid}/progress/street_english_vocab`), registrada en
   `ProgressNotifier._sections`.
 - Palabras SOLO de la lista maestra `streetEnglishVocab` (añadirlas primero).
 - ⚠️ Limitación de `ParejasWidget`: guarda las palabras emparejadas en un
-  solo Set (inglés + español juntos). Dentro de un bloque NO puede haber
-  palabras repetidas, ni una palabra inglesa idéntica a su traducción
-  ("idea"/"idea") — el bloque nunca se completaría.
-
-| Bloques | Tipo | Contenido |
-|---------|------|-----------|
-| 1-6 | Verbos | los 30 verbos de la lista maestra |
-| 7-14 | Sustantivos | sustantivos de la lista + music, party, trip, city, country, street |
-| 15-20 | Adjetivos | adjetivos de la lista + hungry, hot, cold, fast, slow |
+  solo Set (inglés + español juntos). En un mismo ejercicio de parejas NO puede
+  haber palabras repetidas (do/hacer + make/hacer → make = "hacer / crear"),
+  ni una palabra inglesa idéntica a su traducción (idea → "una idea").
 
 ---
 
