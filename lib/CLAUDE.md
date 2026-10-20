@@ -77,70 +77,49 @@ escuchar, pronunciacion, parejas, completar, ordenar, opciones, dialogo, dialogo
 
 ---
 
-## REGLAS PEDAGÓGICAS — OBLIGATORIAS SIEMPRE
+## REGLAS PEDAGÓGICAS — BARBER ZONE (versión 2, reescritura desde cero)
 
-### REGLA 1 — Orden de enseñanza
-NUNCA usar una palabra en un ejercicio antes de haberla enseñado.
-Orden obligatorio por palabra nueva:
-1. escuchar la palabra sola
-2. pronunciar una ORACIÓN COMPLETA que la contenga
-   (nunca pronunciar la palabra suelta)
-3. SOLO entonces usar en otros ejercicios
+Las lecciones antiguas L01-L16 se eliminaron (commit f8e3bb8) y se reescriben
+con estas reglas. El vocabulario de las lecciones antiguas YA NO cuenta como
+enseñado: solo cuenta lo que enseñen las lecciones nuevas.
 
-### REGLA 2 — Palabras nuevas por lección
-Máximo 5 palabras/expresiones nuevas por lección (todos los niveles).
-Cada palabra nueva lleva badge: es_palabra_nueva: true
-(en su ejercicio escuchar)
+### REGLA 1 — Estructura por lección
+- L01-L02: 8 palabras nuevas, 20 ejercicios
+- L03-L15: 5 palabras nuevas, 20 ejercicios
+- L16: repaso general (sin palabras nuevas), 20 ejercicios
+Total A1: 16 lecciones · 81 palabras nuevas (2×8 + 13×5) · 320 ejercicios
 
-### REGLA 3 — Distractores
-Los distractores en completar/opciones/ordenar
-SOLO pueden ser palabras ya enseñadas en
-lecciones anteriores o en la lección actual.
-NUNCA palabras nuevas como distractores.
+### REGLA 2 — Bloques temáticos
+- Bloque 1 (L01-L05): Conversación 2 — corte clásico
+- Bloque 2 (L06-L10): Conversación 1 — corte degradado
+- Bloque 3 (L11-L15): Conversación 3 — corte de niño
+- L16: repaso general de los 3 bloques
+Fuente de vocabulario: SOLO `lib/data/conversaciones_raw.md`.
 
-### REGLA 4 — Repetición espaciada
-Cada lección incluye repaso de lecciones anteriores
-en los ejercicios 1-3 (Bloque 1).
+### REGLA 3 — Tipos de ejercicio
+- pronunciacion: grupos de 2-3 palabras en lista vertical
+  (`respuesta_correcta` = "wait, minutes, please",
+   `fonetica` = "[ UEIT · MI-nets · PLIIS ]" — mismo número de partes;
+   PronunciacionWidget lo muestra como lista palabra + fonética)
+- parejas: grupos de 4 palabras
+- opciones: 3 opciones siempre
+- ordenar: frases completas
+- completar: desde L03 (no se usa en L01-L02)
+- dialogo: el ejercicio 20 de cada lección
+(escuchar y dialogo_completo no están en la lista de tipos de esta versión)
 
-### REGLA 5 — Estructura obligatoria 20 ejercicios
-(la que siguen L02–L15; L01 y L16 son excepciones)
+### REGLA 4 — Repetición
+- Cada palabra nueva se repasa en las 3 lecciones siguientes como mínimo
+  (palabra nueva de L04 → aparece también en L05, L06 y L07).
+- Los distractores (opciones, completar, ordenar, dialogo) solo usan
+  palabras ya enseñadas en lecciones anteriores o antes en la misma lección.
 
-Bloque 1 (01-03) Repaso al abrir la lección:
-  01 parejas       — 3 palabras de lecciones anteriores
-  02 completar     — frase de repaso
-  03 pronunciacion — frase de repaso
-
-Bloque 2 (04-14) Palabras nuevas:
-  04 escuchar 🆕    — palabra1 sola
-  05 pronunciacion — ORACIÓN con palabra1
-  06 escuchar 🆕    — palabra2 sola
-  07 pronunciacion — ORACIÓN con palabra2
-  08 escuchar 🆕    — palabra3 sola
-  09 pronunciacion — ORACIÓN con palabra3
-  10 completar     — palabras 1-3
-  11 escuchar 🆕    — palabra4 sola
-  12 pronunciacion — ORACIÓN con palabra4
-  13 escuchar 🆕    — palabra5 sola
-  14 pronunciacion — ORACIÓN con palabra5
-
-Bloque 3 (15-19) Consolidación:
-  15 parejas       — las 5 palabras nuevas
-  16 completar     — frase con palabras nuevas
-  17 ordenar       — frase simple
-  18 ordenar       — frase que mezcla repaso + nuevas
-  19 pronunciacion — frase larga
-
-Bloque 4 (20) Diálogo final:
-  20 dialogo — solo palabras enseñadas hasta esa lección
-
-### REGLA 6 — Oraciones de pronunciación
-Pueden usar: la palabra nueva, vocabulario ya enseñado, palabras
-gramaticales básicas que ya usan las lecciones (the, a, on, to, your,
-my, please, and, for, not, this…) y el nombre propio "Junior".
-Sin cifras (la voz y el reconocimiento fallan con "30").
-
-REGLA ADICIONAL: nunca 2 escuchares seguidos,
-nunca más de 2 del mismo tipo consecutivos.
+### REGLAS QUE SE MANTIENEN de la versión anterior
+- NUNCA usar una palabra en un ejercicio antes de haberla enseñado.
+- Sin cifras en frases ni respuestas (la voz y el reconocimiento fallan con "30").
+- Nunca más de 2 ejercicios del mismo tipo consecutivos.
+- ⚠️ parejas: dentro de un ejercicio no puede haber palabras repetidas ni una
+  palabra inglesa idéntica a su traducción (ParejasWidget usa un solo Set).
 
 ---
 
@@ -164,28 +143,31 @@ cartoons, next appointment
 
 ---
 
-## MAPA DE LECCIONES A1 — BARBER ZONE
+## MAPA DE LECCIONES A1 — BARBER ZONE (versión 2)
 
-| # | Archivo | Título | Fuente | Palabras clave |
-|---|---------|--------|--------|----------------|
-| L01 | lesson_01_first_contact.dart | First Contact | Conv.1 | Good morning, Appointment, Welcome, Come in, Of course |
-| L02 | lesson_02_take_a_seat.dart | Take a Seat | Conv.1 | Sit down, My name is, What's your name, Nice to meet you, Take a seat |
-| L03 | lesson_03_the_cut.dart | The Cut | Conv.1 | Haircut, Fade, Sides, Top, Longer |
-| L04 | lesson_04_no_appointment.dart | No Appointment | Conv.2 | Do you have, Wait, Minutes, No problem, Please wait |
-| L05 | lesson_05_the_kid.dart | The Kid | Conv.3 | Son, Move, Patient, Photo, Modern |
-| L06 | lesson_06_numbers_lengths.dart | Numbers & Lengths | Conv.1+2 | Number one, Short, Long, Same, Little |
-| L07 | lesson_07_waiting_time.dart | Waiting Time | Conv.2 | Water, Coffee, Drink, While, Something |
-| L08 | lesson_08_scissors_cut.dart | Scissors Cut | Conv.2 | Scissors, Classic, Style, Comb, Neat |
-| L09 | lesson_09_hair_wash.dart | Hair Wash | Conv.2 | Wash, Hair, Fresh, Ready, Street |
-| L10 | lesson_10_be_patient.dart | Be Patient | Conv.3 | Still, Look down, Turn, Head, Careful |
-| L11 | lesson_11_the_photo.dart | The Photo | Conv.3 | Like, Similar, Possible, Different, Close |
-| L12 | lesson_12_beard_basics.dart | Beard Basics | Conv.1 | Beard, Sideburns, Shape, Clean, Line |
-| L13 | lesson_13_style_talk.dart | Style Talk | Conv.1 | Volume, Texture, Product, Natural, Messy |
-| L14 | lesson_14_the_finish.dart | The Finish | Conv.1+2+3 | Done, Look, Great, New, Happy |
-| L15 | lesson_15_see_you_next_time.dart | See You Next Time | Conv.1+2+3 | Goodbye, See you, Next time, Thank you, Pleasure |
-| L16 | lesson_16_full_review.dart | Full Review A1 | Conv.1+2+3 | Repaso de las 75 palabras de L01–L15 (sin palabras nuevas) |
+Lecciones pendientes de escribir. Al crear cada una, rellenar su fila con el
+archivo, el título y las palabras nuevas.
 
-Total A1: 16 lecciones × 20 ejercicios = 320 ejercicios
+| # | Bloque | Fuente | Palabras nuevas | Archivo | Título |
+|---|--------|--------|-----------------|---------|--------|
+| L01 | 1 | Conv.2 corte clásico | 8: Hello, Welcome, Come in, Appointment, Do you have, No problem, Please wait, Right now | lesson_01_first_words.dart | First Words |
+| L02 | 1 | Conv.2 corte clásico | 8 | — | — |
+| L03 | 1 | Conv.2 corte clásico | 5 | — | — |
+| L04 | 1 | Conv.2 corte clásico | 5 | — | — |
+| L05 | 1 | Conv.2 corte clásico | 5 | — | — |
+| L06 | 2 | Conv.1 corte degradado | 5 | — | — |
+| L07 | 2 | Conv.1 corte degradado | 5 | — | — |
+| L08 | 2 | Conv.1 corte degradado | 5 | — | — |
+| L09 | 2 | Conv.1 corte degradado | 5 | — | — |
+| L10 | 2 | Conv.1 corte degradado | 5 | — | — |
+| L11 | 3 | Conv.3 corte de niño | 5 | — | — |
+| L12 | 3 | Conv.3 corte de niño | 5 | — | — |
+| L13 | 3 | Conv.3 corte de niño | 5 | — | — |
+| L14 | 3 | Conv.3 corte de niño | 5 | — | — |
+| L15 | 3 | Conv.3 corte de niño | 5 | — | — |
+| L16 | — | Conv.1+2+3 | 0 (repaso general) | — | — |
+
+Total A1: 16 lecciones × 20 ejercicios = 320 ejercicios · 81 palabras nuevas
 (la fuente de verdad son los comentarios de cabecera de cada archivo de lección)
 
 ---

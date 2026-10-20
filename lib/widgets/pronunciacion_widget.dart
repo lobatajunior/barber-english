@@ -51,9 +51,11 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   String get _phonetica =>
       widget.ejercicio['fonetica']?.toString() ?? '';
 
-  // Lista de palabras sueltas (VOCAB): respuesta "want, time, bad" (o con ·)
-  // + fonética "[ UONT · TAIM · BAD ]" con el mismo número de partes.
-  // Devuelve null para frases normales (p. ej. "[ DU iu laik FUUD · IES ai DU ]").
+  // Lista de palabras/expresiones cortas (VOCAB, Barber Zone): respuesta
+  // "want, time, bad" o "Hello, Welcome, Come in" (o con ·) + fonética
+  // "[ UONT · TAIM · BAD ]" con el mismo número de partes. Cada parte: máx.
+  // 3 palabras y sin ? . ! — así las frases normales devuelven null
+  // (p. ej. "Do you like food? Yes, I do." / "[ DU iu laik FUUD · IES ai DU ]").
   List<(String, String)>? get _wordList {
     final words = _target
         .split(RegExp(r'[,·]'))
@@ -68,7 +70,8 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
         .toList();
     if (words.length < 2 ||
         words.length != fon.length ||
-        words.any((w) => w.contains(' '))) {
+        words.any((w) =>
+            w.contains(RegExp(r'[?.!]')) || w.split(' ').length > 3)) {
       return null;
     }
     return [for (var i = 0; i < words.length; i++) (words[i], fon[i])];
