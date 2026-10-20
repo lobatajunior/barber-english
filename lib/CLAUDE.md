@@ -102,7 +102,9 @@ Fuente de vocabulario: SOLO `lib/data/conversaciones_raw.md`.
    `fonetica` = "[ UEIT · MI-nets · PLIIS ]" — mismo número de partes;
    PronunciacionWidget lo muestra como lista palabra + fonética)
 - parejas: grupos de 4 palabras
-- opciones: 3 opciones siempre
+- opciones: 3 opciones siempre, y SIEMPRE en inglés (la voz las lee en
+  inglés al tocarlas). La pregunta (`pregunta`) y `traduccion_pregunta`
+  pueden ir en español: '¿Cómo se dice "No hay problema"?' → No problem
 - ordenar: frases completas
 - completar: desde L03 (no se usa en L01-L02)
 - dialogo: el ejercicio 20 de cada lección

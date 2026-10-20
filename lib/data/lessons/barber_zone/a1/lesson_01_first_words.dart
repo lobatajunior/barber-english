@@ -93,11 +93,12 @@ const lesson01FirstWords = Lesson(
     // ── EJ 06 · OPCIONES ──────────────────────────────────────────────────
     {
       'tipo': 'opciones',
-      'instruccion': 'Elige la traducción correcta',
+      'instruccion': 'Elige cómo se dice en inglés',
       'quien_habla': 'Practica',
-      'pregunta': '¿Qué significa "No problem"?',
-      'respuesta_correcta': 'No hay problema',
-      'opciones': ['No hay problema', 'Por favor espera', 'Ahora mismo'],
+      'pregunta': '¿Cómo se dice "No hay problema"?',
+      'traduccion_pregunta': 'No hay problema',
+      'respuesta_correcta': 'No problem',
+      'opciones': ['No problem', 'Please wait', 'Right now'],
       'contexto_es': 'Lo dices para tranquilizar al cliente',
     },
 
@@ -206,11 +207,12 @@ const lesson01FirstWords = Lesson(
     // ── EJ 15 · OPCIONES (antes completar: completar empieza en L03) ──────
     {
       'tipo': 'opciones',
-      'instruccion': 'Elige la traducción correcta',
+      'instruccion': 'Elige cómo se dice en inglés',
       'quien_habla': 'Practica',
-      'pregunta': '¿Qué significa "Please wait"?',
-      'respuesta_correcta': 'Por favor espera',
-      'opciones': ['Por favor espera', 'Ahora mismo', 'No hay problema'],
+      'pregunta': '¿Cómo se dice "Por favor espera"?',
+      'traduccion_pregunta': 'Por favor espera',
+      'respuesta_correcta': 'Please wait',
+      'opciones': ['Please wait', 'Right now', 'No problem'],
       'contexto_es': 'Lo dices cuando el cliente tiene que esperar',
     },
 
