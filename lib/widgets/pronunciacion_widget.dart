@@ -51,6 +51,29 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   String get _phonetica =>
       widget.ejercicio['fonetica']?.toString() ?? '';
 
+  // Lista de palabras sueltas (VOCAB): respuesta "want, time, bad" (o con ·)
+  // + fonética "[ UONT · TAIM · BAD ]" con el mismo número de partes.
+  // Devuelve null para frases normales (p. ej. "[ DU iu laik FUUD · IES ai DU ]").
+  List<(String, String)>? get _wordList {
+    final words = _target
+        .split(RegExp(r'[,·]'))
+        .map((w) => w.trim())
+        .where((w) => w.isNotEmpty)
+        .toList();
+    final fon = _phonetica
+        .replaceAll(RegExp(r'[\[\]]'), '')
+        .split('·')
+        .map((f) => f.trim())
+        .where((f) => f.isNotEmpty)
+        .toList();
+    if (words.length < 2 ||
+        words.length != fon.length ||
+        words.any((w) => w.contains(' '))) {
+      return null;
+    }
+    return [for (var i = 0; i < words.length; i++) (words[i], fon[i])];
+  }
+
   @override
   void initState() {
     super.initState();
@@ -173,9 +196,57 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   // ── Build ──────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
+    final wordList = _wordList;
     return Column(
       children: [
-        if (_target.isNotEmpty)
+        // Lista vertical palabra + fonética (VOCAB)
+        if (wordList != null)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: _kGreenGlow,
+              borderRadius: BorderRadius.circular(14),
+              border:
+                  Border.all(color: _kGreen.withValues(alpha: 0.30)),
+            ),
+            child: Column(
+              children: [
+                for (final (word, fon) in wordList)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            word,
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            '[ $fon ]',
+                            style: GoogleFonts.outfit(
+                              color: _kGreen,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        if (wordList == null && _target.isNotEmpty)
           Text(
             _target,
             textAlign: TextAlign.center,
@@ -186,7 +257,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
             ),
           ),
         // CAMBIO 3-2: Fonética siempre visible
-        if (_phonetica.isNotEmpty)
+        if (wordList == null && _phonetica.isNotEmpty)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
