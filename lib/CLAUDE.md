@@ -154,7 +154,7 @@ archivo, el título y las palabras nuevas.
 |---|--------|--------|-----------------|---------|--------|
 | L01 | 1 | Conv.2 corte clásico | 8: Hello, Welcome, Come in, Appointment, Do you have, No problem, Please wait, Right now | lesson_01_first_words.dart | First Words |
 | L02 | 1 | Conv.2 corte clásico | 8: Let me check, Minutes, Have a seat, Would you like, Water, Coffee, Thank you, Of course | lesson_02_no_appointment.dart | No Appointment |
-| L03 | 1 | Conv.2 corte clásico | 5 | — | — |
+| L03 | 1 | Conv.2 corte clásico | 5: How, Your haircut, Short, Longer, On the sides | lesson_03_the_haircut.dart | The Haircut |
 | L04 | 1 | Conv.2 corte clásico | 5 | — | — |
 | L05 | 1 | Conv.2 corte clásico | 5 | — | — |
 | L06 | 2 | Conv.1 corte degradado | 5 | — | — |
