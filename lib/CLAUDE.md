@@ -156,7 +156,7 @@ archivo, el título y las palabras nuevas.
 | L02 | 1 | Conv.2 corte clásico | 8: Let me check, Minutes, Have a seat, Would you like, Water, Coffee, Thank you, Of course | lesson_02_no_appointment.dart | No Appointment |
 | L03 | 1 | Conv.2 corte clásico | 5: How, Your haircut, Short, Longer, On the sides | lesson_03_the_haircut.dart | The Haircut |
 | L04 | 1 | Conv.2 corte clásico | 5: On top, Classic, Scissors, Not too short, Perfect | lesson_04_classic_style.dart | Classic Style |
-| L05 | 1 | Conv.2 corte clásico | 5 | — | — |
+| L05 | 1 | Conv.2 corte clásico | 5: Yes, No, Hair wash, Ready, See you next time | lesson_05_yes_please.dart | Yes, Please |
 | L06 | 2 | Conv.1 corte degradado | 5 | — | — |
 | L07 | 2 | Conv.1 corte degradado | 5 | — | — |
 | L08 | 2 | Conv.1 corte degradado | 5 | — | — |

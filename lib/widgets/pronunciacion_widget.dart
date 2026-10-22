@@ -54,7 +54,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   // Lista de palabras/expresiones cortas (VOCAB, Barber Zone): respuesta
   // "want, time, bad" o "Hello, Welcome, Come in" (o con ·) + fonética
   // "[ UONT · TAIM · BAD ]" con el mismo número de partes. Cada parte: máx.
-  // 3 palabras y sin ? . ! — así las frases normales devuelven null
+  // 4 palabras ("See you next time") y sin ? . ! — así las frases normales devuelven null
   // (p. ej. "Do you like food? Yes, I do." / "[ DU iu laik FUUD · IES ai DU ]").
   List<(String, String)>? get _wordList {
     final words = _target
@@ -71,7 +71,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
     if (words.length < 2 ||
         words.length != fon.length ||
         words.any((w) =>
-            w.contains(RegExp(r'[?.!]')) || w.split(' ').length > 3)) {
+            w.contains(RegExp(r'[?.!]')) || w.split(' ').length > 4)) {
       return null;
     }
     return [for (var i = 0; i < words.length; i++) (words[i], fon[i])];
