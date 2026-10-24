@@ -158,7 +158,7 @@ archivo, el título y las palabras nuevas.
 | L04 | 1 | Conv.2 corte clásico | 5: On top, Classic, Scissors, Not too short, Perfect | lesson_04_classic_style.dart | Classic Style |
 | L05 | 1 | Conv.2 corte clásico | 5: Yes, No, Hair wash, Ready, See you next time | lesson_05_yes_please.dart | Yes, Please |
 | L06 | 2 | Conv.1 corte degradado | 5: Good morning, Fade, Low, Razor, Beard | lesson_06_low_fade.dart | Low Fade |
-| L07 | 2 | Conv.1 corte degradado | 5 | — | — |
+| L07 | 2 | Conv.1 corte degradado | 6: Texture, Volume, More, Less, Modern, Fresh | lesson_07_more_texture.dart | More Texture |
 | L08 | 2 | Conv.1 corte degradado | 5 | — | — |
 | L09 | 2 | Conv.1 corte degradado | 5 | — | — |
 | L10 | 2 | Conv.1 corte degradado | 5 | — | — |
