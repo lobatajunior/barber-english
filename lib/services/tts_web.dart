@@ -71,10 +71,12 @@ void startWebRecording(
   void Function(String) onResult,
   void Function() onDone,
   String apiKey,
+  String target,
 ) {
   js.context['_whisperOnResult'] = js.allowInterop(onResult);
   js.context['_whisperOnDone'] = js.allowInterop(onDone);
   js.context['_whisperApiKey'] = apiKey;
+  js.context['_whisperPrompt'] = target;
   js.context.callMethod('eval', [r"""
     (function() {
       navigator.mediaDevices.getUserMedia({ audio: true, video: false })
@@ -125,11 +127,20 @@ void startWebRecording(
             clearInterval(silenceInterval);
             try { audioCtx.close(); } catch(e) {}
             stream.getTracks().forEach(function(t) { t.stop(); });
+            // Menos de 1 s grabado: intento fallido, no se envía a Whisper.
+            if (Date.now() - recStart < 1000) {
+              if (window._whisperOnResult) window._whisperOnResult('');
+              if (window._whisperOnDone) window._whisperOnDone();
+              return;
+            }
             var blob = new Blob(chunks, { type: mime });
             var fd = new FormData();
             fd.append('file', blob, 'audio.webm');
             fd.append('model', 'whisper-1');
             fd.append('language', 'en');
+            // Vocabulario esperado + temperatura 0: Whisper no inventa palabras.
+            fd.append('prompt', window._whisperPrompt || '');
+            fd.append('temperature', '0');
             fetch('https://api.openai.com/v1/audio/transcriptions', {
               method: 'POST',
               headers: { 'Authorization': 'Bearer ' + window._whisperApiKey },
@@ -147,6 +158,7 @@ void startWebRecording(
               if (window._whisperOnDone) window._whisperOnDone();
             });
           };
+          var recStart = Date.now();
           rec.start();
         })
         .catch(function(err) {

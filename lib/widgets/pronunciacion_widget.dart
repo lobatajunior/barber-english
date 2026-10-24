@@ -39,6 +39,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   bool _modelPlayed = false;
   bool _isListening = false;
   bool _micUnavailable = false;
+  bool _noSpeech = false; // último intento sin audio útil: sin puntaje
   double? _score;
   String _spokenText = '';
   bool _resolved = false;
@@ -137,6 +138,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
 
     setState(() {
       _isListening = true;
+      _noSpeech = false;
       _score = null;
       _spokenText = '';
     });
@@ -144,6 +146,18 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
 
     final started = await speech.startListening(
       onResult: (words) {
+        // Audio < 1 s o Whisper sin texto: intento fallido, sin puntaje ni
+        // penalización; el alumno vuelve a tener el micrófono.
+        if (words.trim().isEmpty) {
+          if (!mounted) return;
+          _micPulseCtrl.stop();
+          _micPulseCtrl.reset();
+          setState(() {
+            _isListening = false;
+            _noSpeech = true;
+          });
+          return;
+        }
         final score = speech.calculateScore(words, _target);
         debugPrint('STT words: $words');
         debugPrint('Target: $_target');
@@ -351,6 +365,18 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                if (_noSpeech && !_micUnavailable) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'No te escuché. Toca el micrófono e inténtalo de nuevo.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.outfit(
+                      color: _kYellow,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
                 if (_micUnavailable) ...[
                   const SizedBox(height: 8),
                   Text(

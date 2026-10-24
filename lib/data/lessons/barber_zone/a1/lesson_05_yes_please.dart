@@ -154,7 +154,7 @@ const lesson05YesPlease = Lesson(
     {
       'tipo': 'completar',
       'instruccion': 'Completa la respuesta del cliente',
-      'quien_habla': 'El cliente dice',
+      'quien_habla': 'Barbero y cliente',
       'frase': 'Do you have an appointment? ___, thank you.',
       'traduccion_pregunta': '¿Tiene usted una cita? No, gracias.',
       'respuesta_correcta': 'No',

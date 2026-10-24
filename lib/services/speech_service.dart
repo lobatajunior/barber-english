@@ -23,10 +23,16 @@ class SpeechService {
   bool _nativeStopped = true;
   bool _nativeHasSpeech = false;
   DateTime? _nativeSilenceStart;
+  DateTime? _nativeRecordStart;
+  String _nativeTarget = '';
 
   static const _nativeListenMax = Duration(seconds: 5);
   static const _nativeSilenceAfterSpeech = Duration(milliseconds: 500);
   static const _nativeSilenceThresholdDb = -40.0;
+
+  // Grabaciones más cortas que esto no se envían a Whisper: son un intento
+  // fallido (sin puntaje), igual que una transcripción vacía.
+  static const _minRecording = Duration(seconds: 1);
 
   final StreamController<void> _webCompleteController =
       StreamController<void>.broadcast();
@@ -97,6 +103,7 @@ class SpeechService {
           onDone();
         },
         kWhisperApiKey,
+        target,
       );
 
       _listenTimer = Timer(Duration(seconds: seconds), stopWebRecording);
@@ -107,6 +114,7 @@ class SpeechService {
       onResult: onResult,
       onDone: onDone,
       onSoundLevel: onSoundLevel,
+      target: target,
     );
   }
 
@@ -117,6 +125,7 @@ class SpeechService {
     required void Function(String words) onResult,
     required void Function() onDone,
     void Function(double level)? onSoundLevel,
+    required String target,
   }) async {
     final hasPermission = await _recorder.hasPermission();
     if (!hasPermission) return false;
@@ -129,9 +138,11 @@ class SpeechService {
     _nativeStopped = false;
     _nativeHasSpeech = false;
     _nativeSilenceStart = null;
+    _nativeTarget = target;
 
     await _recorder.start(const RecordConfig(encoder: AudioEncoder.aacLc),
         path: path);
+    _nativeRecordStart = DateTime.now();
 
     _nativeAmpSub = _recorder
         .onAmplitudeChanged(const Duration(milliseconds: 100))
@@ -178,12 +189,23 @@ class SpeechService {
     final fileSize = await File(path).length();
     debugPrint('[DEBUG record] archivo="$path" tamaño=${fileSize}B');
 
+    final start = _nativeRecordStart;
+    if (start == null || DateTime.now().difference(start) < _minRecording) {
+      debugPrint('[DEBUG record] grabación < 1 s, intento fallido');
+      onResult('');
+      onDone();
+      return;
+    }
+
     try {
       final uri = Uri.parse('https://api.openai.com/v1/audio/transcriptions');
       final request = http.MultipartRequest('POST', uri)
         ..headers['Authorization'] = 'Bearer $kWhisperApiKey'
         ..fields['model'] = 'whisper-1'
         ..fields['language'] = 'en'
+        // Vocabulario esperado + temperatura 0: Whisper no inventa palabras.
+        ..fields['prompt'] = _nativeTarget
+        ..fields['temperature'] = '0'
         ..files.add(
           await http.MultipartFile.fromPath('file', path, filename: 'audio.m4a'),
         );
@@ -219,45 +241,38 @@ class SpeechService {
     _listening = false;
   }
 
-  /// Returns accuracy 0–100.
+  /// Returns accuracy 0–100, estricto palabra por palabra: solo cuenta una
+  /// palabra si coincide EXACTA (sin tolerar terminaciones: want ≠ wanted,
+  /// side ≠ sides), en el mismo orden que la frase objetivo. Ignora
+  /// mayúsculas, puntuación y apóstrofes. 100 solo si coinciden todas; si
+  /// falta alguna, máximo 89.
   double calculateScore(String spoken, String target) {
     final spokenWords =
         _normalize(spoken).split(' ').where((w) => w.isNotEmpty).toList();
     final targetWords =
         _normalize(target).split(' ').where((w) => w.isNotEmpty).toList();
     if (targetWords.isEmpty) return 0;
-    int matches = 0;
-    for (final tw in targetWords) {
-      if (spokenWords.any((sw) =>
-          sw == tw ||
-          sw.contains(tw) ||
-          tw.contains(sw) ||
-          _levenshtein(sw, tw) <= 2)) {
-        matches++;
-      }
-    }
-    return (matches / targetWords.length * 100).clamp(0.0, 100.0);
+    final matches = _orderedExactMatches(spokenWords, targetWords);
+    final score = matches / targetWords.length * 100;
+    if (matches < targetWords.length) return score.clamp(0.0, 89.0);
+    return 100;
   }
 
-  int _levenshtein(String a, String b) {
-    if (a == b) return 0;
-    if (a.isEmpty) return b.length;
-    if (b.isEmpty) return a.length;
-    final matrix =
-        List.generate(a.length + 1, (i) => List.filled(b.length + 1, 0));
-    for (int i = 0; i <= a.length; i++) matrix[i][0] = i;
-    for (int j = 0; j <= b.length; j++) matrix[0][j] = j;
-    for (int i = 1; i <= a.length; i++) {
-      for (int j = 1; j <= b.length; j++) {
-        final cost = a[i - 1] == b[j - 1] ? 0 : 1;
-        matrix[i][j] = [
-          matrix[i - 1][j] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j - 1] + cost
-        ].reduce((a, b) => a < b ? a : b);
+  /// Palabras objetivo que aparecen exactas y en orden en lo dicho
+  /// (subsecuencia común más larga): una palabra dicha cuenta una sola vez,
+  /// y palabras extra dichas por el alumno no restan.
+  int _orderedExactMatches(List<String> spoken, List<String> target) {
+    var prev = List.filled(spoken.length + 1, 0);
+    for (final tw in target) {
+      final row = List.filled(spoken.length + 1, 0);
+      for (int j = 1; j <= spoken.length; j++) {
+        row[j] = spoken[j - 1] == tw
+            ? prev[j - 1] + 1
+            : (prev[j] > row[j - 1] ? prev[j] : row[j - 1]);
       }
+      prev = row;
     }
-    return matrix[a.length][b.length];
+    return prev[spoken.length];
   }
 
   String _normalize(String text) => text
