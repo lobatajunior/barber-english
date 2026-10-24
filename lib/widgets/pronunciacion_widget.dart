@@ -5,6 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/progress_provider.dart';
 
+// ── Umbrales de puntaje ──────────────────────────────────────────────────────
+// ≥ 90 perfecta (calculateScore solo pasa de 89 si coinciden TODAS las
+// palabras) · 60-89 pasa y da XP · < 60 cuenta como fallo (onFallo).
+const kScorePerfecto = 90.0;
+const kScorePasa = 60.0;
+
 // ── Colores exactos (CAMBIO 6) ───────────────────────────────────────────────
 const _kGreen = Color(0xFF00E676);
 const _kGreenGlow = Color(0x1F00E676); // rgba(0,230,118,0.12)
@@ -16,8 +22,8 @@ class PronunciacionWidget extends ConsumerStatefulWidget {
   final Map<String, dynamic> ejercicio;
   final VoidCallback onResuelto;
   final VoidCallback onContinuar;
-  final VoidCallback? onPerfecto; // called when pronunciation score == 100
-  final VoidCallback? onFallo; // called when a result comes back under 70
+  final VoidCallback? onPerfecto; // called when pronunciation is perfect (≥ 90)
+  final VoidCallback? onFallo; // called when a result comes back under 60
 
   const PronunciacionWidget({
     super.key,
@@ -42,6 +48,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   bool _noSpeech = false; // último intento sin audio útil: sin puntaje
   double? _score;
   String _spokenText = '';
+  (String, String)? _casi; // (dicha, esperada) si solo falló una palabra
   bool _resolved = false;
   StreamSubscription<void>? _completeSub;
   Timer? _audioTimeoutTimer;
@@ -141,6 +148,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
       _noSpeech = false;
       _score = null;
       _spokenText = '';
+      _casi = null;
     });
     _micPulseCtrl.repeat();
 
@@ -168,14 +176,17 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
         setState(() {
           _spokenText = words;
           _score = score;
+          _casi = score >= kScorePasa && score < kScorePerfecto
+              ? speech.nearMiss(words, _target)
+              : null;
           _isListening = false;
-          if (score >= 70 && !_resolved) {
+          if (score >= kScorePasa && !_resolved) {
             _resolved = true;
             widget.onResuelto();
-            if (score >= 100) widget.onPerfecto?.call();
+            if (score >= kScorePerfecto) widget.onPerfecto?.call();
           }
         });
-        if (score < 70 && !_resolved) widget.onFallo?.call();
+        if (score < kScorePasa && !_resolved) widget.onFallo?.call();
       },
       onDone: () {
         if (mounted) {
@@ -200,6 +211,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   void _retry() => setState(() {
         _score = null;
         _spokenText = '';
+        _casi = null;
       });
 
   void _retryMic() {
@@ -207,7 +219,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
     _startListening();
   }
 
-  // Saltar sin llegar al 70 % no cuenta como resuelto: no da XP.
+  // Saltar sin llegar al 60 % no cuenta como resuelto: no da XP.
   void _continuar() => widget.onContinuar();
 
   // ── Build ──────────────────────────────────────────────────────────────────
@@ -430,6 +442,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
             _FeedbackPanel(
               score: _score ?? 0,
               spokenText: _spokenText,
+              casi: _casi,
               onRetry: _retry,
               onContinuar: _continuar,
             ),
@@ -531,48 +544,40 @@ class _MicButton extends StatelessWidget {
 class _FeedbackPanel extends StatelessWidget {
   final double score;
   final String spokenText;
+  final (String, String)? casi;
   final VoidCallback onRetry;
   final VoidCallback onContinuar;
 
   const _FeedbackPanel({
     required this.score,
     required this.spokenText,
+    this.casi,
     required this.onRetry,
     required this.onContinuar,
   });
 
   // ── Datos según rango de score ─────────────────────────────────────────────
-  bool get _isSuccess => score >= 70;
+  bool get _isSuccess => score >= kScorePasa;
 
-  Color get _bgColor {
-    if (score >= 70) return _kGreen.withValues(alpha: 0.12);
-    if (score >= 50) return _kYellow.withValues(alpha: 0.10);
-    return _kRed.withValues(alpha: 0.10);
-  }
+  Color get _bgColor => _isSuccess
+      ? _kGreen.withValues(alpha: 0.12)
+      : _kRed.withValues(alpha: 0.10);
 
-  Color get _borderColor {
-    if (score >= 70) return _kGreen.withValues(alpha: 0.50);
-    if (score >= 50) return _kYellow.withValues(alpha: 0.45);
-    return _kRed.withValues(alpha: 0.45);
-  }
+  Color get _borderColor => _isSuccess
+      ? _kGreen.withValues(alpha: 0.50)
+      : _kRed.withValues(alpha: 0.45);
 
-  Color get _textColor {
-    if (score >= 70) return _kGreen;
-    if (score >= 50) return _kYellow;
-    return _kRed;
-  }
+  Color get _textColor => _isSuccess ? _kGreen : _kRed;
 
   String get _emoji {
-    if (score >= 100) return '🏆';
-    if (score >= 70) return '👍';
-    if (score >= 50) return '💪';
+    if (score >= kScorePerfecto) return '🏆';
+    if (score >= kScorePasa) return '👍';
     return '🎯';
   }
 
   String get _message {
-    if (score >= 100) return '¡Pronunciación perfecta!';
-    if (score >= 70) return '¡Muy bien, se entiende!';
-    if (score >= 50) return 'Casi, sigue practicando';
+    if (score >= kScorePerfecto) return '¡Pronunciación perfecta!';
+    if (score >= kScorePasa) return '¡Muy bien, se entiende!';
     return 'Inténtalo de nuevo';
   }
 
@@ -605,6 +610,20 @@ class _FeedbackPanel extends StatelessWidget {
                 ),
               ),
 
+              // Solo falló una palabra: se la señalamos con tono amable
+              if (casi != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  "Casi: dijiste '${casi!.$1}', era '${casi!.$2}'",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.outfit(
+                    color: _kYellow,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+
               // Lo que dijo el usuario
               if (spokenText.isNotEmpty) ...[
                 const SizedBox(height: 6),
@@ -620,7 +639,7 @@ class _FeedbackPanel extends StatelessWidget {
 
               // CAMBIO 5: Botones según score
               if (_isSuccess)
-                // Score >= 70% → solo "Continuar ✅"
+                // Score >= 60% → solo "Continuar ✅"
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -642,7 +661,7 @@ class _FeedbackPanel extends StatelessWidget {
                   ),
                 )
               else ...[
-                // Score < 70% → "Intentar de nuevo" + "Continuar de todas formas"
+                // Score < 60% → "Intentar de nuevo" + "Continuar de todas formas"
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -680,8 +699,8 @@ class _FeedbackPanel extends StatelessWidget {
           ),
         ),
 
-        // Confetti animado para 100% perfecto (CAMBIO 4)
-        if (score >= 100)
+        // Confetti animado para pronunciación perfecta (CAMBIO 4)
+        if (score >= kScorePerfecto)
           Positioned.fill(
             child: IgnorePointer(child: _ConfettiOverlay()),
           ),
@@ -697,11 +716,7 @@ class _ScoreCircle extends StatelessWidget {
   final double score;
   const _ScoreCircle({required this.score});
 
-  Color get _color {
-    if (score >= 70) return _kGreen;
-    if (score >= 50) return _kYellow;
-    return _kRed;
-  }
+  Color get _color => score >= kScorePasa ? _kGreen : _kRed;
 
   @override
   Widget build(BuildContext context) {

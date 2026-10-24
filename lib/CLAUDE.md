@@ -70,10 +70,13 @@ escuchar, pronunciacion, parejas, completar, ordenar, opciones, dialogo, dialogo
 ---
 
 ## SISTEMA DE PRONUNCIACIÓN
-- 100%:   🏆 "¡Pronunciación perfecta!" → verde + confetti
-- 70-89%: 👍 "¡Muy bien, se entiende!" → verde suave
-- 50-69%: 💪 "Casi, sigue practicando" → amarillo
-- 0-49%:  🎯 "Inténtalo de nuevo"      → rojo
+- 90-100%: 🏆 "¡Pronunciación perfecta!" → verde + confetti (solo si
+  coinciden TODAS las palabras exactas; si falta una, máximo 89%)
+- 60-89%:  👍 "¡Muy bien, se entiende!" → verde, pasa y da XP. Si solo
+  difiere una palabra: "Casi: dijiste 'want', era 'wanted'"
+- 0-59%:   🎯 "Inténtalo de nuevo" → rojo, cuenta como fallo (2 fallos
+  muestran la respuesta correcta y avanzan)
+- Audio < 1 s o Whisper vacío: intento fallido sin puntaje
 
 ---
 

@@ -44,7 +44,7 @@ const _kFrasesFallo = [
 // Intentos fallidos permitidos por ejercicio antes de mostrar la respuesta.
 const _kMaxIntentos = 2;
 
-// XP por pronunciación correcta (≥ 70 %). Es el único tipo que da XP por
+// XP por pronunciación correcta (≥ 60 %, kScorePasa). Es el único tipo que da XP por
 // ejercicio; 30 mantiene ~300 XP por lección (7 × 30 + 100) como antes, cuando
 // los 20 ejercicios daban +10 cada uno.
 const _kXpPronunciacion = 30;

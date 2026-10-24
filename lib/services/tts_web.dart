@@ -71,12 +71,10 @@ void startWebRecording(
   void Function(String) onResult,
   void Function() onDone,
   String apiKey,
-  String target,
 ) {
   js.context['_whisperOnResult'] = js.allowInterop(onResult);
   js.context['_whisperOnDone'] = js.allowInterop(onDone);
   js.context['_whisperApiKey'] = apiKey;
-  js.context['_whisperPrompt'] = target;
   js.context.callMethod('eval', [r"""
     (function() {
       navigator.mediaDevices.getUserMedia({ audio: true, video: false })
@@ -138,8 +136,7 @@ void startWebRecording(
             fd.append('file', blob, 'audio.webm');
             fd.append('model', 'whisper-1');
             fd.append('language', 'en');
-            // Vocabulario esperado + temperatura 0: Whisper no inventa palabras.
-            fd.append('prompt', window._whisperPrompt || '');
+            // Temperatura 0: Whisper no inventa palabras.
             fd.append('temperature', '0');
             fetch('https://api.openai.com/v1/audio/transcriptions', {
               method: 'POST',

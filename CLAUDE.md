@@ -82,13 +82,13 @@ Common keys across all exercise types: `tipo`, `instruccion`, `quien_habla`, `fr
 
 ### TTS (Text-to-Speech)
 
-`tts_web.dart` and `tts_stub.dart` are conditionally imported — web uses ResponsiveVoice (voice 'US English Female', rate 0.85) with Web Speech API as fallback. Speech ends fire a custom `rvSpeechEnd` DOM event listened to by Dart. STT uses OpenAI Whisper via `tts_web.dart:startWebRecording()` — auto-stops after 1 s of silence. `SpeechService.calculateScore()` returns 0-100; ≥ 70 counts as resolved.
+`tts_web.dart` and `tts_stub.dart` are conditionally imported — web uses ResponsiveVoice (voice 'US English Female', rate 0.85) with Web Speech API as fallback. Speech ends fire a custom `rvSpeechEnd` DOM event listened to by Dart. STT uses OpenAI Whisper via `tts_web.dart:startWebRecording()` — auto-stops after 1 s of silence. `SpeechService.calculateScore()` returns 0-100, exact word-by-word in order (no tolerance for endings; capped at 89 unless every word matches); ≥ 60 counts as resolved, < 60 is a failure (`kScorePasa` / `kScorePerfecto` in `pronunciacion_widget.dart`). Whisper is called with `temperature` 0 and no `prompt`; recordings under 1 s or empty transcripts are a failed attempt with no score.
 
 ### Gamification
 
 XP thresholds: 0→500 (Apprentice), 500→1500 (Junior), 1500→3500 (Barber), 3500→7000 (Senior), 7000+ (Master Barber).
 **Only `pronunciacion` gives per-exercise XP and the floating "+XP" animation**; the other 7 types just unlock CONTINUAR.
-Per lesson: +30 XP per pronunciation ≥ 70 % (`_kXpPronunciacion` in `exercise_screen.dart`), +50 per perfect (100 %) pronunciation, +100 lesson completion, +20 daily streak bonus. Skipping a pronunciation gives no XP. A normal lesson (7 pronunciations) ≈ 310 XP.
+Per lesson: +30 XP per pronunciation ≥ 60 % (`_kXpPronunciacion` in `exercise_screen.dart`), +50 per perfect (≥ 90 %, all words exact) pronunciation, +100 lesson completion, +20 daily streak bonus. Skipping a pronunciation gives no XP. A normal lesson (7 pronunciations) ≈ 310 XP.
 The home mascot evolves by number of completed lessons, not XP. The streak is based on the date a lesson is completed.
 
 ## Pedagogical rules (mandatory for every lesson)

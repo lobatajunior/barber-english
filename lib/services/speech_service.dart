@@ -24,7 +24,6 @@ class SpeechService {
   bool _nativeHasSpeech = false;
   DateTime? _nativeSilenceStart;
   DateTime? _nativeRecordStart;
-  String _nativeTarget = '';
 
   static const _nativeListenMax = Duration(seconds: 5);
   static const _nativeSilenceAfterSpeech = Duration(milliseconds: 500);
@@ -103,7 +102,6 @@ class SpeechService {
           onDone();
         },
         kWhisperApiKey,
-        target,
       );
 
       _listenTimer = Timer(Duration(seconds: seconds), stopWebRecording);
@@ -114,7 +112,6 @@ class SpeechService {
       onResult: onResult,
       onDone: onDone,
       onSoundLevel: onSoundLevel,
-      target: target,
     );
   }
 
@@ -125,7 +122,6 @@ class SpeechService {
     required void Function(String words) onResult,
     required void Function() onDone,
     void Function(double level)? onSoundLevel,
-    required String target,
   }) async {
     final hasPermission = await _recorder.hasPermission();
     if (!hasPermission) return false;
@@ -138,7 +134,6 @@ class SpeechService {
     _nativeStopped = false;
     _nativeHasSpeech = false;
     _nativeSilenceStart = null;
-    _nativeTarget = target;
 
     await _recorder.start(const RecordConfig(encoder: AudioEncoder.aacLc),
         path: path);
@@ -203,8 +198,7 @@ class SpeechService {
         ..headers['Authorization'] = 'Bearer $kWhisperApiKey'
         ..fields['model'] = 'whisper-1'
         ..fields['language'] = 'en'
-        // Vocabulario esperado + temperatura 0: Whisper no inventa palabras.
-        ..fields['prompt'] = _nativeTarget
+        // Temperatura 0: Whisper no inventa palabras.
         ..fields['temperature'] = '0'
         ..files.add(
           await http.MultipartFile.fromPath('file', path, filename: 'audio.m4a'),
@@ -252,27 +246,71 @@ class SpeechService {
     final targetWords =
         _normalize(target).split(' ').where((w) => w.isNotEmpty).toList();
     if (targetWords.isEmpty) return 0;
-    final matches = _orderedExactMatches(spokenWords, targetWords);
+    final matches = _orderedExactMatches(spokenWords, targetWords).length;
     final score = matches / targetWords.length * 100;
     if (matches < targetWords.length) return score.clamp(0.0, 89.0);
     return 100;
   }
 
-  /// Palabras objetivo que aparecen exactas y en orden en lo dicho
-  /// (subsecuencia común más larga): una palabra dicha cuenta una sola vez,
-  /// y palabras extra dichas por el alumno no restan.
-  int _orderedExactMatches(List<String> spoken, List<String> target) {
-    var prev = List.filled(spoken.length + 1, 0);
-    for (final tw in target) {
-      final row = List.filled(spoken.length + 1, 0);
-      for (int j = 1; j <= spoken.length; j++) {
-        row[j] = spoken[j - 1] == tw
-            ? prev[j - 1] + 1
-            : (prev[j] > row[j - 1] ? prev[j] : row[j - 1]);
-      }
-      prev = row;
+  /// Si lo dicho difiere de la frase objetivo en UNA sola palabra sustituida
+  /// (p. ej. "want" en lugar de "wanted"), devuelve (dicha, esperada) para el
+  /// mensaje "Casi". Con varias palabras distintas, una omitida o algo
+  /// totalmente diferente devuelve null.
+  (String said, String expected)? nearMiss(String spoken, String target) {
+    final spokenWords =
+        _normalize(spoken).split(' ').where((w) => w.isNotEmpty).toList();
+    final targetWords =
+        _normalize(target).split(' ').where((w) => w.isNotEmpty).toList();
+    final pairs = _orderedExactMatches(spokenWords, targetWords);
+    if (targetWords.length < 2 || pairs.length != targetWords.length - 1) {
+      return null;
     }
-    return prev[spoken.length];
+    final matchedTarget = {for (final (t, _) in pairs) t};
+    final missing =
+        List.generate(targetWords.length, (i) => i).firstWhere(
+            (i) => !matchedTarget.contains(i));
+    // Hueco en lo dicho entre las palabras acertadas vecinas a la que falta.
+    var lower = -1;
+    var upper = spokenWords.length;
+    for (final (t, s) in pairs) {
+      if (t == missing - 1) lower = s;
+      if (t == missing + 1) upper = s;
+    }
+    final gap = spokenWords.sublist(lower + 1, upper);
+    if (gap.length != 1) return null;
+    return (gap.single, targetWords[missing]);
+  }
+
+  /// Parejas (índice objetivo, índice dicho) de palabras que coinciden exactas
+  /// y en orden (subsecuencia común más larga): una palabra dicha cuenta una
+  /// sola vez, y palabras extra dichas por el alumno no restan.
+  List<(int, int)> _orderedExactMatches(
+      List<String> spoken, List<String> target) {
+    final t = target.length;
+    final s = spoken.length;
+    final lcs = List.generate(t + 1, (_) => List.filled(s + 1, 0));
+    for (int i = t - 1; i >= 0; i--) {
+      for (int j = s - 1; j >= 0; j--) {
+        lcs[i][j] = target[i] == spoken[j]
+            ? lcs[i + 1][j + 1] + 1
+            : (lcs[i + 1][j] > lcs[i][j + 1] ? lcs[i + 1][j] : lcs[i][j + 1]);
+      }
+    }
+    final pairs = <(int, int)>[];
+    var i = 0;
+    var j = 0;
+    while (i < t && j < s) {
+      if (target[i] == spoken[j]) {
+        pairs.add((i, j));
+        i++;
+        j++;
+      } else if (lcs[i + 1][j] >= lcs[i][j + 1]) {
+        i++;
+      } else {
+        j++;
+      }
+    }
+    return pairs;
   }
 
   String _normalize(String text) => text
