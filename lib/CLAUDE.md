@@ -104,7 +104,7 @@ Fuente de vocabulario: SOLO `lib/data/conversaciones_raw.md`.
   (`respuesta_correcta` = "wait, minutes, please",
    `fonetica` = "[ UEIT · MI-nets · PLIIS ]" — mismo número de partes;
    PronunciacionWidget lo muestra como lista palabra + fonética)
-- parejas: grupos de 4 palabras
+- parejas: 4 o 5 pares por ejercicio
 - opciones: 3 opciones siempre, y SIEMPRE en inglés (la voz las lee en
   inglés al tocarlas). La pregunta (`pregunta`) y `traduccion_pregunta`
   pueden ir en español: '¿Cómo se dice "No hay problema"?' → No problem
@@ -163,7 +163,7 @@ archivo, el título y las palabras nuevas.
 | L06 | 2 | Conv.1 corte degradado | 5: Good morning, Fade, Low, Razor, Beard | lesson_06_low_fade.dart | Low Fade |
 | L07 | 2 | Conv.1 corte degradado | 6: Texture, Volume, More, Less, Modern, Fresh | lesson_07_more_texture.dart | More Texture |
 | L08 | 2 | Conv.1 corte degradado | 5: Sideburns, Combed back, Product, I trust you, Like new | lesson_08_like_new.dart | Like New |
-| L09 | 2 | Conv.1 corte degradado | 5 | — | — |
+| L09 | 2 | Conv.3 corte de niño | 5: I have an appointment, For my son, I have a photo, Be patient, Do not move | lesson_09_my_son.dart | My Son |
 | L10 | 2 | Conv.1 corte degradado | 5 | — | — |
 | L11 | 3 | Conv.3 corte de niño | 5 | — | — |
 | L12 | 3 | Conv.3 corte de niño | 5 | — | — |

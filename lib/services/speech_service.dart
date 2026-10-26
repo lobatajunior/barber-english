@@ -241,10 +241,11 @@ class SpeechService {
   /// mayúsculas, puntuación y apóstrofes. 100 solo si coinciden todas; si
   /// falta alguna, máximo 89.
   double calculateScore(String spoken, String target) {
-    final spokenWords =
-        _normalize(spoken).split(' ').where((w) => w.isNotEmpty).toList();
     final targetWords =
         _normalize(target).split(' ').where((w) => w.isNotEmpty).toList();
+    final spokenWords = _joinSplitWords(
+        _normalize(spoken).split(' ').where((w) => w.isNotEmpty).toList(),
+        targetWords);
     if (targetWords.isEmpty) return 0;
     final matches = _orderedExactMatches(spokenWords, targetWords).length;
     final score = matches / targetWords.length * 100;
@@ -257,10 +258,11 @@ class SpeechService {
   /// mensaje "Casi". Con varias palabras distintas, una omitida o algo
   /// totalmente diferente devuelve null.
   (String said, String expected)? nearMiss(String spoken, String target) {
-    final spokenWords =
-        _normalize(spoken).split(' ').where((w) => w.isNotEmpty).toList();
     final targetWords =
         _normalize(target).split(' ').where((w) => w.isNotEmpty).toList();
+    final spokenWords = _joinSplitWords(
+        _normalize(spoken).split(' ').where((w) => w.isNotEmpty).toList(),
+        targetWords);
     final pairs = _orderedExactMatches(spokenWords, targetWords);
     if (targetWords.length < 2 || pairs.length != targetWords.length - 1) {
       return null;
@@ -279,6 +281,25 @@ class SpeechService {
     final gap = spokenWords.sublist(lower + 1, upper);
     if (gap.length != 1) return null;
     return (gap.single, targetWords[missing]);
+  }
+
+  /// Une dos palabras dichas seguidas cuando juntas forman EXACTAMENTE una
+  /// palabra del objetivo ("side burns" → "sideburns"), porque Whisper a
+  /// veces parte palabras compuestas. No relaja nada más.
+  List<String> _joinSplitWords(List<String> spoken, List<String> target) {
+    final targetSet = target.toSet();
+    final out = <String>[];
+    for (int i = 0; i < spoken.length; i++) {
+      if (i + 1 < spoken.length &&
+          !targetSet.contains(spoken[i]) &&
+          targetSet.contains(spoken[i] + spoken[i + 1])) {
+        out.add(spoken[i] + spoken[i + 1]);
+        i++;
+      } else {
+        out.add(spoken[i]);
+      }
+    }
+    return out;
   }
 
   /// Parejas (índice objetivo, índice dicho) de palabras que coinciden exactas
