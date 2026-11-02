@@ -168,7 +168,7 @@ archivo, el título y las palabras nuevas.
 | L09 | 2 | Conv.3 corte de niño | 5: I have an appointment, For my son, I have a photo, Be patient, Do not move | lesson_09_my_son.dart | My Son |
 | L10 | 2 | Conv.2 corte clásico | 6: Would you like to wait?, I do not have an appointment, Scissors only, A little longer, Combed up, Messy | lesson_10_messy_style.dart | Messy Style |
 | L11 | 3 | Conv.1 corte degradado | 5: What is your name?, My name is, You are early, Black coffee, Come to the chair | lesson_11_your_name.dart | Your Name |
-| L12 | 3 | Conv.3 corte de niño | 5 | — | — |
+| L12 | 3 | Conv.3 corte de niño | 5: Look down, Look to the side, Head up, Combed to the side, Mom | lesson_12_look_down.dart | Look Down |
 | L13 | 3 | Conv.3 corte de niño | 5 | — | — |
 | L14 | 3 | Conv.3 corte de niño | 5 | — | — |
 | L15 | 3 | Conv.3 corte de niño | 5 | — | — |

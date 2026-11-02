@@ -10,6 +10,7 @@ import 'lessons/barber_zone/a1/lesson_08_like_new.dart';
 import 'lessons/barber_zone/a1/lesson_09_my_son.dart';
 import 'lessons/barber_zone/a1/lesson_10_messy_style.dart';
 import 'lessons/barber_zone/a1/lesson_11_your_name.dart';
+import 'lessons/barber_zone/a1/lesson_12_look_down.dart';
 
 final barberZoneLessons = <Lesson>[
   lesson01FirstWords,
@@ -23,4 +24,5 @@ final barberZoneLessons = <Lesson>[
   lesson09MySon,
   lesson10MessyStyle,
   lesson11YourName,
+  lesson12LookDown,
 ];
