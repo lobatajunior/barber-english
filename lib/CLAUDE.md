@@ -164,7 +164,7 @@ archivo, el título y las palabras nuevas.
 | L07 | 2 | Conv.1 corte degradado | 6: Texture, Volume, More, Less, Modern, Fresh | lesson_07_more_texture.dart | More Texture |
 | L08 | 2 | Conv.1 corte degradado | 5: Sideburns, Combed back, Product, I trust you, Like new | lesson_08_like_new.dart | Like New |
 | L09 | 2 | Conv.3 corte de niño | 5: I have an appointment, For my son, I have a photo, Be patient, Do not move | lesson_09_my_son.dart | My Son |
-| L10 | 2 | Conv.1 corte degradado | 5 | — | — |
+| L10 | 2 | Conv.2 corte clásico | 6: Would you like to wait?, I do not have an appointment, Scissors only, A little longer, Combed up, Messy | lesson_10_messy_style.dart | Messy Style |
 | L11 | 3 | Conv.3 corte de niño | 5 | — | — |
 | L12 | 3 | Conv.3 corte de niño | 5 | — | — |
 | L13 | 3 | Conv.3 corte de niño | 5 | — | — |

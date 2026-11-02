@@ -8,6 +8,7 @@ import 'lessons/barber_zone/a1/lesson_06_low_fade.dart';
 import 'lessons/barber_zone/a1/lesson_07_more_texture.dart';
 import 'lessons/barber_zone/a1/lesson_08_like_new.dart';
 import 'lessons/barber_zone/a1/lesson_09_my_son.dart';
+import 'lessons/barber_zone/a1/lesson_10_messy_style.dart';
 
 final barberZoneLessons = <Lesson>[
   lesson01FirstWords,
@@ -19,4 +20,5 @@ final barberZoneLessons = <Lesson>[
   lesson07MoreTexture,
   lesson08LikeNew,
   lesson09MySon,
+  lesson10MessyStyle,
 ];
