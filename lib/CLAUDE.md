@@ -94,9 +94,11 @@ Total A1: 16 lecciones · 81 palabras nuevas (2×8 + 13×5) · 320 ejercicios
 
 ### REGLA 2 — Bloques temáticos
 - Bloque 1 (L01-L05): Conversación 2 — corte clásico
-- Bloque 2 (L06-L10): Conversación 1 — corte degradado
-- Bloque 3 (L11-L15): Conversación 3 — corte de niño
-- L16: repaso general de los 3 bloques
+- L06-L07: Conversación 1 — corte degradado
+- Desde L08 las conversaciones se alternan:
+  L08 Conv.1 degradado · L09 Conv.3 niño · L10 Conv.2 clásico ·
+  L11 Conv.1 degradado · L12 Conv.3 niño
+- L16: repaso general de las 3 conversaciones
 Fuente de vocabulario: SOLO `lib/data/conversaciones_raw.md`.
 
 ### REGLA 3 — Tipos de ejercicio
@@ -174,6 +176,13 @@ archivo, el título y las palabras nuevas.
 
 Total A1: 16 lecciones × 20 ejercicios = 320 ejercicios · 81 palabras nuevas
 (la fuente de verdad son los comentarios de cabecera de cada archivo de lección)
+
+### REPASOS PENDIENTES
+Unidades que no se repasaron en sus 3 lecciones siguientes (REGLA 4):
+- L13 debe repasar: Sideburns, Combed back, Product, For my son
+- L14 debe repasar: Would you like to wait?, I do not have an appointment,
+  A little longer, Messy
+- Pendientes también: Minutes y Right now (para la lección de números)
 
 ---
 

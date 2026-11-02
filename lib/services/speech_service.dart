@@ -334,9 +334,35 @@ class SpeechService {
     return pairs;
   }
 
+  // Contracciones que se expanden en lo dicho y en el objetivo, para que
+  // "What's your name?" puntúe igual que "What is your name?".
+  static const _contractions = {
+    "what's": 'what is',
+    "that's": 'that is',
+    "it's": 'it is',
+    "he's": 'he is',
+    "she's": 'she is',
+    "you're": 'you are',
+    "we're": 'we are',
+    "they're": 'they are',
+    "i'm": 'i am',
+    "don't": 'do not',
+    "doesn't": 'does not',
+    "didn't": 'did not',
+    "can't": 'can not',
+    "won't": 'will not',
+    "let's": 'let us',
+    "i'll": 'i will',
+    "i've": 'i have',
+  };
+
+  static final _contractionRe = RegExp(
+      "\\b(${_contractions.keys.map(RegExp.escape).join('|')})(?![\\w'])");
+
   String _normalize(String text) => text
       .toLowerCase()
-      .replaceAll(RegExp(r"[''`]"), "'")
+      .replaceAll(RegExp('[‘’ʼ`]'), "'")
+      .replaceAllMapped(_contractionRe, (m) => _contractions[m[1]]!)
       .replaceAll(RegExp(r'[^\w\s]'), '')
       .replaceAll(RegExp(r'\s+'), ' ')
       .trim();

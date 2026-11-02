@@ -82,7 +82,7 @@ Common keys across all exercise types: `tipo`, `instruccion`, `quien_habla`, `fr
 
 ### TTS (Text-to-Speech)
 
-`tts_web.dart` and `tts_stub.dart` are conditionally imported — web uses ResponsiveVoice (voice 'US English Female', rate 0.85) with Web Speech API as fallback. Speech ends fire a custom `rvSpeechEnd` DOM event listened to by Dart. STT uses OpenAI Whisper via `tts_web.dart:startWebRecording()` — auto-stops after 1 s of silence. `SpeechService.calculateScore()` returns 0-100, exact word-by-word in order (no tolerance for endings; capped at 89 unless every word matches); ≥ 60 counts as resolved, < 60 is a failure (`kScorePasa` / `kScorePerfecto` in `pronunciacion_widget.dart`). Whisper is called with `temperature` 0 and no `prompt`; recordings under 1 s or empty transcripts are a failed attempt with no score.
+`tts_web.dart` and `tts_stub.dart` are conditionally imported — web uses ResponsiveVoice (voice 'US English Female', rate 0.85) with Web Speech API as fallback. Speech ends fire a custom `rvSpeechEnd` DOM event listened to by Dart. STT uses OpenAI Whisper via `tts_web.dart:startWebRecording()` — auto-stops after 1 s of silence. `SpeechService.calculateScore()` returns 0-100, exact word-by-word in order (no tolerance for endings; capped at 89 unless every word matches; contractions like what's/don't are expanded in both texts first, and two spoken words that join into one target word count as it); ≥ 60 counts as resolved, < 60 is a failure (`kScorePasa` / `kScorePerfecto` in `pronunciacion_widget.dart`). Whisper is called with `temperature` 0 and no `prompt`; recordings under 1 s or empty transcripts are a failed attempt with no score.
 
 ### Gamification
 
