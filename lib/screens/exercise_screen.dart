@@ -8,6 +8,8 @@ import '../core/app_theme.dart';
 import '../models/lesson.dart';
 import '../providers/progress_provider.dart';
 import '../providers/gamification_provider.dart';
+import '../services/account_service.dart';
+import 'guest_wall_screen.dart';
 import '../widgets/opciones_widget.dart';
 import '../widgets/pronunciacion_widget.dart';
 import '../widgets/parejas_widget.dart';
@@ -233,6 +235,15 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
       _nombreNivelNuevo = gam.nombreNivel;
       _showCompletion = true;
     });
+  }
+
+  // Al salir del resumen final, un invitado con alguna lección completada ve
+  // el muro de registro; después (se registre o no) vuelve a la lista.
+  Future<void> _salirDelResumen() async {
+    if (AccountService.isGuest && ref.read(progressProvider).total >= 1) {
+      await showGuestWall(context);
+    }
+    if (mounted) Navigator.of(context).pop();
   }
 
   Widget _buildIntroScreen() {
@@ -467,7 +478,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
       return _CompletionView(
         lessonTitle: widget.lesson.title,
         lessonEmoji: widget.lesson.emoji,
-        onNext: () => Navigator.of(context).pop(),
+        onNext: _salirDelResumen,
         xpEjercicios: _xpEjerciciosTotal,
         xpPronunciacion: _xpPronunciacionTotal,
         xpRacha: _xpRachaGanado,

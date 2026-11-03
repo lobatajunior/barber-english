@@ -10,6 +10,7 @@ import '../data/street_english_data.dart';
 import '../providers/auth_provider.dart';
 import '../providers/progress_provider.dart';
 import '../providers/gamification_provider.dart';
+import '../services/account_service.dart';
 import 'section_screen.dart';
 import 'street_english_menu_screen.dart';
 
@@ -66,6 +67,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     _pulseAnim = Tween<double>(begin: 0.94, end: 1.06).animate(
       CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut),
     );
+
+    // Por si el perfil ya estaba cargado antes de abrir Home (ref.listen
+    // solo avisa de los cambios posteriores).
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _maybeAskName(ref.read(userProfileProvider).valueOrNull));
   }
 
   @override
@@ -84,10 +90,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     return 'assets/pose6.png';
   }
 
-  String _greeting(User? user) {
-    if (user == null || user.isAnonymous) return '¡Hola, Barber!';
-    final name = (user.email ?? '').split('@').first;
-    return '¡Hola, $name!';
+  String _greeting(User? user, String nombre) {
+    final hour = DateTime.now().hour;
+    final saludo = hour < 12
+        ? 'Buenos días'
+        : (hour < 20 ? 'Buenas tardes' : 'Buenas noches');
+    final name = nombre.isNotEmpty
+        ? nombre
+        : (user == null || user.isAnonymous
+            ? 'Barber'
+            : (user.email ?? '').split('@').first);
+    return '$saludo, $name';
+  }
+
+  // Cuenta normal sin nombre en users/{uid}: se pregunta una vez por sesión.
+  // No se pregunta con datos solo de caché (el nombre podría estar ya en el
+  // servidor) ni a quien acaba de registrarse.
+  void _maybeAskName(UserProfile? profile) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (!mounted ||
+        user == null ||
+        user.isAnonymous ||
+        profile == null ||
+        profile.fromCache ||
+        profile.nombre.isNotEmpty ||
+        AccountService.registering ||
+        AccountService.namePromptDone.contains(user.uid)) {
+      return;
+    }
+    AccountService.namePromptDone.add(user.uid);
+    showDialog(
+      context: context,
+      builder: (_) => _NameDialog(uid: user.uid),
+    );
   }
 
   @override
@@ -96,6 +131,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final progress = ref.watch(progressProvider);
     final total = progress.total;
     final gam = ref.watch(gamificationProvider);
+    final nombre = ref.watch(userProfileProvider).valueOrNull?.nombre ?? '';
+    ref.listen<AsyncValue<UserProfile?>>(
+        userProfileProvider, (_, next) => _maybeAskName(next.valueOrNull));
 
     return Scaffold(
       body: Container(
@@ -104,7 +142,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           child: Column(
             children: [
               _TopBar(
-                greeting: _greeting(user),
+                greeting: _greeting(user, nombre),
                 nivel: gam.nivel,
                 lessonCount: total,
                 onLogout: () => FirebaseAuth.instance.signOut(),
@@ -152,6 +190,86 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
         ),
       ),
+    );
+  }
+}
+
+// ── Diálogo "¿Cómo te llamas?" ──────────────────────────────────────────────
+
+class _NameDialog extends StatefulWidget {
+  final String uid;
+  const _NameDialog({required this.uid});
+
+  @override
+  State<_NameDialog> createState() => _NameDialogState();
+}
+
+class _NameDialogState extends State<_NameDialog> {
+  final _ctrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  void _guardar() {
+    final nombre = _ctrl.text.trim();
+    if (nombre.isEmpty) return;
+    AccountService.saveName(widget.uid, nombre);
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(
+            color: AppColors.primary.withValues(alpha: 0.45), width: 1.5),
+      ),
+      title: Text(
+        '¿Cómo te llamas?',
+        style: GoogleFonts.outfit(
+            color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900),
+      ),
+      content: TextField(
+        controller: _ctrl,
+        autofocus: true,
+        keyboardType: TextInputType.name,
+        textCapitalization: TextCapitalization.words,
+        style: const TextStyle(color: Colors.white),
+        onSubmitted: (_) => _guardar(),
+        decoration: InputDecoration(
+          hintText: 'Tu nombre',
+          hintStyle: const TextStyle(color: Colors.white38),
+          filled: true,
+          fillColor: Colors.white.withValues(alpha: 0.07),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Ahora no',
+              style: GoogleFonts.outfit(color: Colors.white38)),
+        ),
+        ElevatedButton(
+          onPressed: _guardar,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.buttonCyan,
+            foregroundColor: AppColors.buttonCyanText,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
+          ),
+          child: Text('Guardar',
+              style: GoogleFonts.outfit(fontWeight: FontWeight.w800)),
+        ),
+      ],
     );
   }
 }
@@ -208,7 +326,7 @@ class _TopBar extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   lessonCount == 0
-                      ? 'Empieza tu primera lección hoy'
+                      ? 'Hoy vas a aprender tus primeras frases'
                       : '$lessonCount lecciones dominadas 🔥',
                   style: GoogleFonts.outfit(
                     color: AppColors.textSecondary.withValues(alpha: 0.55),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../core/app_colors.dart';
 import '../core/app_theme.dart';
 import '../models/section.dart';
@@ -9,7 +8,9 @@ import '../models/lesson.dart';
 import '../providers/auth_provider.dart';
 import '../providers/progress_provider.dart';
 import '../widgets/lesson_card.dart';
+import '../services/account_service.dart';
 import 'exercise_screen.dart';
+import 'guest_wall_screen.dart';
 
 class SectionScreen extends ConsumerStatefulWidget {
   final AppSection section;
@@ -39,13 +40,20 @@ class _SectionScreenState extends ConsumerState<SectionScreen>
   }
 
   void _onLessonTap(BuildContext context, Lesson lesson, Set<int> completed) {
+    // Invitado: puede repetir las lecciones que ya completó, pero tras su
+    // primera lección (en cualquier zona) tiene que crear su cuenta para
+    // abrir otra. El muro vincula la cuenta anónima y conserva el progreso.
+    final user = ref.read(currentUserProvider);
+    final isGuest = user == null || AccountService.isGuest;
+    if (isGuest &&
+        !completed.contains(lesson.id) &&
+        (lesson.isPremiumLocked || ref.read(progressProvider).total >= 1)) {
+      showGuestWall(context);
+      return;
+    }
+
     if (lesson.isPremiumLocked) {
-      final user = ref.read(currentUserProvider);
-      if (user == null || user.isAnonymous) {
-        _showCreateAccountModal(context);
-      } else {
-        _showPremiumDialog(context, lesson);
-      }
+      _showPremiumDialog(context, lesson);
       return;
     }
 
@@ -69,121 +77,6 @@ class _SectionScreenState extends ConsumerState<SectionScreen>
         builder: (_) => ExerciseScreen(
           lesson: lesson,
           sectionId: widget.section.id,
-        ),
-      ),
-    );
-  }
-
-  void _showCreateAccountModal(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: BorderSide(
-              color: AppColors.primary.withValues(alpha: 0.45), width: 1.5),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('🔓', style: TextStyle(fontSize: 52)),
-            const SizedBox(height: 14),
-            Text(
-              '¡CREA TU CUENTA!',
-              style: GoogleFonts.outfit(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Regístrate gratis para guardar tu progreso y desbloquear más lecciones.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(color: Colors.white60, fontSize: 13),
-            ),
-            const SizedBox(height: 6),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.2)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.check_circle_outline,
-                      color: AppColors.primary, size: 15),
-                  const SizedBox(width: 6),
-                  Flexible(
-                    child: Text(
-                      'Tu progreso actual se conservará',
-                      style: GoogleFonts.outfit(
-                          color: AppColors.primary, fontSize: 11),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 22),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.buttonCyan,
-                  foregroundColor: AppColors.buttonCyanText,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
-                  elevation: 6,
-                  shadowColor: AppColors.buttonCyan.withValues(alpha: 0.4),
-                ),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  await FirebaseAuth.instance.signOut();
-                },
-                child: Text(
-                  'CREAR CUENTA GRATIS',
-                  style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w900, fontSize: 15),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              height: 46,
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white70,
-                  side: const BorderSide(color: Colors.white24),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
-                ),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  await FirebaseAuth.instance.signOut();
-                },
-                child: Text(
-                  'YA TENGO CUENTA · INICIAR SESIÓN',
-                  style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w700, fontSize: 13),
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Seguir explorando sin cuenta',
-                style: GoogleFonts.outfit(color: Colors.white30, fontSize: 12),
-              ),
-            ),
-          ],
         ),
       ),
     );
