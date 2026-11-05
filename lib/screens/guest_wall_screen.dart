@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/app_theme.dart';
+import '../services/account_service.dart';
+import '../widgets/google_sign_in_section.dart';
 import '../widgets/register_form.dart';
 
 /// Muestra el muro de registro para invitados. Devuelve true si el invitado
@@ -24,7 +25,7 @@ class GuestWallScreen extends StatelessWidget {
   // pantallas abiertas para que el login no quede debajo de ellas.
   Future<void> _goToLogin(BuildContext context) async {
     Navigator.of(context).popUntil((route) => route.isFirst);
-    await FirebaseAuth.instance.signOut();
+    await AccountService.signOut();
   }
 
   @override
@@ -64,6 +65,11 @@ class GuestWallScreen extends StatelessWidget {
                       color: Colors.white60, fontSize: 14, height: 1.4),
                 ),
                 const SizedBox(height: 28),
+                GoogleSignInSection(
+                  onSuccess: () => Navigator.pop(context, true),
+                  onSwitchedAccount: () => Navigator.of(context)
+                      .popUntil((route) => route.isFirst),
+                ),
                 RegisterForm(
                   linkGuest: true,
                   onSuccess: () => Navigator.pop(context, true),

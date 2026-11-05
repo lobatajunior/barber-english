@@ -145,7 +145,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 greeting: _greeting(user, nombre),
                 nivel: gam.nivel,
                 lessonCount: total,
-                onLogout: () => FirebaseAuth.instance.signOut(),
+                onLogout: AccountService.signOut,
               ),
               _XpBar(gam: gam),
               Expanded(

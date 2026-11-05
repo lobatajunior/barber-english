@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../core/app_colors.dart';
 import '../core/app_theme.dart';
 import '../services/account_service.dart';
+import '../widgets/google_sign_in_section.dart';
 import '../widgets/register_form.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -119,6 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 32),
 
+                const GoogleSignInSection(),
                 if (_isLogin) ..._buildLoginForm() else const RegisterForm(),
                 const SizedBox(height: 14),
 
