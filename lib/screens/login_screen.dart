@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../core/app_colors.dart';
 import '../core/app_theme.dart';
 import '../services/account_service.dart';
+import '../widgets/forgot_password_dialog.dart';
 import '../widgets/google_sign_in_section.dart';
 import '../widgets/register_form.dart';
 
@@ -186,6 +187,19 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Colors.white38,
             ),
             onPressed: () => setState(() => _showPass = !_showPass),
+          ),
+        ),
+
+        // — ¿Olvidaste tu contraseña? —
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            onPressed: () =>
+                showForgotPasswordDialog(context, _emailCtrl.text.trim()),
+            child: Text(
+              '¿Olvidaste tu contraseña?',
+              style: GoogleFonts.outfit(color: Colors.white60, fontSize: 13),
+            ),
           ),
         ),
 
