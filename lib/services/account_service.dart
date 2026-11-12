@@ -201,7 +201,8 @@ class AccountService {
     } on FirebaseAuthException catch (e) {
       if (isEmailInUse(e)) _pendingGoogleCredential = e.credential;
       return _isCancel(e) ? null : e;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('completeGoogleRedirect: error ignorado: $e');
       return null;
     } finally {
       registering = false;

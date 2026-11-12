@@ -45,7 +45,7 @@ class DefaultFirebaseOptions {
     appId: '1:625038868457:web:b8365e77cf504e48ff1578',
     messagingSenderId: '625038868457',
     projectId: 'barber-english',
-    authDomain: 'barber-english.firebaseapp.com',
+    authDomain: 'barber-english.web.app',
     storageBucket: 'barber-english.firebasestorage.app',
   );
 
