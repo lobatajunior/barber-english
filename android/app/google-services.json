@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "625038868457-13horitjin4k3b5tm2iup80o1qifkj0u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.barberenglish.app",
+            "certificate_hash": "ae5527b39de4291abaa43ca73c96f3f99ecb709a"
+          }
+        },
+        {
+          "client_id": "625038868457-l96p1i7ucp4h9hig8a3qb818rorb6tl7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.barberenglish.app",
+            "certificate_hash": "8ec045157f1a3a56bc235893bb78fbe0cc59f022"
+          }
+        },
+        {
           "client_id": "625038868457-aqms8o6vb66l7gacmafeobmb9efvtkh2.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -27,7 +43,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "625038868457-aqms8o6vb66l7gacmafeobmb9efvtkh2.apps.googleusercontent.com",
+              "client_id": "625038868457-7at4jf6ui2dvs7sqib0saqrm9e1vqv72.apps.googleusercontent.com",
               "client_type": 3
             },
             {
@@ -50,6 +66,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "625038868457-khbalho94675pkeepro7nde6safc0um3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.barber_english",
+            "certificate_hash": "8ec045157f1a3a56bc235893bb78fbe0cc59f022"
+          }
+        },
+        {
+          "client_id": "625038868457-t3j83ohm5sjbt611v2rkal4i71sss2v3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.barber_english",
+            "certificate_hash": "ae5527b39de4291abaa43ca73c96f3f99ecb709a"
+          }
+        },
+        {
           "client_id": "625038868457-aqms8o6vb66l7gacmafeobmb9efvtkh2.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -63,7 +95,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "625038868457-aqms8o6vb66l7gacmafeobmb9efvtkh2.apps.googleusercontent.com",
+              "client_id": "625038868457-7at4jf6ui2dvs7sqib0saqrm9e1vqv72.apps.googleusercontent.com",
               "client_type": 3
             },
             {

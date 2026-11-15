@@ -52,3 +52,6 @@ android/key.properties
 *.jks
 *.keystore
 .firebase/
+
+# Backup of Firebase config
+android/app/google-services.json.bak
