@@ -596,7 +596,7 @@ class _FeedbackPanel extends StatelessWidget {
           child: Column(
             children: [
               // Score circular
-              _ScoreCircle(score: score),
+              ScoreCircle(score: score),
               const SizedBox(height: 14),
 
               // Emoji + mensaje
@@ -712,32 +712,52 @@ class _FeedbackPanel extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // Círculo de score
 // ─────────────────────────────────────────────────────────────────────────────
-class _ScoreCircle extends StatelessWidget {
+// El anillo ocupa todo el cuadro (antes el Stack le daba restricciones sueltas
+// y se quedaba en 36 px, más estrecho que "100%"). El texto vive en el cuadrado
+// inscrito del hueco interior y FittedBox lo encoge si no cabe, así que nunca
+// se sale del anillo, tenga uno, dos o tres dígitos.
+const double kScoreCircleSize = 84;
+const double _kScoreStroke = 6;
+// Lado del cuadrado inscrito en el círculo interior: (84 - 2·6) / √2 ≈ 50.9
+const double kScoreTextBox = 50;
+
+class ScoreCircle extends StatelessWidget {
   final double score;
-  const _ScoreCircle({required this.score});
+  const ScoreCircle({super.key, required this.score});
 
   Color get _color => score >= kScorePasa ? _kGreen : _kRed;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 72,
-      height: 72,
+      width: kScoreCircleSize,
+      height: kScoreCircleSize,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          CircularProgressIndicator(
-            value: score / 100,
-            strokeWidth: 6,
-            backgroundColor: Colors.white12,
-            valueColor: AlwaysStoppedAnimation<Color>(_color),
+          Positioned.fill(
+            child: CircularProgressIndicator(
+              value: score / 100,
+              strokeWidth: _kScoreStroke,
+              backgroundColor: Colors.white12,
+              valueColor: AlwaysStoppedAnimation<Color>(_color),
+            ),
           ),
-          Text(
-            '${score.round()}%',
-            style: GoogleFonts.outfit(
-              color: _color,
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
+          SizedBox(
+            width: kScoreTextBox,
+            height: kScoreTextBox,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                '${score.round()}%',
+                maxLines: 1,
+                softWrap: false,
+                style: GoogleFonts.outfit(
+                  color: _color,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ),
           ),
         ],

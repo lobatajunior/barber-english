@@ -14,6 +14,14 @@ import '../services/account_service.dart';
 import 'section_screen.dart';
 import 'street_english_menu_screen.dart';
 
+/// Pone en mayúscula la inicial de cada palabra, solo para mostrarla
+/// ("junior lobata" → "Junior Lobata"). El resto de cada palabra se deja
+/// tal cual y no cambia el nombre guardado en Firestore.
+String capitalizeWords(String text) => text
+    .split(' ')
+    .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
+    .join(' ');
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -100,7 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         : (user == null || user.isAnonymous
             ? 'Barber'
             : (user.email ?? '').split('@').first);
-    return '$saludo, $name';
+    return '$saludo, ${capitalizeWords(name)}';
   }
 
   // Cuenta normal sin nombre en users/{uid}: se pregunta una vez por sesión.
