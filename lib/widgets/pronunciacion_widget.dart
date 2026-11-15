@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/progress_provider.dart';
+import '../services/pronunciation_text.dart';
 
 // ── Umbrales de puntaje ──────────────────────────────────────────────────────
 // ≥ 90 perfecta (calculateScore solo pasa de 89 si coinciden TODAS las
@@ -24,6 +25,9 @@ class PronunciacionWidget extends ConsumerStatefulWidget {
   final VoidCallback onContinuar;
   final VoidCallback? onPerfecto; // called when pronunciation is perfect (≥ 90)
   final VoidCallback? onFallo; // called when a result comes back under 60
+  // Diferencias del último intento puntuado (null si no hay), justo antes de
+  // onFallo/onResuelto: la pantalla las muestra bajo la respuesta revelada.
+  final ValueChanged<PronunciationFeedback?>? onCorreccion;
 
   const PronunciacionWidget({
     super.key,
@@ -32,6 +36,7 @@ class PronunciacionWidget extends ConsumerStatefulWidget {
     required this.onContinuar,
     this.onPerfecto,
     this.onFallo,
+    this.onCorreccion,
   });
 
   @override
@@ -48,7 +53,10 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   bool _noSpeech = false; // último intento sin audio útil: sin puntaje
   double? _score;
   String _spokenText = '';
-  (String, String)? _casi; // (dicha, esperada) si solo falló una palabra
+  // Corrección palabra por palabra del último intento puntuado.
+  PronunciationFeedback? _feedback;
+  // Lista vertical: diferencias de cada unidad (null = aún sin resultado).
+  List<List<WordDiff>>? _unitDiffs;
   bool _resolved = false;
   StreamSubscription<void>? _completeSub;
   Timer? _audioTimeoutTimer;
@@ -148,7 +156,8 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
       _noSpeech = false;
       _score = null;
       _spokenText = '';
-      _casi = null;
+      _feedback = null;
+      _unitDiffs = null;
     });
     _micPulseCtrl.repeat();
 
@@ -167,6 +176,11 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
           return;
         }
         final score = speech.calculateScore(words, _target);
+        final diffs = speech.wordDiffs(words, _target);
+        final feedback = PronunciationFeedback.from(score, diffs,
+            perfecto: kScorePerfecto, pasa: kScorePasa);
+        final units = _wordList;
+        debugPrint('Diffs: $diffs');
         debugPrint('STT words: $words');
         debugPrint('Target: $_target');
         debugPrint('Score: $score');
@@ -176,10 +190,13 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
         setState(() {
           _spokenText = words;
           _score = score;
-          _casi = score >= kScorePasa && score < kScorePerfecto
-              ? speech.nearMiss(words, _target)
-              : null;
+          _feedback = feedback;
+          _unitDiffs = units == null
+              ? null
+              : diffsByUnit(
+                  diffs, unitWordCounts([for (final (w, _) in units) w]));
           _isListening = false;
+          widget.onCorreccion?.call(feedback);
           if (score >= kScorePasa && !_resolved) {
             _resolved = true;
             widget.onResuelto();
@@ -211,7 +228,8 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   void _retry() => setState(() {
         _score = null;
         _spokenText = '';
-        _casi = null;
+        _feedback = null;
+        _unitDiffs = null;
       });
 
   void _retryMic() {
@@ -241,34 +259,43 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
             ),
             child: Column(
               children: [
-                for (final (word, fon) in wordList)
+                for (final (i, (word, fon)) in wordList.indexed)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Row(
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: Text(
-                            word,
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                word,
+                                textAlign: TextAlign.right,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            '[ $fon ]',
-                            style: GoogleFonts.outfit(
-                              color: _kGreen,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.5,
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                '[ $fon ]',
+                                style: GoogleFonts.outfit(
+                                  color: _kGreen,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
+                        // Resultado de esta unidad tras puntuar
+                        if (_score != null &&
+                            _unitDiffs != null &&
+                            i < _unitDiffs!.length)
+                          _UnitResult(diffs: _unitDiffs![i]),
                       ],
                     ),
                   ),
@@ -442,7 +469,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
             _FeedbackPanel(
               score: _score ?? 0,
               spokenText: _spokenText,
-              casi: _casi,
+              feedback: _feedback,
               onRetry: _retry,
               onContinuar: _continuar,
             ),
@@ -544,14 +571,14 @@ class _MicButton extends StatelessWidget {
 class _FeedbackPanel extends StatelessWidget {
   final double score;
   final String spokenText;
-  final (String, String)? casi;
+  final PronunciationFeedback? feedback;
   final VoidCallback onRetry;
   final VoidCallback onContinuar;
 
   const _FeedbackPanel({
     required this.score,
     required this.spokenText,
-    this.casi,
+    this.feedback,
     required this.onRetry,
     required this.onContinuar,
   });
@@ -599,9 +626,12 @@ class _FeedbackPanel extends StatelessWidget {
               ScoreCircle(score: score),
               const SizedBox(height: 14),
 
-              // Emoji + mensaje
+              // Emoji + mensaje (bajo 60 con diferencias, el propio
+              // "Inténtalo de nuevo:" de la corrección hace de título)
               Text(
-                '$_emoji  $_message',
+                feedback != null && !_isSuccess
+                    ? '$_emoji  ${feedback!.prefix.trim()}'
+                    : '$_emoji  $_message',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.outfit(
                   color: _textColor,
@@ -610,18 +640,11 @@ class _FeedbackPanel extends StatelessWidget {
                 ),
               ),
 
-              // Solo falló una palabra: se la señalamos con tono amable
-              if (casi != null) ...[
+              // Corrección palabra por palabra ("escuché", no "dijiste":
+              // Whisper también se equivoca).
+              if (feedback != null) ...[
                 const SizedBox(height: 6),
-                Text(
-                  "Casi: dijiste '${casi!.$1}', era '${casi!.$2}'",
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.outfit(
-                    color: _kYellow,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                CorreccionLista(feedback: feedback!, conPrefijo: _isSuccess),
               ],
 
               // Lo que dijo el usuario
@@ -705,6 +728,81 @@ class _FeedbackPanel extends StatelessWidget {
             child: IgnorePointer(child: _ConfettiOverlay()),
           ),
       ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Corrección palabra por palabra (panel de feedback y respuesta revelada)
+// ─────────────────────────────────────────────────────────────────────────────
+class CorreccionLista extends StatelessWidget {
+  final PronunciationFeedback feedback;
+
+  /// Muestra "Casi:" / "Inténtalo de nuevo:" como primera línea.
+  final bool conPrefijo;
+
+  const CorreccionLista({
+    super.key,
+    required this.feedback,
+    this.conPrefijo = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final style = GoogleFonts.outfit(
+      color: _kYellow,
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+    );
+    return Column(
+      children: [
+        if (conPrefijo)
+          Text(feedback.prefix.trim(),
+              textAlign: TextAlign.center,
+              style: style.copyWith(fontWeight: FontWeight.w800)),
+        for (final item in feedback.items)
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text('• $item', textAlign: TextAlign.center, style: style),
+          ),
+        if (feedback.slowDown)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              '🔊 $kMensajeMasDespacio',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.outfit(
+                color: Colors.white70,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+// Resultado de una unidad de la lista vertical: ✓ si se escuchó entera, o sus
+// diferencias (máx. 2) si no.
+class _UnitResult extends StatelessWidget {
+  final List<WordDiff> diffs;
+  const _UnitResult({required this.diffs});
+
+  @override
+  Widget build(BuildContext context) {
+    final ok = diffs.isEmpty;
+    return Padding(
+      padding: const EdgeInsets.only(top: 2),
+      child: Text(
+        ok ? '✓' : '✗ ${diffs.take(2).map((d) => d.texto).join(' · ')}',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.outfit(
+          color: ok ? _kGreen : _kYellow,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
     );
   }
 }

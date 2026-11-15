@@ -8,6 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'tts_web.dart' if (dart.library.io) 'tts_stub.dart';
 import 'api_keys.dart';
+import 'pronunciation_text.dart' show scorePronunciation, WordDiff;
+import 'pronunciation_text.dart' as pt show wordDiffs;
 
 class SpeechService {
   final AudioPlayer _player = AudioPlayer();
@@ -235,137 +237,14 @@ class SpeechService {
     _listening = false;
   }
 
-  /// Returns accuracy 0–100, estricto palabra por palabra: solo cuenta una
-  /// palabra si coincide EXACTA (sin tolerar terminaciones: want ≠ wanted,
-  /// side ≠ sides), en el mismo orden que la frase objetivo. Ignora
-  /// mayúsculas, puntuación y apóstrofes. 100 solo si coinciden todas; si
-  /// falta alguna, máximo 89.
-  double calculateScore(String spoken, String target) {
-    final targetWords =
-        _normalize(target).split(' ').where((w) => w.isNotEmpty).toList();
-    final spokenWords = _joinSplitWords(
-        _normalize(spoken).split(' ').where((w) => w.isNotEmpty).toList(),
-        targetWords);
-    if (targetWords.isEmpty) return 0;
-    final matches = _orderedExactMatches(spokenWords, targetWords).length;
-    final score = matches / targetWords.length * 100;
-    if (matches < targetWords.length) return score.clamp(0.0, 89.0);
-    return 100;
-  }
+  /// Puntaje 0–100 estricto palabra por palabra (ver [scorePronunciation]
+  /// en pronunciation_text.dart, donde vive la normalización compartida).
+  double calculateScore(String spoken, String target) =>
+      scorePronunciation(spoken, target);
 
-  /// Si lo dicho difiere de la frase objetivo en UNA sola palabra sustituida
-  /// (p. ej. "want" en lugar de "wanted"), devuelve (dicha, esperada) para el
-  /// mensaje "Casi". Con varias palabras distintas, una omitida o algo
-  /// totalmente diferente devuelve null.
-  (String said, String expected)? nearMiss(String spoken, String target) {
-    final targetWords =
-        _normalize(target).split(' ').where((w) => w.isNotEmpty).toList();
-    final spokenWords = _joinSplitWords(
-        _normalize(spoken).split(' ').where((w) => w.isNotEmpty).toList(),
-        targetWords);
-    final pairs = _orderedExactMatches(spokenWords, targetWords);
-    if (targetWords.length < 2 || pairs.length != targetWords.length - 1) {
-      return null;
-    }
-    final matchedTarget = {for (final (t, _) in pairs) t};
-    final missing =
-        List.generate(targetWords.length, (i) => i).firstWhere(
-            (i) => !matchedTarget.contains(i));
-    // Hueco en lo dicho entre las palabras acertadas vecinas a la que falta.
-    var lower = -1;
-    var upper = spokenWords.length;
-    for (final (t, s) in pairs) {
-      if (t == missing - 1) lower = s;
-      if (t == missing + 1) upper = s;
-    }
-    final gap = spokenWords.sublist(lower + 1, upper);
-    if (gap.length != 1) return null;
-    return (gap.single, targetWords[missing]);
-  }
-
-  /// Une dos palabras dichas seguidas cuando juntas forman EXACTAMENTE una
-  /// palabra del objetivo ("side burns" → "sideburns"), porque Whisper a
-  /// veces parte palabras compuestas. No relaja nada más.
-  List<String> _joinSplitWords(List<String> spoken, List<String> target) {
-    final targetSet = target.toSet();
-    final out = <String>[];
-    for (int i = 0; i < spoken.length; i++) {
-      if (i + 1 < spoken.length &&
-          !targetSet.contains(spoken[i]) &&
-          targetSet.contains(spoken[i] + spoken[i + 1])) {
-        out.add(spoken[i] + spoken[i + 1]);
-        i++;
-      } else {
-        out.add(spoken[i]);
-      }
-    }
-    return out;
-  }
-
-  /// Parejas (índice objetivo, índice dicho) de palabras que coinciden exactas
-  /// y en orden (subsecuencia común más larga): una palabra dicha cuenta una
-  /// sola vez, y palabras extra dichas por el alumno no restan.
-  List<(int, int)> _orderedExactMatches(
-      List<String> spoken, List<String> target) {
-    final t = target.length;
-    final s = spoken.length;
-    final lcs = List.generate(t + 1, (_) => List.filled(s + 1, 0));
-    for (int i = t - 1; i >= 0; i--) {
-      for (int j = s - 1; j >= 0; j--) {
-        lcs[i][j] = target[i] == spoken[j]
-            ? lcs[i + 1][j + 1] + 1
-            : (lcs[i + 1][j] > lcs[i][j + 1] ? lcs[i + 1][j] : lcs[i][j + 1]);
-      }
-    }
-    final pairs = <(int, int)>[];
-    var i = 0;
-    var j = 0;
-    while (i < t && j < s) {
-      if (target[i] == spoken[j]) {
-        pairs.add((i, j));
-        i++;
-        j++;
-      } else if (lcs[i + 1][j] >= lcs[i][j + 1]) {
-        i++;
-      } else {
-        j++;
-      }
-    }
-    return pairs;
-  }
-
-  // Contracciones que se expanden en lo dicho y en el objetivo, para que
-  // "What's your name?" puntúe igual que "What is your name?".
-  static const _contractions = {
-    "what's": 'what is',
-    "that's": 'that is',
-    "it's": 'it is',
-    "he's": 'he is',
-    "she's": 'she is',
-    "you're": 'you are',
-    "we're": 'we are',
-    "they're": 'they are',
-    "i'm": 'i am',
-    "don't": 'do not',
-    "doesn't": 'does not',
-    "didn't": 'did not',
-    "can't": 'can not',
-    "won't": 'will not',
-    "let's": 'let us',
-    "i'll": 'i will',
-    "i've": 'i have',
-  };
-
-  static final _contractionRe = RegExp(
-      "\\b(${_contractions.keys.map(RegExp.escape).join('|')})(?![\\w'])");
-
-  String _normalize(String text) => text
-      .toLowerCase()
-      .replaceAll(RegExp('[‘’ʼ`]'), "'")
-      .replaceAllMapped(_contractionRe, (m) => _contractions[m[1]]!)
-      .replaceAll(RegExp(r'[^\w\s]'), '')
-      .replaceAll(RegExp(r'\s+'), ' ')
-      .trim();
+  /// Diferencias palabra por palabra entre lo esperado y lo escuchado.
+  List<WordDiff> wordDiffs(String spoken, String target) =>
+      pt.wordDiffs(spoken, target);
 
   void dispose() {
     _listenTimer?.cancel();

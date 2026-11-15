@@ -9,6 +9,7 @@ import '../models/lesson.dart';
 import '../providers/progress_provider.dart';
 import '../providers/gamification_provider.dart';
 import '../services/account_service.dart';
+import '../services/pronunciation_text.dart' show PronunciationFeedback;
 import 'guest_wall_screen.dart';
 import '../widgets/opciones_widget.dart';
 import '../widgets/pronunciacion_widget.dart';
@@ -86,6 +87,9 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
   String _mensaje = '';
   int _intentosFallidos = 0;
   bool _revelando = false; // mostrando la respuesta tras agotar intentos
+  // Diferencias del último intento de pronunciación, para mostrarlas bajo la
+  // respuesta revelada.
+  PronunciationFeedback? _correccion;
   Timer? _revealTimer;
   int _xpFlySeq = 0;
   bool _xpFlyVisible = false;
@@ -182,6 +186,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
       _mensaje = '';
       _intentosFallidos = 0;
       _revelando = false;
+      _correccion = null;
     });
     if (_index < _exercises.length - 1) {
       setState(() {
@@ -420,6 +425,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
           onContinuar: _advance,
           onPerfecto: _onPerfecto,
           onFallo: _onFallo,
+          onCorreccion: (f) => _correccion = f,
         );
       case 'parejas':
         return ParejasWidget(
@@ -630,7 +636,12 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                         ),
                       ),
                       if (_revelando)
-                        _RespuestaReveladaBanner(respuesta: _respuestaCorrecta),
+                        _RespuestaReveladaBanner(
+                          respuesta: _respuestaCorrecta,
+                          correccion: _current['tipo'] == 'pronunciacion'
+                              ? _correccion
+                              : null,
+                        ),
                     ],
                   ),
                 ),
@@ -791,7 +802,8 @@ class _FloatingXpState extends State<_FloatingXp>
 // ─────────────────────────────────────────────────────────────────────────────
 class _RespuestaReveladaBanner extends StatelessWidget {
   final String respuesta;
-  const _RespuestaReveladaBanner({required this.respuesta});
+  final PronunciationFeedback? correccion;
+  const _RespuestaReveladaBanner({required this.respuesta, this.correccion});
 
   @override
   Widget build(BuildContext context) {
@@ -825,6 +837,11 @@ class _RespuestaReveladaBanner extends StatelessWidget {
                 fontWeight: FontWeight.w800,
               ),
             ),
+            // Pronunciación: qué se escuchó distinto en el último intento.
+            if (correccion != null) ...[
+              const SizedBox(height: 10),
+              CorreccionLista(feedback: correccion!, conPrefijo: false),
+            ],
           ],
         ),
       ),
