@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/app_colors.dart';
 import '../services/account_service.dart';
+import 'google_sign_in_button.dart';
 
 /// Botón "Continuar con Google" con su separador "o" debajo. Si el usuario es
 /// invitado, vincula Google a su cuenta en vez de crear otra.
@@ -67,46 +68,7 @@ class _GoogleSignInSectionState extends State<GoogleSignInSection> {
     if (!AccountService.googleSupported) return const SizedBox.shrink();
     return Column(
       children: [
-        SizedBox(
-          width: double.infinity,
-          height: 55,
-          child: ElevatedButton(
-            onPressed: _isLoading ? null : _continue,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black87,
-              disabledBackgroundColor: Colors.white70,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-            ),
-            child: _isLoading
-                ? const SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                        color: Colors.black54, strokeWidth: 2.5),
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'G',
-                        style: GoogleFonts.outfit(
-                          color: const Color(0xFF4285F4),
-                          fontSize: 22,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Continuar con Google',
-                        style: GoogleFonts.outfit(
-                            fontSize: 16, fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  ),
-          ),
-        ),
+        GoogleSignInButton(onPressed: _continue, isLoading: _isLoading),
 
         // — Error —
         if (_error.isNotEmpty) ...[

@@ -22,6 +22,7 @@ dependencies:
   path_provider: ^2.1.6
   url_launcher: ^6.3.3
   google_sign_in: ^7.2.0
+  flutter_svg: ^2.4.0
 
 dev_dependencies:
   flutter_test:
@@ -39,6 +40,7 @@ flutter:
     - assets/pose4.png
     - assets/pose5.png
     - assets/pose6.png
+    - assets/images/google_g.svg
 
 flutter_launcher_icons:
   android: true
