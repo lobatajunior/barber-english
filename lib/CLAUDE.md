@@ -169,7 +169,7 @@ archivo, el título y las palabras nuevas.
 | L10 | 2 | Conv.2 corte clásico | 6: Would you like to wait?, I do not have an appointment, Scissors only, A little longer, Combed up, Messy | lesson_10_messy_style.dart | Messy Style |
 | L11 | 3 | Conv.1 corte degradado | 5: What is your name?, My name is, You are early, Black coffee, Come to the chair | lesson_11_your_name.dart | Your Name |
 | L12 | 3 | Conv.3 corte de niño | 5: Look down, Look to the side, Head up, Combed to the side, Mom | lesson_12_look_down.dart | Look Down |
-| L13 | 3 | Conv.3 corte de niño | 5 | — | — |
+| L13 | 3 | Conv.3 corte de niño | 5: Cartoons on the phone, Do you like your haircut?, Like the photo, Great job, Little boy | lesson_13_cartoons.dart | Cartoons |
 | L14 | 3 | Conv.3 corte de niño | 5 | — | — |
 | L15 | 3 | Conv.3 corte de niño | 5 | — | — |
 | L16 | — | Conv.1+2+3 | 0 (repaso general) | — | — |
@@ -179,9 +179,12 @@ Total A1: 16 lecciones × 20 ejercicios = 320 ejercicios · 81 palabras nuevas
 
 ### REPASOS PENDIENTES
 Unidades que no se repasaron en sus 3 lecciones siguientes (REGLA 4):
-- L13 debe repasar: Sideburns, Combed back, Product, For my son
-- L14 debe repasar: Would you like to wait?, I do not have an appointment,
-  A little longer, Messy
+- ✅ L13 repasó: Sideburns, Combed back, Product, For my son (EJ 09, 16, 17)
+- L14 debe repasar:
+  - de L10: Would you like to wait?, I do not have an appointment,
+    A little longer, Messy
+  - de L11: What is your name?, My name is, You are early, Black coffee,
+    Come to the chair
 - Pendientes también: Minutes y Right now (para la lección de números)
 
 ---
