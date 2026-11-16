@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../core/screen_size.dart';
 import '../providers/progress_provider.dart';
 
 const _kGreen = Color(0xFF00E676);
@@ -85,6 +86,7 @@ class _EscucharWidgetState extends ConsumerState<EscucharWidget>
 
   @override
   Widget build(BuildContext context) {
+    final short = isShortScreen(context);
     return Column(
       children: [
         // ── Botón grande de reproducción ────────────────────────────────────
@@ -97,8 +99,8 @@ class _EscucharWidgetState extends ConsumerState<EscucharWidget>
               child: child,
             ),
             child: Container(
-              width: 110,
-              height: 110,
+              width: short ? 84 : 110,
+              height: short ? 84 : 110,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: _playing
@@ -119,7 +121,8 @@ class _EscucharWidgetState extends ConsumerState<EscucharWidget>
                       ]
                     : [],
               ),
-              child: Icon(Icons.volume_up_rounded, color: _kGreen, size: 46),
+              child: Icon(Icons.volume_up_rounded,
+                  color: _kGreen, size: short ? 36 : 46),
             ),
           ),
         ),
@@ -154,11 +157,11 @@ class _EscucharWidgetState extends ConsumerState<EscucharWidget>
           child: _showWord
               ? Padding(
                   key: const ValueKey('word'),
-                  padding: const EdgeInsets.only(top: 16),
+                  padding: EdgeInsets.only(top: short ? 10 : 16),
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 20),
+                    padding: EdgeInsets.symmetric(
+                        vertical: short ? 14 : 20, horizontal: 20),
                     decoration: BoxDecoration(
                       color: _kCard,
                       borderRadius: BorderRadius.circular(20),
@@ -179,7 +182,7 @@ class _EscucharWidgetState extends ConsumerState<EscucharWidget>
                           textAlign: TextAlign.center,
                           style: GoogleFonts.outfit(
                             color: Colors.white,
-                            fontSize: 32,
+                            fontSize: short ? 26 : 32,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.5,
                           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/app_colors.dart';
+import '../core/screen_size.dart';
 import '../providers/progress_provider.dart';
 
 class DialogoWidget extends ConsumerStatefulWidget {
@@ -48,6 +49,7 @@ class _DialogoWidgetState extends ConsumerState<DialogoWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final short = isShortScreen(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -66,7 +68,7 @@ class _DialogoWidgetState extends ConsumerState<DialogoWidget> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: short ? 8 : 12),
 
         // ── Opciones de respuesta ────────────────────────────────────────────
         ..._shuffled.map((opt) {
@@ -88,8 +90,8 @@ class _DialogoWidgetState extends ConsumerState<DialogoWidget> {
             onTap: _resolved ? null : () => _select(opt),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
-              margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              margin: EdgeInsets.only(bottom: short ? 8 : 10),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: short ? 10 : 14),
               decoration: BoxDecoration(
                 color: isSelected
                     ? borderColor.withValues(alpha: 0.12)

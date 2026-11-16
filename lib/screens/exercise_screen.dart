@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/app_colors.dart';
 import '../core/app_theme.dart';
+import '../core/screen_size.dart';
 import '../models/lesson.dart';
 import '../providers/progress_provider.dart';
 import '../providers/gamification_provider.dart';
@@ -478,6 +479,13 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
     }
   }
 
+  Widget _escena() => SceneCardWidget(
+        ejercicio: _current,
+        pose: _poseActual,
+        mensaje: _mensaje,
+        mensajeEsAcierto: _reaccion == _Reaccion.acierto,
+      );
+
   @override
   Widget build(BuildContext context) {
     if (_showCompletion) {
@@ -528,6 +536,17 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
     }
 
     final progress = (_index + 1) / _exercises.length;
+    // Pantallas bajas (< 600 px, p. ej. Instagram en 360x560): barra superior,
+    // escena y botones más compactos para que el ejercicio quepa sin bajar.
+    final short = isShortScreen(context);
+    final esPronunciacion = _current['tipo']?.toString() == 'pronunciacion';
+    final contador = Text(
+      '${_index + 1}/${_exercises.length}',
+      style: GoogleFonts.outfit(
+        color: Colors.white38,
+        fontSize: 12,
+      ),
+    );
 
     return Scaffold(
       body: Container(
@@ -539,7 +558,9 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
             children: [
               // — Progress bar + close —
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 6, 8, 0),
+                padding: short
+                    ? const EdgeInsets.fromLTRB(20, 0, 4, 0)
+                    : const EdgeInsets.fromLTRB(20, 6, 8, 0),
                 child: Row(
                   children: [
                     Expanded(
@@ -551,13 +572,19 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                           valueColor: const AlwaysStoppedAnimation<Color>(
                             AppColors.primary,
                           ),
-                          minHeight: 10,
+                          minHeight: short ? 7 : 10,
                         ),
                       ),
                     ),
+                    if (short) ...[
+                      const SizedBox(width: 10),
+                      contador,
+                    ],
                     const SizedBox(width: 8),
                     IconButton(
-                      visualDensity: VisualDensity.compact,
+                      visualDensity: short
+                          ? const VisualDensity(horizontal: -4, vertical: -4)
+                          : VisualDensity.compact,
                       icon: const Icon(
                         Icons.close,
                         color: Colors.white38,
@@ -570,6 +597,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
               ),
 
               // — Lección info —
+              if (!short)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Row(
@@ -589,17 +617,11 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                       ),
                     ),
                     const Spacer(),
-                    Text(
-                      '${_index + 1}/${_exercises.length}',
-                      style: GoogleFonts.outfit(
-                        color: Colors.white38,
-                        fontSize: 12,
-                      ),
-                    ),
+                    contador,
                   ],
                 ),
               ),
-              const SizedBox(height: 2),
+              if (!short) const SizedBox(height: 2),
 
               // — Instrucción —
               Padding(
@@ -609,24 +631,64 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
                     color: Colors.white60,
-                    fontSize: 14,
+                    fontSize: short ? 13 : 14,
                   ),
                 ),
               ),
 
               // — Contenido del ejercicio —
+              // Pronunciación lleva la escena como cabecera: su micrófono,
+              // resultado y Continuar quedan fijos abajo. El resto hace
+              // scroll en el medio (solo si no cabe) con COMPROBAR fijo abajo.
+              if (esPronunciacion)
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(20, short ? 4 : 8, 20, 4),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      layoutBuilder: (current, previous) => Stack(
+                        children: [
+                          ...previous,
+                          if (current != null) Positioned.fill(child: current),
+                        ],
+                      ),
+                      child: IgnorePointer(
+                        key: ValueKey('$_index-${_current['tipo']}'),
+                        ignoring: _revelando,
+                        child: PronunciacionWidget(
+                          ejercicio: _current,
+                          onResuelto: _onResolved,
+                          onContinuar: _advance,
+                          onPerfecto: _onPerfecto,
+                          onFallo: _onFallo,
+                          onCorreccion: (f) => _correccion = f,
+                          header: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _escena(),
+                              if (_revelando)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: _RespuestaReveladaBanner(
+                                    respuesta: _respuestaCorrecta,
+                                    correccion: _correccion,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              else
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                  padding: EdgeInsets.fromLTRB(20, short ? 4 : 8, 20, 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      SceneCardWidget(
-                        ejercicio: _current,
-                        pose: _poseActual,
-                        mensaje: _mensaje,
-                        mensajeEsAcierto: _reaccion == _Reaccion.acierto,
-                      ),
+                      _escena(),
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 250),
                         // Sin interacción mientras se muestra la respuesta.
@@ -650,7 +712,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
 
               // — Botones de acción —
               // Para pronunciacion los botones están dentro del widget.
-              if (_current['tipo']?.toString() != 'pronunciacion')
+              if (!esPronunciacion)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 4),
                   child: Column(
@@ -658,7 +720,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                     children: [
                       SizedBox(
                         width: double.infinity,
-                        height: 50,
+                        height: short ? 44 : 50,
                         child: ElevatedButton(
                           onPressed: _resolved ? _advance : null,
                           style: ElevatedButton.styleFrom(
@@ -692,7 +754,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                       TextButton(
                         onPressed: _advance,
                         style: TextButton.styleFrom(
-                          minimumSize: const Size(64, 36),
+                          minimumSize: Size(64, short ? 30 : 36),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
@@ -1329,9 +1391,10 @@ class SceneCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // En móviles bajos (p. ej. 360x640 con barras del navegador) la mascota
     // se reduce para que pregunta, opciones y botón quepan sin bajar.
-    final compact = MediaQuery.sizeOf(context).height < 720;
+    final compact = isCompactScreen(context);
+    final short = isShortScreen(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: short ? 8 : 12),
       child: Stack(
         children: [
           Container(
@@ -1344,11 +1407,12 @@ class SceneCardWidget extends StatelessWidget {
               ),
             ),
             child: Padding(
-              padding: EdgeInsets.all(compact ? 10 : 14),
+              padding: EdgeInsets.all(short ? 8 : (compact ? 10 : 14)),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _AvatarCircle(pose: pose, width: compact ? 44 : 64),
+                  _AvatarCircle(
+                      pose: pose, width: short ? 34 : (compact ? 44 : 64)),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(

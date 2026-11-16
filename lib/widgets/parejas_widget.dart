@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/app_colors.dart';
+import '../core/screen_size.dart';
 import '../providers/progress_provider.dart';
 
 class ParejasWidget extends ConsumerStatefulWidget {
@@ -122,6 +123,7 @@ class _WordCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final short = isShortScreen(context);
     final Color color = isMatched
         ? AppColors.success
         : isSelected
@@ -132,9 +134,10 @@ class _WordCard extends StatelessWidget {
       onTap: isMatched ? null : onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        margin: const EdgeInsets.symmetric(vertical: 5),
+        margin: EdgeInsets.symmetric(
+            vertical: short ? 3 : (isCompactScreen(context) ? 4 : 5)),
         width: 145,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        padding: EdgeInsets.symmetric(vertical: short ? 9 : 12, horizontal: 10),
         decoration: BoxDecoration(
           color: (isMatched || isSelected)
               ? color.withValues(alpha:0.12)

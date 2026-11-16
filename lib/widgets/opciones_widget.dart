@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/app_colors.dart';
+import '../core/screen_size.dart';
 import '../providers/progress_provider.dart';
 
 class OpcionesWidget extends ConsumerStatefulWidget {
@@ -49,6 +50,7 @@ class _OpcionesWidgetState extends ConsumerState<OpcionesWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final short = isShortScreen(context);
     final correcta = widget.ejercicio['respuesta_correcta'].toString();
     final traduccion = widget.ejercicio['traduccion_pregunta']?.toString() ?? '';
 
@@ -59,7 +61,7 @@ class _OpcionesWidgetState extends ConsumerState<OpcionesWidget> {
           textAlign: TextAlign.center,
           style: GoogleFonts.outfit(
             color: Colors.white,
-            fontSize: 21,
+            fontSize: short ? 18 : 21,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -84,10 +86,10 @@ class _OpcionesWidgetState extends ConsumerState<OpcionesWidget> {
               ),
             ),
           ),
-        const SizedBox(height: 16),
+        SizedBox(height: short ? 10 : 16),
         Wrap(
           spacing: 10,
-          runSpacing: 10,
+          runSpacing: short ? 8 : 10,
           alignment: WrapAlignment.center,
           children: _shuffled.map((opt) {
             final isCorrect =
@@ -108,8 +110,8 @@ class _OpcionesWidgetState extends ConsumerState<OpcionesWidget> {
               onTap: () => _select(opt),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 12),
+                padding: EdgeInsets.symmetric(
+                    horizontal: 20, vertical: short ? 9 : 12),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? borderColor.withValues(alpha:0.12)
@@ -121,7 +123,7 @@ class _OpcionesWidgetState extends ConsumerState<OpcionesWidget> {
                   opt,
                   style: GoogleFonts.outfit(
                     color: isSelected ? borderColor : Colors.white70,
-                    fontSize: 17,
+                    fontSize: short ? 16 : 17,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

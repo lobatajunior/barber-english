@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/app_colors.dart';
+import '../core/screen_size.dart';
 import '../providers/progress_provider.dart';
 
 class OrdenarWidget extends ConsumerStatefulWidget {
@@ -82,6 +83,7 @@ class _OrdenarWidgetState extends ConsumerState<OrdenarWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final short = isShortScreen(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -89,8 +91,8 @@ class _OrdenarWidgetState extends ConsumerState<OrdenarWidget> {
         AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           width: double.infinity,
-          constraints: const BoxConstraints(minHeight: 72),
-          padding: const EdgeInsets.all(14),
+          constraints: BoxConstraints(minHeight: short ? 56 : 72),
+          padding: EdgeInsets.all(short ? 10 : 14),
           decoration: BoxDecoration(
             color: _resolved
                 ? AppColors.success.withValues(alpha: 0.08)
@@ -158,12 +160,12 @@ class _OrdenarWidgetState extends ConsumerState<OrdenarWidget> {
           ),
         ],
 
-        const SizedBox(height: 14),
+        SizedBox(height: short ? 8 : 14),
 
         // ── Banco de palabras ────────────────────────────────────────────────
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(14),
+          padding: EdgeInsets.all(short ? 10 : 14),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.03),
             borderRadius: BorderRadius.circular(16),

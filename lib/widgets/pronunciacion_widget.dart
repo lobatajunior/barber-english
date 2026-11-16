@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/screen_size.dart';
 import '../providers/progress_provider.dart';
 import '../services/pronunciation_text.dart';
 
@@ -29,6 +30,11 @@ class PronunciacionWidget extends ConsumerStatefulWidget {
   // onFallo/onResuelto: la pantalla las muestra bajo la respuesta revelada.
   final ValueChanged<PronunciationFeedback?>? onCorreccion;
 
+  /// Con [header] (la escena de ExerciseScreen) el widget ocupa todo el alto
+  /// disponible: escena, frase y "Escucha de nuevo" hacen scroll arriba, y el
+  /// micrófono / resultado / Continuar quedan fijos abajo, siempre visibles.
+  final Widget? header;
+
   const PronunciacionWidget({
     super.key,
     required this.ejercicio,
@@ -37,6 +43,7 @@ class PronunciacionWidget extends ConsumerStatefulWidget {
     this.onPerfecto,
     this.onFallo,
     this.onCorreccion,
+    this.header,
   });
 
   @override
@@ -244,8 +251,8 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   @override
   Widget build(BuildContext context) {
     final wordList = _wordList;
-    return Column(
-      children: [
+    final short = isShortScreen(context);
+    final arriba = <Widget>[
         // Lista vertical palabra + fonética (VOCAB)
         if (wordList != null)
           Container(
@@ -368,11 +375,11 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
           ),
         ),
 
-        const SizedBox(height: 12),
+    ];
 
-        // Zona fija: el IndexedStack reserva desde el inicio el espacio máximo
-        // de ambos hijos, evitando que la pantalla se alargue al aparecer el feedback.
-        IndexedStack(
+    // Zona fija: el IndexedStack reserva desde el inicio el espacio máximo
+    // de ambos hijos, evitando que la pantalla se alargue al aparecer el feedback.
+    final abajo = IndexedStack(
           index: _score != null ? 1 : 0,
           alignment: Alignment.topCenter,
           children: [
@@ -381,6 +388,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
               mainAxisSize: MainAxisSize.min,
               children: [
                 _MicButton(
+                  size: short ? 100 : 132,
                   isListening: _isListening,
                   isEnabled: _modelPlayed && !_isPlaying,
                   pulseCtrl: _micPulseCtrl,
@@ -388,7 +396,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                       ? _startListening
                       : null,
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: short ? 2 : 10),
                 Text(
                   _isListening
                       ? '🔴  Escuchando...'
@@ -448,7 +456,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                     ),
                   ),
                 ],
-                const SizedBox(height: 4),
+                SizedBox(height: short ? 0 : 4),
                 TextButton(
                   onPressed: _continuar,
                   style: TextButton.styleFrom(
@@ -478,7 +486,27 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
               onContinuar: _continuar,
             ),
           ],
+        );
+
+    final header = widget.header;
+    if (header == null) {
+      return Column(
+        children: [...arriba, const SizedBox(height: 12), abajo],
+      );
+    }
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(bottom: isCompactScreen(context) ? 4 : 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [header, ...arriba],
+            ),
+          ),
         ),
+        SizedBox(height: isCompactScreen(context) ? 4 : 8),
+        abajo,
       ],
     );
   }
@@ -488,12 +516,14 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
 // Botón micrófono con animación de círculos pulsantes en verde (CAMBIO 3-5)
 // ─────────────────────────────────────────────────────────────────────────────
 class _MicButton extends StatelessWidget {
+  final double size;
   final bool isListening;
   final bool isEnabled;
   final AnimationController pulseCtrl;
   final VoidCallback? onTap;
 
   const _MicButton({
+    this.size = 132,
     required this.isListening,
     required this.isEnabled,
     required this.pulseCtrl,
@@ -503,8 +533,8 @@ class _MicButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 132,
-      height: 132,
+      width: size,
+      height: size,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -529,8 +559,8 @@ class _MicButton extends StatelessWidget {
             onTap: onTap,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: 80,
-              height: 80,
+              width: _button,
+              height: _button,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isListening
@@ -550,7 +580,7 @@ class _MicButton extends StatelessWidget {
                 color: isListening
                     ? _kGreen
                     : (isEnabled ? Colors.white70 : Colors.white24),
-                size: 34,
+                size: _button * 0.42,
               ),
             ),
           ),
@@ -559,9 +589,12 @@ class _MicButton extends StatelessWidget {
     );
   }
 
+  // Botón central: 80 px en la zona normal (132), 64 px en pantallas bajas.
+  double get _button => size >= 132 ? 80 : 64;
+
   Widget _ring(double t) => Container(
-        width: 80 + t * 52,
-        height: 80 + t * 52,
+        width: _button + t * (size - _button),
+        height: _button + t * (size - _button),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: _kGreen.withValues(alpha: (1.0 - t) * 0.32),
@@ -627,12 +660,16 @@ class _FeedbackPanel extends StatelessWidget {
     );
     // En móviles bajos el círculo va al lado del mensaje (no encima) para que
     // el panel y el botón de continuar quepan sin bajar.
-    final compact = MediaQuery.sizeOf(context).height < 720;
+    final compact = isCompactScreen(context);
+    final short = isShortScreen(context);
+    final btnPad = EdgeInsets.symmetric(vertical: short ? 9 : 12);
     return Stack(
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+          padding: short
+              ? const EdgeInsets.fromLTRB(12, 8, 12, 4)
+              : const EdgeInsets.fromLTRB(16, 14, 16, 10),
           decoration: BoxDecoration(
             color: _bgColor,
             borderRadius: BorderRadius.circular(20),
@@ -645,7 +682,9 @@ class _FeedbackPanel extends StatelessWidget {
               if (compact)
                 Row(
                   children: [
-                    ScoreCircle(score: score),
+                    ScoreCircle(
+                        score: score,
+                        size: short ? 56 : kScoreCircleSize),
                     const SizedBox(width: 12),
                     Expanded(child: titulo),
                   ],
@@ -658,9 +697,17 @@ class _FeedbackPanel extends StatelessWidget {
 
               // Corrección palabra por palabra ("escuché", no "dijiste":
               // Whisper también se equivoca).
+              // Altura limitada con scroll propio: nunca empuja Continuar
+              // fuera de la pantalla.
               if (feedback != null) ...[
                 const SizedBox(height: 6),
-                CorreccionLista(feedback: feedback!, conPrefijo: _isSuccess),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: short ? 60 : 96),
+                  child: SingleChildScrollView(
+                    child: CorreccionLista(
+                        feedback: feedback!, conPrefijo: _isSuccess),
+                  ),
+                ),
               ],
 
               // Lo que dijo el usuario
@@ -674,7 +721,7 @@ class _FeedbackPanel extends StatelessWidget {
                 ),
               ],
 
-              const SizedBox(height: 12),
+              SizedBox(height: short ? 8 : 12),
 
               // CAMBIO 5: Botones según score
               if (_isSuccess)
@@ -686,7 +733,7 @@ class _FeedbackPanel extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _kGreen,
                       foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: btnPad,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14)),
                       elevation: 4,
@@ -714,7 +761,7 @@ class _FeedbackPanel extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white.withValues(alpha: 0.10),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: btnPad,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14)),
                       elevation: 0,
@@ -841,15 +888,18 @@ const double kScoreTextBox = 50;
 
 class ScoreCircle extends StatelessWidget {
   final double score;
-  const ScoreCircle({super.key, required this.score});
+  final double size;
+  const ScoreCircle(
+      {super.key, required this.score, this.size = kScoreCircleSize});
 
   Color get _color => score >= kScorePasa ? _kGreen : _kRed;
 
   @override
   Widget build(BuildContext context) {
+    final textBox = kScoreTextBox * size / kScoreCircleSize;
     return SizedBox(
-      width: kScoreCircleSize,
-      height: kScoreCircleSize,
+      width: size,
+      height: size,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -862,8 +912,8 @@ class ScoreCircle extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: kScoreTextBox,
-            height: kScoreTextBox,
+            width: textBox,
+            height: textBox,
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(

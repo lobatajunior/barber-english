@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/app_colors.dart';
+import '../core/screen_size.dart';
 import '../providers/progress_provider.dart';
 
 class CompletarWidget extends ConsumerStatefulWidget {
@@ -57,6 +58,7 @@ class _CompletarWidgetState extends ConsumerState<CompletarWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final short = isShortScreen(context);
     final frase = widget.ejercicio['frase']?.toString() ?? '';
     final traduccion = widget.ejercicio['traduccion_pregunta']?.toString() ?? '';
     final parts = frase.split('___');
@@ -76,7 +78,7 @@ class _CompletarWidgetState extends ConsumerState<CompletarWidget> {
         // ── Frase con hueco ──────────────────────────────────────────────────
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(short ? 12 : 16),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(16),
@@ -148,7 +150,7 @@ class _CompletarWidgetState extends ConsumerState<CompletarWidget> {
           ),
         ],
 
-        const SizedBox(height: 16),
+        SizedBox(height: short ? 10 : 16),
 
         // ── Opciones ─────────────────────────────────────────────────────────
         Wrap(
@@ -169,7 +171,7 @@ class _CompletarWidgetState extends ConsumerState<CompletarWidget> {
               onTap: _resolved ? null : () => _select(opt),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 22, vertical: short ? 9 : 12),
                 decoration: BoxDecoration(
                   color: isOpt
                       ? chipColor.withValues(alpha: 0.12)
