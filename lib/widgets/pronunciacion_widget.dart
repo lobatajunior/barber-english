@@ -250,7 +250,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
         if (wordList != null)
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: _kGreenGlow,
               borderRadius: BorderRadius.circular(14),
@@ -261,7 +261,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
               children: [
                 for (final (i, (word, fon)) in wordList.indexed)
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    padding: const EdgeInsets.symmetric(vertical: 3),
                     child: Column(
                       children: [
                         Row(
@@ -335,7 +335,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
             ),
           ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 12),
 
         // CAMBIO 3-3: Botón "Escucha de nuevo"
         SizedBox(
@@ -363,12 +363,12 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
               ),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14)),
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: const EdgeInsets.symmetric(vertical: 10),
             ),
           ),
         ),
 
-        const SizedBox(height: 28),
+        const SizedBox(height: 12),
 
         // Zona fija: el IndexedStack reserva desde el inicio el espacio máximo
         // de ambos hijos, evitando que la pantalla se alargue al aparecer el feedback.
@@ -448,9 +448,13 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                     ),
                   ),
                 ],
-                const SizedBox(height: 14),
+                const SizedBox(height: 4),
                 TextButton(
                   onPressed: _continuar,
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(64, 36),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
                   child: Text(
                     'Saltar →',
                     style: GoogleFonts.outfit(
@@ -499,8 +503,8 @@ class _MicButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 160,
-      height: 160,
+      width: 132,
+      height: 132,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -556,8 +560,8 @@ class _MicButton extends StatelessWidget {
   }
 
   Widget _ring(double t) => Container(
-        width: 80 + t * 70,
-        height: 80 + t * 70,
+        width: 80 + t * 52,
+        height: 80 + t * 52,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: _kGreen.withValues(alpha: (1.0 - t) * 0.32),
@@ -610,11 +614,25 @@ class _FeedbackPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final titulo = Text(
+      feedback != null && !_isSuccess
+          ? '$_emoji  ${feedback!.prefix.trim()}'
+          : '$_emoji  $_message',
+      textAlign: TextAlign.center,
+      style: GoogleFonts.outfit(
+        color: _textColor,
+        fontSize: 16,
+        fontWeight: FontWeight.w800,
+      ),
+    );
+    // En móviles bajos el círculo va al lado del mensaje (no encima) para que
+    // el panel y el botón de continuar quepan sin bajar.
+    final compact = MediaQuery.sizeOf(context).height < 720;
     return Stack(
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
           decoration: BoxDecoration(
             color: _bgColor,
             borderRadius: BorderRadius.circular(20),
@@ -622,23 +640,21 @@ class _FeedbackPanel extends StatelessWidget {
           ),
           child: Column(
             children: [
-              // Score circular
-              ScoreCircle(score: score),
-              const SizedBox(height: 14),
-
-              // Emoji + mensaje (bajo 60 con diferencias, el propio
-              // "Inténtalo de nuevo:" de la corrección hace de título)
-              Text(
-                feedback != null && !_isSuccess
-                    ? '$_emoji  ${feedback!.prefix.trim()}'
-                    : '$_emoji  $_message',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.outfit(
-                  color: _textColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+              // Score circular + emoji y mensaje (bajo 60 con diferencias,
+              // el propio "Inténtalo de nuevo:" de la corrección hace de título)
+              if (compact)
+                Row(
+                  children: [
+                    ScoreCircle(score: score),
+                    const SizedBox(width: 12),
+                    Expanded(child: titulo),
+                  ],
+                )
+              else ...[
+                ScoreCircle(score: score),
+                const SizedBox(height: 10),
+                titulo,
+              ],
 
               // Corrección palabra por palabra ("escuché", no "dijiste":
               // Whisper también se equivoca).
@@ -658,7 +674,7 @@ class _FeedbackPanel extends StatelessWidget {
                 ),
               ],
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 12),
 
               // CAMBIO 5: Botones según score
               if (_isSuccess)
@@ -670,7 +686,7 @@ class _FeedbackPanel extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _kGreen,
                       foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14)),
                       elevation: 4,
@@ -698,16 +714,20 @@ class _FeedbackPanel extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white.withValues(alpha: 0.10),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14)),
                       elevation: 0,
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 2),
                 TextButton(
                   onPressed: onContinuar,
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(64, 36),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
                   child: Text(
                     'Continuar de todas formas →',
                     style: GoogleFonts.outfit(

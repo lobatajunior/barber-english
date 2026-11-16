@@ -59,7 +59,7 @@ class _OpcionesWidgetState extends ConsumerState<OpcionesWidget> {
           textAlign: TextAlign.center,
           style: GoogleFonts.outfit(
             color: Colors.white,
-            fontSize: 24,
+            fontSize: 21,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -84,10 +84,10 @@ class _OpcionesWidgetState extends ConsumerState<OpcionesWidget> {
               ),
             ),
           ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 16),
         Wrap(
-          spacing: 12,
-          runSpacing: 12,
+          spacing: 10,
+          runSpacing: 10,
           alignment: WrapAlignment.center,
           children: _shuffled.map((opt) {
             final isCorrect =
@@ -109,7 +109,7 @@ class _OpcionesWidgetState extends ConsumerState<OpcionesWidget> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 22, vertical: 16),
+                    horizontal: 20, vertical: 12),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? borderColor.withValues(alpha:0.12)

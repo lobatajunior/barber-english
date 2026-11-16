@@ -539,7 +539,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
             children: [
               // — Progress bar + close —
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 12, 8),
+                padding: const EdgeInsets.fromLTRB(20, 6, 8, 0),
                 child: Row(
                   children: [
                     Expanded(
@@ -557,6 +557,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                     ),
                     const SizedBox(width: 8),
                     IconButton(
+                      visualDensity: VisualDensity.compact,
                       icon: const Icon(
                         Icons.close,
                         color: Colors.white38,
@@ -598,7 +599,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
 
               // — Instrucción —
               Padding(
@@ -608,7 +609,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
                     color: Colors.white60,
-                    fontSize: 15,
+                    fontSize: 14,
                   ),
                 ),
               ),
@@ -616,7 +617,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
               // — Contenido del ejercicio —
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -651,13 +652,13 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
               // Para pronunciacion los botones están dentro del widget.
               if (_current['tipo']?.toString() != 'pronunciacion')
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 4),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
                         width: double.infinity,
-                        height: 54,
+                        height: 50,
                         child: ElevatedButton(
                           onPressed: _resolved ? _advance : null,
                           style: ElevatedButton.styleFrom(
@@ -690,6 +691,10 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                       ),
                       TextButton(
                         onPressed: _advance,
+                        style: TextButton.styleFrom(
+                          minimumSize: const Size(64, 36),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
                         child: Text(
                           'SALTAR',
                           style: GoogleFonts.outfit(
@@ -1322,8 +1327,11 @@ class SceneCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // En móviles bajos (p. ej. 360x640 con barras del navegador) la mascota
+    // se reduce para que pregunta, opciones y botón quepan sin bajar.
+    final compact = MediaQuery.sizeOf(context).height < 720;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Stack(
         children: [
           Container(
@@ -1336,12 +1344,12 @@ class SceneCardWidget extends StatelessWidget {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(compact ? 10 : 14),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _AvatarCircle(pose: pose),
-                  const SizedBox(width: 14),
+                  _AvatarCircle(pose: pose, width: compact ? 44 : 64),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1442,12 +1450,13 @@ class SceneCardWidget extends StatelessWidget {
 
 class _AvatarCircle extends StatelessWidget {
   final String pose;
-  const _AvatarCircle({required this.pose});
+  final double width;
+  const _AvatarCircle({required this.pose, this.width = 72});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 72,
+      width: width,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
         child: Image.asset(

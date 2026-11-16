@@ -17,6 +17,7 @@
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Aprende inglés para barberos">
   <meta name="theme-color" content="#080808">
@@ -37,7 +38,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" href="splash.webp" as="image" type="image/webp">
   <style>
-    html, body { margin: 0; height: 100%; background: #080808; }
+    /* Alto = zona visible real (100dvh descuenta las barras del navegador y del
+       navegador interno de Instagram); 100% queda como respaldo. Sin scroll de página. */
+    html, body { margin: 0; height: 100%; height: 100dvh; overflow: hidden; background: #080808; }
+    /* Sonda para que Dart lea el área segura (muesca / barra de gestos). */
+    #safe-area-probe {
+      position: fixed; top: 0; left: 0; width: 0; height: 0; visibility: hidden; pointer-events: none;
+      padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
     #splash {
       position: fixed; inset: 0; z-index: 9999;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -67,7 +75,27 @@
     <img src="splash.webp" alt="">
     <div class="bar"></div>
   </div>
+  <div id="safe-area-probe"></div>
   <script>
+    // Área segura en px, leída desde Dart (lib/services/safe_area_web.dart).
+    window.beSafeAreaInsets = function () {
+      var el = document.getElementById('safe-area-probe');
+      if (!el) return [0, 0];
+      var cs = getComputedStyle(el);
+      return [parseFloat(cs.paddingTop) || 0, parseFloat(cs.paddingBottom) || 0];
+    };
+    // Flutter reemplaza el meta viewport al arrancar y quita viewport-fit=cover:
+    // se vuelve a añadir en cuanto aparece su meta.
+    (function () {
+      function fixViewport() {
+        var metas = document.querySelectorAll('meta[name="viewport"]');
+        for (var i = 0; i < metas.length; i++) {
+          var c = metas[i].getAttribute('content') || '';
+          if (c.indexOf('viewport-fit') === -1) metas[i].setAttribute('content', c + ', viewport-fit=cover');
+        }
+      }
+      new MutationObserver(fixViewport).observe(document.head, { childList: true });
+    })();
     window.addEventListener('flutter-first-frame', function () {
       var el = document.getElementById('splash');
       if (!el) return;

@@ -158,7 +158,7 @@ class _OrdenarWidgetState extends ConsumerState<OrdenarWidget> {
           ),
         ],
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 14),
 
         // ── Banco de palabras ────────────────────────────────────────────────
         Container(

@@ -132,9 +132,9 @@ class _WordCard extends StatelessWidget {
       onTap: isMatched ? null : onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        margin: const EdgeInsets.symmetric(vertical: 7),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         width: 145,
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         decoration: BoxDecoration(
           color: (isMatched || isSelected)
               ? color.withValues(alpha:0.12)

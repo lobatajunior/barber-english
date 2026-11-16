@@ -154,11 +154,11 @@ class _EscucharWidgetState extends ConsumerState<EscucharWidget>
           child: _showWord
               ? Padding(
                   key: const ValueKey('word'),
-                  padding: const EdgeInsets.only(top: 28),
+                  padding: const EdgeInsets.only(top: 16),
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
-                        vertical: 28, horizontal: 20),
+                        vertical: 20, horizontal: 20),
                     decoration: BoxDecoration(
                       color: _kCard,
                       borderRadius: BorderRadius.circular(20),

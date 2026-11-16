@@ -11,6 +11,8 @@ import 'providers/auth_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'services/account_service.dart';
+import 'services/safe_area_stub.dart'
+    if (dart.library.js_interop) 'services/safe_area_web.dart';
 
 final _messengerKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -72,8 +74,10 @@ class BarberEnglishApp extends ConsumerWidget {
 
 /// En web, la app se ve como en un móvil: en pantallas anchas todo va en una
 /// columna centrada de [_kMaxAppWidth] px con fondo #080808 a los lados; en
-/// pantallas estrechas ocupa todo el ancho sin cambios. Envuelve al Navigator,
-/// así que diálogos, SnackBars y overlays quedan dentro de la columna.
+/// pantallas estrechas ocupa todo el ancho. Envuelve al Navigator, así que
+/// diálogos, SnackBars y overlays quedan dentro de la columna.
+/// También pasa a MediaQuery el área segura del navegador (barra de gestos,
+/// muesca), que Flutter web no informa, para que SafeArea funcione.
 const double _kMaxAppWidth = 480;
 
 class _MobileFrame extends StatelessWidget {
@@ -83,8 +87,26 @@ class _MobileFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mq = MediaQuery.of(context);
-    if (!kIsWeb || mq.size.width <= _kMaxAppWidth) return child;
+    if (!kIsWeb) return child;
+    var mq = MediaQuery.of(context);
+
+    final safe = webSafeAreaInsets();
+    if (safe.top > mq.viewPadding.top || safe.bottom > mq.viewPadding.bottom) {
+      final viewPadding = mq.viewPadding.copyWith(
+        top: safe.top > mq.viewPadding.top ? safe.top : null,
+        bottom: safe.bottom > mq.viewPadding.bottom ? safe.bottom : null,
+      );
+      // Con el teclado abierto, el padding inferior lo cubre el teclado.
+      final bottom = viewPadding.bottom - mq.viewInsets.bottom;
+      mq = mq.copyWith(
+        viewPadding: viewPadding,
+        padding: viewPadding.copyWith(bottom: bottom > 0 ? bottom : 0),
+      );
+    }
+
+    if (mq.size.width <= _kMaxAppWidth) {
+      return MediaQuery(data: mq, child: child);
+    }
     return ColoredBox(
       color: const Color(0xFF080808),
       child: Center(
