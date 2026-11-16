@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../core/app_colors.dart';
 import '../core/app_theme.dart';
+import '../core/screen_size.dart';
 import '../models/section.dart';
 import '../data/barber_zone_data.dart';
 import '../data/street_english_data.dart';
@@ -157,42 +158,77 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               ),
               _XpBar(gam: gam),
               Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 4),
-                        _MascotHero(
-                          pose: _mascotPose(total),
-                          xpTotal: gam.xpTotal,
-                          floatAnim: _floatAnim,
-                          pulseAnim: _pulseAnim,
+                child: LayoutBuilder(builder: (context, box) {
+                  final short = isShortScreen(context);
+                  final secciones = <Widget>[
+                    const _SectionHeader(),
+                    SizedBox(height: short ? 8 : 14),
+                    ..._sections.map(
+                      (s) => _SectionCard(
+                        section: s,
+                        completed: progress.forSection(s.id),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => s.id == 'street_english'
+                                ? StreetEnglishMenuScreen(section: s)
+                                : SectionScreen(section: s),
+                          ),
                         ),
-                        const SizedBox(height: 22),
-                        _SectionHeader(),
-                        const SizedBox(height: 14),
-                        ..._sections.map(
-                          (s) => _SectionCard(
-                            section: s,
-                            completed: progress.forSection(s.id),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => s.id == 'street_english'
-                                    ? StreetEnglishMenuScreen(section: s)
-                                    : SectionScreen(section: s),
+                      ),
+                    ),
+                    SizedBox(height: short ? 4 : 12),
+                  ];
+                  Widget mascota(double alto) => _MascotHero(
+                        height: alto,
+                        pose: _mascotPose(total),
+                        xpTotal: gam.xpTotal,
+                        floatAnim: _floatAnim,
+                        pulseAnim: _pulseAnim,
+                      );
+
+                  // Lo normal: sin scroll. La mascota ocupa el alto que sobra
+                  // (hasta 210 px) y las tarjetas quedan siempre enteras.
+                  if (box.maxHeight >= (short ? 380 : 460)) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (_, m) => Center(
+                                child: mascota(
+                                    m.maxHeight < 210 ? m.maxHeight : 210),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
+                          SizedBox(height: short ? 6 : 16),
+                          ...secciones,
+                        ],
+                      ),
+                    );
+                  }
+
+                  // Pantallas muy bajas (p. ej. móvil en horizontal): scroll,
+                  // pero sin rebote ni brillo de overscroll.
+                  return ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context)
+                        .copyWith(overscroll: false),
+                    child: SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(child: mascota(110)),
+                          const SizedBox(height: 6),
+                          ...secciones,
+                        ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                }),
               ),
             ],
           ),
@@ -299,8 +335,11 @@ class _TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final short = isShortScreen(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 14, 8, 10),
+      padding: short
+          ? const EdgeInsets.fromLTRB(20, 6, 4, 4)
+          : const EdgeInsets.fromLTRB(20, 14, 8, 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -379,12 +418,15 @@ class _TopBar extends StatelessWidget {
 // ── Mascot hero ───────────────────────────────────────────────────────────────
 
 class _MascotHero extends StatelessWidget {
+  /// Alto total (210 px como máximo); anillos e imagen escalan con él.
+  final double height;
   final String pose;
   final int xpTotal;
   final Animation<double> floatAnim;
   final Animation<double> pulseAnim;
 
   const _MascotHero({
+    this.height = 210,
     required this.pose,
     required this.xpTotal,
     required this.floatAnim,
@@ -393,8 +435,9 @@ class _MascotHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final k = height / 210;
     return SizedBox(
-      height: 210,
+      height: height,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -406,22 +449,22 @@ class _MascotHero extends StatelessWidget {
               child: child,
             ),
             child: Container(
-              width: 192,
-              height: 192,
+              width: 192 * k,
+              height: 192 * k,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppColors.primary.withValues(alpha: 0.03),
                 border: Border.all(
                   color: AppColors.primary.withValues(alpha: 0.07),
-                  width: 22,
+                  width: 22 * k,
                 ),
               ),
             ),
           ),
           // Inner ring
           Container(
-            width: 138,
-            height: 138,
+            width: 138 * k,
+            height: 138 * k,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.primary.withValues(alpha: 0.05),
@@ -447,7 +490,7 @@ class _MascotHero extends StatelessWidget {
               child: Image.asset(
                 pose,
                 key: ValueKey(pose),
-                height: 198,
+                height: 198 * k,
                 fit: BoxFit.contain,
               ),
             ),
@@ -455,7 +498,7 @@ class _MascotHero extends StatelessWidget {
           // XP badge (top-right of mascot)
           if (xpTotal > 0)
             Positioned(
-              top: 8,
+              top: 8 * k,
               right: 32,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -532,10 +575,13 @@ class _XpBar extends StatelessWidget {
     final xpEnNivel = gam.xpTotal - gam.xpInicioNivel;
     final xpNecesario = gam.xpFinNivel - gam.xpInicioNivel;
 
+    final short = isShortScreen(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+      padding: EdgeInsets.fromLTRB(20, 0, 20, short ? 4 : 10),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+        padding: short
+            ? const EdgeInsets.fromLTRB(12, 7, 12, 6)
+            : const EdgeInsets.fromLTRB(14, 10, 14, 10),
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(14),
@@ -580,7 +626,7 @@ class _XpBar extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 7),
+            SizedBox(height: short ? 5 : 7),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
@@ -591,7 +637,7 @@ class _XpBar extends StatelessWidget {
                 minHeight: 5,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: short ? 2 : 4),
             Align(
               alignment: Alignment.centerRight,
               child: Text(
@@ -666,12 +712,15 @@ class _SectionCard extends StatelessWidget {
     final total = section.totalLessons;
     final ratio = section.progressRatio(completed);
     final isStarted = done > 0;
+    final short = isShortScreen(context);
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 14),
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+        margin: EdgeInsets.only(bottom: short ? 10 : 14),
+        padding: short
+            ? const EdgeInsets.fromLTRB(14, 10, 14, 10)
+            : const EdgeInsets.fromLTRB(16, 14, 16, 14),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -703,8 +752,8 @@ class _SectionCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: short ? 36 : 44,
+                  height: short ? 36 : 44,
                   decoration: BoxDecoration(
                     color: section.accentColor.withValues(alpha: 0.14),
                     shape: BoxShape.circle,
@@ -716,7 +765,7 @@ class _SectionCard extends StatelessWidget {
                   child: Center(
                     child: Text(
                       section.emoji,
-                      style: const TextStyle(fontSize: 20),
+                      style: TextStyle(fontSize: short ? 17 : 20),
                     ),
                   ),
                 ),
@@ -742,7 +791,7 @@ class _SectionCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: short ? 8 : 12),
 
             // ── Thin progress bar ──────────────────────────────────────
             ClipRRect(
@@ -755,7 +804,7 @@ class _SectionCard extends StatelessWidget {
                 minHeight: 4,
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: short ? 8 : 10),
 
             // ── Compact progress + small CTA ───────────────────────────
             Row(

@@ -478,7 +478,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
             // ── 1: Panel de feedback ────────────────────────────────────────
             // score ?? 0 solo afecta al layout cuando aún no hay resultado;
             // el panel nunca es visible (index 0 activo) hasta que _score != null.
-            _FeedbackPanel(
+            PronunciationResultPanel(
               score: _score ?? 0,
               spokenText: _spokenText,
               feedback: _feedback,
@@ -605,14 +605,17 @@ class _MicButton extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // Panel de feedback tras pronunciar (CAMBIOS 4 y 5)
 // ─────────────────────────────────────────────────────────────────────────────
-class _FeedbackPanel extends StatelessWidget {
+/// Resultado de un intento: puntaje, mensaje, correcciones y botones.
+/// En pantallas bajas ocupa menos de 120 px de alto.
+class PronunciationResultPanel extends StatelessWidget {
   final double score;
   final String spokenText;
   final PronunciationFeedback? feedback;
   final VoidCallback onRetry;
   final VoidCallback onContinuar;
 
-  const _FeedbackPanel({
+  const PronunciationResultPanel({
+    super.key,
     required this.score,
     required this.spokenText,
     this.feedback,
@@ -647,144 +650,151 @@ class _FeedbackPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final short = isShortScreen(context);
     final titulo = Text(
       feedback != null && !_isSuccess
           ? '$_emoji  ${feedback!.prefix.trim()}'
           : '$_emoji  $_message',
-      textAlign: TextAlign.center,
       style: GoogleFonts.outfit(
         color: _textColor,
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: FontWeight.w800,
+        height: 1.25,
       ),
     );
-    // En móviles bajos el círculo va al lado del mensaje (no encima) para que
-    // el panel y el botón de continuar quepan sin bajar.
-    final compact = isCompactScreen(context);
-    final short = isShortScreen(context);
-    final btnPad = EdgeInsets.symmetric(vertical: short ? 9 : 12);
+    final detalle = feedback != null || spokenText.isNotEmpty;
+    final btnStyleText = GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 15);
+    const btnAlto = 40.0; // máximo 44 px
+    final btnShape =
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10));
+
     return Stack(
       children: [
         Container(
           width: double.infinity,
-          padding: short
-              ? const EdgeInsets.fromLTRB(12, 8, 12, 4)
-              : const EdgeInsets.fromLTRB(16, 14, 16, 10),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: _bgColor,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: _borderColor, width: 1.5),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: _borderColor, width: 1),
           ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Score circular + emoji y mensaje (bajo 60 con diferencias,
-              // el propio "Inténtalo de nuevo:" de la corrección hace de título)
-              if (compact)
-                Row(
-                  children: [
-                    ScoreCircle(
-                        score: score,
-                        size: short ? 56 : kScoreCircleSize),
-                    const SizedBox(width: 12),
-                    Expanded(child: titulo),
-                  ],
-                )
-              else ...[
-                ScoreCircle(score: score),
-                const SizedBox(height: 10),
-                titulo,
-              ],
-
-              // Corrección palabra por palabra ("escuché", no "dijiste":
-              // Whisper también se equivoca).
-              // Altura limitada con scroll propio: nunca empuja Continuar
-              // fuera de la pantalla.
-              if (feedback != null) ...[
-                const SizedBox(height: 6),
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: short ? 60 : 96),
-                  child: SingleChildScrollView(
-                    child: CorreccionLista(
-                        feedback: feedback!, conPrefijo: _isSuccess),
+              // Puntaje al lado del mensaje; debajo del mensaje, las
+              // correcciones y lo que se escuchó (bajo 60 con diferencias, el
+              // propio "Inténtalo de nuevo:" de la corrección hace de título).
+              Row(
+                children: [
+                  ScoreCircle(score: score, size: 44),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        titulo,
+                        // Corrección palabra por palabra ("escuché", no
+                        // "dijiste": Whisper también se equivoca). Altura
+                        // limitada con scroll propio: nunca empuja Continuar
+                        // fuera de la pantalla.
+                        if (detalle)
+                          _ScrollConBarra(
+                            maxHeight: short ? 36 : 80,
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (feedback != null)
+                                    CorreccionLista(
+                                      feedback: feedback!,
+                                      conPrefijo: _isSuccess,
+                                      alinear: TextAlign.left,
+                                    ),
+                                  // Lo que dijo el usuario
+                                  if (spokenText.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        '"$spokenText"',
+                                        style: GoogleFonts.outfit(
+                                            color: Colors.white38,
+                                            fontSize: 12),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-
-              // Lo que dijo el usuario
-              if (spokenText.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Text(
-                  '"$spokenText"',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.outfit(
-                      color: Colors.white38, fontSize: 12),
-                ),
-              ],
-
-              SizedBox(height: short ? 8 : 12),
+                ],
+              ),
+              const SizedBox(height: 6),
 
               // CAMBIO 5: Botones según score
               if (_isSuccess)
                 // Score >= 60% → solo "Continuar ✅"
                 SizedBox(
-                  width: double.infinity,
+                  height: btnAlto,
                   child: ElevatedButton(
                     onPressed: onContinuar,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _kGreen,
                       foregroundColor: Colors.black,
-                      padding: btnPad,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14)),
+                      padding: EdgeInsets.zero,
+                      shape: btnShape,
                       elevation: 4,
                       shadowColor: _kGreen.withValues(alpha: 0.35),
                     ),
-                    child: Text(
-                      'Continuar ✅',
-                      style: GoogleFonts.outfit(
-                          fontWeight: FontWeight.w900, fontSize: 15),
-                    ),
+                    child: Text('Continuar ✅',
+                        style: btnStyleText.copyWith(
+                            fontWeight: FontWeight.w900)),
                   ),
                 )
-              else ...[
-                // Score < 60% → "Intentar de nuevo" + "Continuar de todas formas"
+              else
+                // Score < 60% → "Intentar de nuevo" + "Saltar" en una fila
                 SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: onRetry,
-                    icon: const Text('🔄', style: TextStyle(fontSize: 16)),
-                    label: Text(
-                      'Intentar de nuevo',
-                      style: GoogleFonts.outfit(
-                          fontWeight: FontWeight.w800, fontSize: 15),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withValues(alpha: 0.10),
-                      foregroundColor: Colors.white,
-                      padding: btnPad,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14)),
-                      elevation: 0,
-                    ),
+                  height: btnAlto,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: onRetry,
+                          icon: const Text('🔄',
+                              style: TextStyle(fontSize: 15)),
+                          label: Text('Intentar de nuevo',
+                              maxLines: 1, style: btnStyleText),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Colors.white.withValues(alpha: 0.10),
+                            foregroundColor: Colors.white,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10),
+                            shape: btnShape,
+                            elevation: 0,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: onContinuar,
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          shape: btnShape,
+                          side: const BorderSide(color: Colors.white24),
+                        ),
+                        child: Text(
+                          'Saltar →',
+                          style: btnStyleText.copyWith(
+                              color: Colors.white60,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 2),
-                TextButton(
-                  onPressed: onContinuar,
-                  style: TextButton.styleFrom(
-                    minimumSize: const Size(64, 36),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: Text(
-                    'Continuar de todas formas →',
-                    style: GoogleFonts.outfit(
-                      color: Colors.white30,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
             ],
           ),
         ),
@@ -800,6 +810,46 @@ class _FeedbackPanel extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Zona de altura limitada con scroll y barra siempre visible, para que se note
+// que hay más correcciones debajo.
+// ─────────────────────────────────────────────────────────────────────────────
+class _ScrollConBarra extends StatefulWidget {
+  final double maxHeight;
+  final Widget child;
+
+  const _ScrollConBarra({required this.maxHeight, required this.child});
+
+  @override
+  State<_ScrollConBarra> createState() => _ScrollConBarraState();
+}
+
+class _ScrollConBarraState extends State<_ScrollConBarra> {
+  final _ctrl = ScrollController();
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: widget.maxHeight),
+      child: Scrollbar(
+        controller: _ctrl,
+        thumbVisibility: true,
+        child: SingleChildScrollView(
+          controller: _ctrl,
+          padding: const EdgeInsets.only(right: 8),
+          child: widget.child,
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Corrección palabra por palabra (panel de feedback y respuesta revelada)
 // ─────────────────────────────────────────────────────────────────────────────
 class CorreccionLista extends StatelessWidget {
@@ -808,10 +858,14 @@ class CorreccionLista extends StatelessWidget {
   /// Muestra "Casi:" / "Inténtalo de nuevo:" como primera línea.
   final bool conPrefijo;
 
+  /// Centrado en la respuesta revelada; a la izquierda en el panel.
+  final TextAlign alinear;
+
   const CorreccionLista({
     super.key,
     required this.feedback,
     this.conPrefijo = true,
+    this.alinear = TextAlign.center,
   });
 
   @override
@@ -822,22 +876,25 @@ class CorreccionLista extends StatelessWidget {
       fontWeight: FontWeight.w600,
     );
     return Column(
+      crossAxisAlignment: alinear == TextAlign.left
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
       children: [
         if (conPrefijo)
           Text(feedback.prefix.trim(),
-              textAlign: TextAlign.center,
+              textAlign: alinear,
               style: style.copyWith(fontWeight: FontWeight.w800)),
         for (final item in feedback.items)
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Text('• $item', textAlign: TextAlign.center, style: style),
+            child: Text('• $item', textAlign: alinear, style: style),
           ),
         if (feedback.slowDown)
           Padding(
-            padding: const EdgeInsets.only(top: 6),
+            padding: const EdgeInsets.only(top: 2),
             child: Text(
               '🔊 $kMensajeMasDespacio',
-              textAlign: TextAlign.center,
+              textAlign: alinear,
               style: GoogleFonts.outfit(
                 color: Colors.white70,
                 fontSize: 13,
@@ -896,7 +953,9 @@ class ScoreCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textBox = kScoreTextBox * size / kScoreCircleSize;
+    final stroke = size < 60 ? 4.0 : _kScoreStroke;
+    final textBox =
+        size >= kScoreCircleSize ? kScoreTextBox : size - 2 * stroke - 8;
     return SizedBox(
       width: size,
       height: size,
@@ -906,7 +965,7 @@ class ScoreCircle extends StatelessWidget {
           Positioned.fill(
             child: CircularProgressIndicator(
               value: score / 100,
-              strokeWidth: _kScoreStroke,
+              strokeWidth: stroke,
               backgroundColor: Colors.white12,
               valueColor: AlwaysStoppedAnimation<Color>(_color),
             ),
