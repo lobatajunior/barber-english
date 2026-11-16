@@ -60,10 +60,45 @@ class BarberEnglishApp extends ConsumerWidget {
       scaffoldMessengerKey: _messengerKey,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.theme,
+      builder: (context, child) => _MobileFrame(child: child!),
       home: authState.when(
         loading: () => const _SplashScreen(),
         error: (_, _) => const LoginScreen(),
         data: (user) => user != null ? const HomeScreen() : const LoginScreen(),
+      ),
+    );
+  }
+}
+
+/// En web, la app se ve como en un móvil: en pantallas anchas todo va en una
+/// columna centrada de [_kMaxAppWidth] px con fondo #080808 a los lados; en
+/// pantallas estrechas ocupa todo el ancho sin cambios. Envuelve al Navigator,
+/// así que diálogos, SnackBars y overlays quedan dentro de la columna.
+const double _kMaxAppWidth = 480;
+
+class _MobileFrame extends StatelessWidget {
+  const _MobileFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    if (!kIsWeb || mq.size.width <= _kMaxAppWidth) return child;
+    return ColoredBox(
+      color: const Color(0xFF080808),
+      child: Center(
+        child: ClipRect(
+          child: SizedBox(
+            width: _kMaxAppWidth,
+            // El resto de MediaQuery (teclado, paddings, escala de texto) se
+            // conserva; solo el ancho pasa a ser el de la columna.
+            child: MediaQuery(
+              data: mq.copyWith(size: Size(_kMaxAppWidth, mq.size.height)),
+              child: child,
+            ),
+          ),
+        ),
       ),
     );
   }
