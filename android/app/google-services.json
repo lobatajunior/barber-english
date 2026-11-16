@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "625038868457-3emba5dmik8vqc04dddpbq0m47b2c416.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.barberenglish.app",
+            "certificate_hash": "aa33a0e6210cb26f4a39bdcad76d351e05691742"
+          }
+        },
+        {
           "client_id": "625038868457-l96p1i7ucp4h9hig8a3qb818rorb6tl7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
