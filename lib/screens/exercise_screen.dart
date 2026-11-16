@@ -484,6 +484,10 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
         pose: _poseActual,
         mensaje: _mensaje,
         mensajeEsAcierto: _reaccion == _Reaccion.acierto,
+        // Tras fallar una pronunciación, la escena se reduce a una línea:
+        // el panel de resultado ya explica el error.
+        unaLinea: _current['tipo'] == 'pronunciacion' &&
+            _reaccion == _Reaccion.fallo,
       );
 
   @override
@@ -669,9 +673,9 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                               if (_revelando)
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 8),
+                                  // Sin correcciones: ya están en el panel.
                                   child: _RespuestaReveladaBanner(
                                     respuesta: _respuestaCorrecta,
-                                    correccion: _correccion,
                                   ),
                                 ),
                             ],
@@ -1371,12 +1375,17 @@ class SceneCardWidget extends StatelessWidget {
   final String mensaje; // reacción al resultado; vacío = sin mensaje
   final bool mensajeEsAcierto;
 
+  /// Una sola línea (mascota pequeña + mensaje), para no sumar otro bloque
+  /// cuando el panel de resultado ya muestra el error.
+  final bool unaLinea;
+
   const SceneCardWidget({
     super.key,
     required this.ejercicio,
     required this.pose,
     this.mensaje = '',
     this.mensajeEsAcierto = true,
+    this.unaLinea = false,
   });
 
   String get _phraseEs =>
@@ -1393,6 +1402,43 @@ class SceneCardWidget extends StatelessWidget {
     // se reduce para que pregunta, opciones y botón quepan sin bajar.
     final compact = isCompactScreen(context);
     final short = isShortScreen(context);
+    if (unaLinea) {
+      return Padding(
+        padding: EdgeInsets.only(bottom: short ? 6 : 10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: const Color(0xFF111111),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                height: 28,
+                child: Image.asset(pose,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, _, _) =>
+                        Image.asset('assets/mascota.png')),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  mensaje.isEmpty ? _phraseEs : mensaje,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.outfit(
+                    color: mensaje.isEmpty ? _kGreen : _kAmber,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Padding(
       padding: EdgeInsets.only(bottom: short ? 8 : 12),
       child: Stack(

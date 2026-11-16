@@ -75,13 +75,15 @@ escuchar, pronunciacion, parejas, completar, ordenar, opciones, dialogo, dialogo
 - 60-89%:  👍 "¡Muy bien, se entiende!" → verde, pasa y da XP, y debajo
   "Casi:" con hasta 2 diferencias
 - 0-59%:   🎯 "Inténtalo de nuevo:" con hasta 3 diferencias → rojo, cuenta
-  como fallo (2 fallos muestran la respuesta correcta, con las diferencias
-  del último intento debajo, y avanzan)
+  como fallo (2 fallos muestran la respuesta correcta y avanzan; las
+  diferencias del último intento siguen solo en el panel de resultado)
 - Diferencias (lib/services/pronunciation_text.dart, `wordDiffs`), alineadas
   con las mismas palabras acertadas que el puntaje: escuché "X", era "Y" ·
   faltó "Y" · sobró "X". Se dice "escuché", nunca "dijiste" (Whisper también
   se equivoca). Más de 3 → "Escucha de nuevo y repite más despacio".
-  En la lista vertical cada unidad muestra ✓ o sus diferencias.
+  En la lista vertical cada unidad muestra solo ✓ o ✗; las diferencias se leen
+  únicamente en el panel de resultado (ni en la lista ni en la respuesta
+  revelada).
 - Audio < 1 s o Whisper vacío: intento fallido sin puntaje ni diferencias
 
 ---

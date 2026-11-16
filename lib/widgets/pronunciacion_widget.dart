@@ -284,7 +284,24 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            // Tras puntuar: ✓ / ✗ de esta unidad. Las
+                            // diferencias se leen solo en el panel de resultado.
+                            SizedBox(
+                              width: 28,
+                              child: _score != null &&
+                                      _unitDiffs != null &&
+                                      i < _unitDiffs!.length
+                                  ? Icon(
+                                      _unitDiffs![i].isEmpty
+                                          ? Icons.check_rounded
+                                          : Icons.close_rounded,
+                                      size: 16,
+                                      color: _unitDiffs![i].isEmpty
+                                          ? _kGreen
+                                          : _kYellow,
+                                    )
+                                  : null,
+                            ),
                             Expanded(
                               child: Text(
                                 '[ $fon ]',
@@ -298,11 +315,6 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                             ),
                           ],
                         ),
-                        // Resultado de esta unidad tras puntuar
-                        if (_score != null &&
-                            _unitDiffs != null &&
-                            i < _unitDiffs!.length)
-                          _UnitResult(diffs: _unitDiffs![i]),
                       ],
                     ),
                   ),
@@ -347,6 +359,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
         // CAMBIO 3-3: Botón "Escucha de nuevo"
         SizedBox(
           width: double.infinity,
+          height: 44,
           child: OutlinedButton.icon(
             onPressed: _isPlaying ? null : _speakModel,
             icon: Icon(
@@ -355,7 +368,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
               size: 20,
             ),
             label: Text(
-              _isPlaying ? 'Reproduciendo...' : '🔊  Escucha de nuevo',
+              _isPlaying ? 'Reproduciendo...' : 'Escucha de nuevo',
               style: GoogleFonts.outfit(
                 color: _isPlaying ? _kGreen.withValues(alpha: 0.4) : _kGreen,
                 fontWeight: FontWeight.w700,
@@ -370,7 +383,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
               ),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14)),
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.zero,
             ),
           ),
         ),
@@ -663,8 +676,10 @@ class PronunciationResultPanel extends StatelessWidget {
       ),
     );
     final detalle = feedback != null || spokenText.isNotEmpty;
-    final btnStyleText = GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 15);
-    const btnAlto = 40.0; // máximo 44 px
+    final btnStyleText =
+        GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 14);
+    const btnAlto = 40.0; // Intentar de nuevo / Saltar
+    const btnAltoContinuar = 44.0;
     final btnShape =
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(10));
 
@@ -736,7 +751,7 @@ class PronunciationResultPanel extends StatelessWidget {
               if (_isSuccess)
                 // Score >= 60% → solo "Continuar ✅"
                 SizedBox(
-                  height: btnAlto,
+                  height: btnAltoContinuar,
                   child: ElevatedButton(
                     onPressed: onContinuar,
                     style: ElevatedButton.styleFrom(
@@ -749,7 +764,7 @@ class PronunciationResultPanel extends StatelessWidget {
                     ),
                     child: Text('Continuar ✅',
                         style: btnStyleText.copyWith(
-                            fontWeight: FontWeight.w900)),
+                            fontSize: 15, fontWeight: FontWeight.w900)),
                   ),
                 )
               else
@@ -763,7 +778,7 @@ class PronunciationResultPanel extends StatelessWidget {
                         child: ElevatedButton.icon(
                           onPressed: onRetry,
                           icon: const Text('🔄',
-                              style: TextStyle(fontSize: 15)),
+                              style: TextStyle(fontSize: 14)),
                           label: Text('Intentar de nuevo',
                               maxLines: 1, style: btnStyleText),
                           style: ElevatedButton.styleFrom(
@@ -771,7 +786,7 @@ class PronunciationResultPanel extends StatelessWidget {
                                 Colors.white.withValues(alpha: 0.10),
                             foregroundColor: Colors.white,
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 10),
+                                const EdgeInsets.symmetric(horizontal: 8),
                             shape: btnShape,
                             elevation: 0,
                           ),
@@ -781,7 +796,7 @@ class PronunciationResultPanel extends StatelessWidget {
                       TextButton(
                         onPressed: onContinuar,
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
                           shape: btnShape,
                           side: const BorderSide(color: Colors.white24),
                         ),
@@ -903,30 +918,6 @@ class CorreccionLista extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-}
-
-// Resultado de una unidad de la lista vertical: ✓ si se escuchó entera, o sus
-// diferencias (máx. 2) si no.
-class _UnitResult extends StatelessWidget {
-  final List<WordDiff> diffs;
-  const _UnitResult({required this.diffs});
-
-  @override
-  Widget build(BuildContext context) {
-    final ok = diffs.isEmpty;
-    return Padding(
-      padding: const EdgeInsets.only(top: 2),
-      child: Text(
-        ok ? '✓' : '✗ ${diffs.take(2).map((d) => d.texto).join(' · ')}',
-        textAlign: TextAlign.center,
-        style: GoogleFonts.outfit(
-          color: ok ? _kGreen : _kYellow,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
     );
   }
 }
@@ -1090,7 +1081,7 @@ class _ConfettiPainter extends CustomPainter {
       canvas.rotate(p.angle + progress * p.spin);
       canvas.drawRect(
         Rect.fromCenter(center: Offset.zero, width: p.w, height: p.h),
-        Paint()..color = p.color.withValues(alpha: opacity),
+        Paint()..color = p.color.withValues(alpha: opacity * 0.35),
       );
       canvas.restore();
     }
