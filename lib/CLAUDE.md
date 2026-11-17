@@ -251,7 +251,7 @@ STREET ENGLISH · GRAMMAR. VOCAB tiene las suyas:
   3. `pronunciacion` palabras 1-5 · 4. `pronunciacion` palabras 6-10
   La pronunciación va en grupos de 5 (`frase` = "work, food, tired, go, happy",
   `fonetica` = "[ UORK · FUUD · … ]"): la grabación se corta tras 1 s de
-  silencio (`SILENCE_MS` en `tts_web.dart`), con 10 palabras se cortaría.
+  silencio (`kMicSilencioListaMs` en `lib/services/mic_config.dart`), con 10 palabras se cortaría.
 - Bloques 3, 6, 9, 12 = repaso de los dos anteriores; 15 = repaso general.
 - Progreso en su propia sección: id `street_english_vocab`
   (`users/{uid}/progress/street_english_vocab`), registrada en

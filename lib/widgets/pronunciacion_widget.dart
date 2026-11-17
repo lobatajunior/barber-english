@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/screen_size.dart';
 import '../providers/progress_provider.dart';
 import '../services/pronunciation_text.dart';
+import '../services/speech_service.dart';
 
 // ── Umbrales de puntaje ──────────────────────────────────────────────────────
 // ≥ 90 perfecta (calculateScore solo pasa de 89 si coinciden TODAS las
@@ -60,8 +61,18 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
     with SingleTickerProviderStateMixin {
   bool _isPlaying = false;
   bool _isListening = false;
+  // La grabación paró y se espera a Whisper: "Procesando…".
+  bool _isProcessing = false;
   bool _micUnavailable = false;
   bool _noSpeech = false; // último intento sin audio útil: sin puntaje
+  // No se oyó voz: no se envió nada (no cuenta como intento ni como 0 %).
+  bool _noVoice = false;
+  // El navegador no puede grabar en ningún formato.
+  bool _micNoSoportado = false;
+  // Dueño del permiso del micrófono: se reutiliza en los reintentos de este
+  // ejercicio y se cierra al salir de él.
+  late final String _micOwner = 'pron-${identityHashCode(this)}';
+  late final SpeechService _speech;
   double? _score;
   String _spokenText = '';
   // Corrección palabra por palabra del último intento puntuado.
@@ -119,6 +130,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
       vsync: this,
       duration: const Duration(milliseconds: 1400),
     );
+    _speech = ref.read(speechServiceProvider);
     // La frase NO suena sola al abrir el ejercicio (hacía la lección más
     // lenta): solo con "Escucha de nuevo". El micrófono está listo desde ya.
   }
@@ -127,6 +139,10 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   void dispose() {
     _completeSub?.cancel();
     _audioTimeoutTimer?.cancel();
+    // Salir del ejercicio: se corta una grabación en curso (sin enviarla) y se
+    // cierra el micrófono.
+    if (_isListening) _speech.stopListening();
+    _speech.releaseMic(_micOwner);
     _micPulseCtrl.dispose();
     super.dispose();
   }
@@ -167,7 +183,10 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
 
     setState(() {
       _isListening = true;
+      _isProcessing = false;
       _noSpeech = false;
+      _noVoice = false;
+      _micNoSoportado = false;
       _score = null;
       _spokenText = '';
       _feedback = null;
@@ -185,6 +204,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
           _micPulseCtrl.reset();
           setState(() {
             _isListening = false;
+            _isProcessing = false;
             _noSpeech = true;
           });
           return;
@@ -206,6 +226,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
           _spokenText = words;
           _score = score;
           _feedback = feedback;
+          _isProcessing = false;
           _unitDiffs = units == null
               ? null
               : diffsByUnit(
@@ -224,10 +245,48 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
         if (mounted) {
           _micPulseCtrl.stop();
           _micPulseCtrl.reset();
-          setState(() => _isListening = false);
+          setState(() {
+            _isListening = false;
+            _isProcessing = false;
+          });
         }
       },
+      // Paró la grabación (silencio, tope o toque): se espera a Whisper.
+      onStopped: () {
+        if (!mounted) return;
+        _micPulseCtrl.stop();
+        _micPulseCtrl.reset();
+        setState(() {
+          _isListening = false;
+          _isProcessing = true;
+        });
+      },
+      onNoVoice: () {
+        if (!mounted) return;
+        setState(() {
+          _isListening = false;
+          _isProcessing = false;
+          _noVoice = true;
+        });
+      },
+      onCancelled: () {
+        if (!mounted) return;
+        setState(() {
+          _isListening = false;
+          _isProcessing = false;
+        });
+      },
+      onUnsupported: () {
+        if (!mounted) return;
+        setState(() {
+          _isListening = false;
+          _isProcessing = false;
+          _micNoSoportado = true;
+        });
+      },
       target: _target,
+      listaDePalabras: _wordList != null,
+      owner: _micOwner,
     );
 
     if (!started && mounted) {
@@ -239,6 +298,9 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
       });
     }
   }
+
+  // Toque mientras graba: envía ya si hubo voz; si no, cancela sin enviar.
+  void _finishListening() => ref.read(speechServiceProvider).finishListening();
 
   void _retry() => setState(() {
         _score = null;
@@ -411,20 +473,26 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                 _MicButton(
                   size: short ? 100 : 132,
                   isListening: _isListening,
-                  // Desactivado solo mientras suena la frase modelo.
-                  isEnabled: !_isPlaying,
+                  isProcessing: _isProcessing,
+                  // Desactivado mientras suena la frase modelo o se espera
+                  // a Whisper.
+                  isEnabled: !_isPlaying && !_isProcessing,
                   pulseCtrl: _micPulseCtrl,
-                  onTap: (!_isListening && !_isPlaying)
-                      ? _startListening
-                      : null,
+                  onTap: _isListening
+                      ? _finishListening
+                      : (!_isPlaying && !_isProcessing)
+                          ? _startListening
+                          : null,
                 ),
                 SizedBox(height: short ? 2 : 10),
                 Text(
                   _isListening
-                      ? '🔴  Escuchando...'
-                      : (_isPlaying
-                          ? 'Espera el modelo de pronunciación...'
-                          : '🎙️  Ahora pronuncia tú'),
+                      ? '🔴  Escuchando… toca para terminar'
+                      : _isProcessing
+                          ? 'Procesando…'
+                          : (_isPlaying
+                              ? 'Espera el modelo de pronunciación...'
+                              : '🎙️  Ahora pronuncia tú'),
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
                     color: _isListening
@@ -434,6 +502,31 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                if (_noVoice && !_micUnavailable) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'No te escuché, inténtalo de nuevo',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.outfit(
+                      color: _kYellow,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+                if (_micNoSoportado) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Este navegador no puede grabar audio. Prueba con Chrome '
+                    'o con Safari actualizado.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.outfit(
+                      color: _kRed,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
                 if (_noSpeech && !_micUnavailable) ...[
                   const SizedBox(height: 8),
                   Text(
@@ -557,6 +650,7 @@ String _sinCorteEnGuion(String s) => s.replaceAll('-', '\u2060-\u2060');
 class _MicButton extends StatelessWidget {
   final double size;
   final bool isListening;
+  final bool isProcessing;
   final bool isEnabled;
   final AnimationController pulseCtrl;
   final VoidCallback? onTap;
@@ -564,6 +658,7 @@ class _MicButton extends StatelessWidget {
   const _MicButton({
     this.size = 132,
     required this.isListening,
+    this.isProcessing = false,
     required this.isEnabled,
     required this.pulseCtrl,
     required this.onTap,
@@ -615,7 +710,11 @@ class _MicButton extends StatelessWidget {
                 ),
               ),
               child: Icon(
-                isListening ? Icons.mic : Icons.mic_none_rounded,
+                isListening
+                    ? Icons.mic
+                    : isProcessing
+                        ? Icons.hourglass_top_rounded
+                        : Icons.mic_none_rounded,
                 color: isListening
                     ? _kGreen
                     : (isEnabled ? Colors.white70 : Colors.white24),

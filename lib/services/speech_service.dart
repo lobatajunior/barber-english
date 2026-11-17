@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'tts_web.dart' if (dart.library.io) 'tts_stub.dart';
+import 'mic_web.dart' if (dart.library.io) 'mic_stub.dart';
+import 'mic_config.dart';
 import 'api_keys.dart';
 import 'pronunciation_text.dart' show scorePronunciation, WordDiff;
 import 'pronunciation_text.dart' as pt show wordDiffs;
@@ -15,7 +17,6 @@ class SpeechService {
   final AudioPlayer _player = AudioPlayer();
   final AudioRecorder _recorder = AudioRecorder();
   bool _listening = false;
-  Timer? _listenTimer;
 
   // Sesión nativa en curso (Android/iOS): graba con record y detecta el fin
   // del habla con un VAD propio basado en el nivel de amplitud (dBFS) que
@@ -27,13 +28,28 @@ class SpeechService {
   DateTime? _nativeSilenceStart;
   DateTime? _nativeRecordStart;
 
-  static const _nativeListenMax = Duration(seconds: 5);
-  static const _nativeSilenceAfterSpeech = Duration(milliseconds: 500);
-  static const _nativeSilenceThresholdDb = -40.0;
+  // Callbacks de la escucha nativa en curso (para tocar y terminar).
+  void Function(String words)? _nativeOnResult;
+  void Function()? _nativeOnDone;
+  void Function()? _nativeOnStopped;
+  void Function()? _nativeOnCancelled;
+
+  // Valores en mic_config.dart.
+  static const _nativeListenMax = Duration(milliseconds: kMicNativoTopeMs);
+  static const _nativeSilenceAfterSpeech =
+      Duration(milliseconds: kMicNativoSilencioMs);
+  static const _nativeSilenceThresholdDb = kMicNativoUmbralDb;
 
   // Grabaciones más cortas que esto no se envían a Whisper: son un intento
   // fallido (sin puntaje), igual que una transcripción vacía.
-  static const _minRecording = Duration(seconds: 1);
+  static const _minRecording = Duration(milliseconds: kMicGrabacionMinMs);
+
+  void _log(String msg) {
+    if (!kMicDebug) return;
+    final start = _nativeRecordStart;
+    final ms = start == null ? 0 : DateTime.now().difference(start).inMilliseconds;
+    debugPrint('[mic] +$ms ms · $msg');
+  }
 
   final StreamController<void> _webCompleteController =
       StreamController<void>.broadcast();
@@ -72,41 +88,68 @@ class SpeechService {
 
   bool get isListening => _listening;
 
+  /// Graba y transcribe con Whisper.
+  ///
+  /// - [onStopped]: la grabación paró y se está enviando a Whisper
+  ///   (la interfaz pasa a "Procesando…").
+  /// - [onResult]: texto de Whisper ('' = intento fallido sin puntaje).
+  /// - [onNoVoice]: no se oyó voz (web, [kMicSinVozMs]); no se envió nada.
+  /// - [onCancelled]: se tocó el micrófono sin haber hablado; no se envió nada.
+  /// - [onUnsupported]: el navegador no puede grabar en ningún formato.
+  /// - [onDone]: siempre al final (también si se negó el micrófono).
+  ///
+  /// [owner] identifica al ejercicio: el permiso del micrófono se reutiliza en
+  /// sus reintentos y se cierra con [releaseMic]. [listaDePalabras] alarga el
+  /// silencio que da la grabación por terminada.
   Future<bool> startListening({
     required void Function(String words) onResult,
     required void Function() onDone,
     void Function(double level)? onSoundLevel,
+    void Function()? onStopped,
+    void Function()? onNoVoice,
+    void Function()? onCancelled,
+    void Function()? onUnsupported,
     String target = '',
+    bool listaDePalabras = false,
+    String owner = '',
   }) async {
     if (_listening) return false;
 
     if (kIsWeb) {
       _listening = true;
-      const seconds = 5;
-
-      var resultDelivered = false;
-
-      startWebRecording(
-        (String text) {
-          if (resultDelivered) return;
-          resultDelivered = true;
-          _listenTimer?.cancel();
-          _listening = false;
-          onResult(text);
-          // onDone will be fired immediately after by the JS side
+      micStart(
+        cfg: {
+          'debug': kMicDebug,
+          'owner': owner,
+          'reuse': kMicReusarStream,
+          'formatos': kMicFormatos,
+          'calibrationMs': kMicCalibracionMs,
+          'signalMin': kMicSenalMinRms,
+          'signalWaitMs': kMicEsperaSenalMs,
+          'intervalMs': kMicIntervaloMs,
+          'speechFactor': kMicFactorVoz,
+          'speechMin': kMicUmbralVozMin,
+          'silenceFactor': kMicFactorSilencio,
+          'silenceMin': kMicUmbralSilencioMin,
+          'silenceMaxRatio': kMicSilencioMaxRespectoVoz,
+          'silenceMs': micSilencioMs(listaDePalabras: listaDePalabras),
+          'maxMs': micTopeMs(target),
+          'minBeforeStopMs': kMicMinAntesDePararMs,
+          'noVoiceMs': kMicSinVozMs,
+          'minRecordingMs': kMicGrabacionMinMs,
+          'endpoint': 'https://api.openai.com/v1/audio/transcriptions',
+          'apiKey': kWhisperApiKey,
         },
-        () {
-          // Always called by JS after onResult (or alone on mic-denied)
-          if (!resultDelivered) {
-            _listenTimer?.cancel();
-            _listening = false;
-          }
+        onStopped: () => onStopped?.call(),
+        onResult: onResult,
+        onNoVoice: () => onNoVoice?.call(),
+        onCancelled: () => onCancelled?.call(),
+        onUnsupported: () => onUnsupported?.call(),
+        onDone: () {
+          _listening = false;
           onDone();
         },
-        kWhisperApiKey,
       );
-
-      _listenTimer = Timer(Duration(seconds: seconds), stopWebRecording);
       return true;
     }
 
@@ -114,7 +157,36 @@ class SpeechService {
       onResult: onResult,
       onDone: onDone,
       onSoundLevel: onSoundLevel,
+      onStopped: onStopped,
+      onCancelled: onCancelled,
     );
+  }
+
+  /// Toque en el micrófono mientras graba: envía ya si hubo voz; si no,
+  /// cancela sin enviar ([onCancelled]).
+  Future<void> finishListening() async {
+    if (!_listening) return;
+    if (kIsWeb) {
+      micFinish();
+      return;
+    }
+    if (_nativeStopped) return;
+    final onResult = _nativeOnResult, onDone = _nativeOnDone;
+    if (_nativeHasSpeech && onResult != null && onDone != null) {
+      _log('parada (toque)');
+      await _finishNativeRecording(onResult, onDone);
+    } else {
+      _log('parada (toque sin voz): cancelada');
+      final onCancelled = _nativeOnCancelled;
+      await stopListening();
+      onCancelled?.call();
+      onDone?.call();
+    }
+  }
+
+  /// Cierra el micrófono del ejercicio [owner] (al salir del ejercicio).
+  void releaseMic(String owner) {
+    if (kIsWeb) micRelease(owner);
   }
 
   // ── STT nativo (Android/iOS): graba con record y transcribe vía Whisper.
@@ -124,6 +196,8 @@ class SpeechService {
     required void Function(String words) onResult,
     required void Function() onDone,
     void Function(double level)? onSoundLevel,
+    void Function()? onStopped,
+    void Function()? onCancelled,
   }) async {
     final hasPermission = await _recorder.hasPermission();
     if (!hasPermission) return false;
@@ -136,19 +210,26 @@ class SpeechService {
     _nativeStopped = false;
     _nativeHasSpeech = false;
     _nativeSilenceStart = null;
+    _nativeOnResult = onResult;
+    _nativeOnDone = onDone;
+    _nativeOnStopped = onStopped;
+    _nativeOnCancelled = onCancelled;
 
     await _recorder.start(const RecordConfig(encoder: AudioEncoder.aacLc),
         path: path);
     _nativeRecordStart = DateTime.now();
+    _log('inicio de grabación');
 
     _nativeAmpSub = _recorder
         .onAmplitudeChanged(const Duration(milliseconds: 100))
         .listen((amp) {
       onSoundLevel?.call(amp.current);
       if (amp.current > _nativeSilenceThresholdDb) {
+        if (!_nativeHasSpeech) _log('voz detectada (${amp.current} dB)');
         _nativeHasSpeech = true;
         _nativeSilenceStart = null;
       } else if (_nativeHasSpeech) {
+        if (_nativeSilenceStart == null) _log('silencio detectado');
         final silenceStart = _nativeSilenceStart ??= DateTime.now();
         if (DateTime.now().difference(silenceStart) >=
             _nativeSilenceAfterSpeech) {
@@ -158,6 +239,7 @@ class SpeechService {
     });
 
     _nativeMaxDurationTimer = Timer(_nativeListenMax, () {
+      _log('tope de grabación');
       _finishNativeRecording(onResult, onDone);
     });
 
@@ -171,6 +253,8 @@ class SpeechService {
     if (_nativeStopped) return;
     _nativeStopped = true;
     _nativeMaxDurationTimer?.cancel();
+    _log('parada');
+    _nativeOnStopped?.call();
     await _nativeAmpSub?.cancel();
     _nativeAmpSub = null;
     _listening = false;
@@ -205,8 +289,12 @@ class SpeechService {
         ..files.add(
           await http.MultipartFile.fromPath('file', path, filename: 'audio.m4a'),
         );
+      _log('envío a Whisper: ${fileSize}B');
+      final sent = DateTime.now();
       final streamed = await request.send();
       final response = await http.Response.fromStream(streamed);
+      _log('respuesta de Whisper en '
+          '${DateTime.now().difference(sent).inMilliseconds} ms');
       debugPrint(
           '[DEBUG whisper] status=${response.statusCode} body=${response.body}');
       final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -222,9 +310,8 @@ class SpeechService {
   /// Cancela una escucha nativa en curso sin transcribir (a diferencia de
   /// [_finishNativeRecording], que sí sube el audio a Whisper).
   Future<void> stopListening() async {
-    _listenTimer?.cancel();
     if (kIsWeb) {
-      stopWebRecording();
+      micCancel();
     } else {
       _nativeMaxDurationTimer?.cancel();
       await _nativeAmpSub?.cancel();
@@ -247,7 +334,6 @@ class SpeechService {
       pt.wordDiffs(spoken, target);
 
   void dispose() {
-    _listenTimer?.cancel();
     _nativeMaxDurationTimer?.cancel();
     _nativeAmpSub?.cancel();
     _player.dispose();

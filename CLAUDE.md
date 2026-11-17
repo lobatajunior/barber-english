@@ -23,8 +23,7 @@ flutter build web
 # Check for build errors after creating/editing a lesson
 flutter build web 2>&1 | grep -E "error:|Error:" | head -20
 
-# Lint (known pre-existing noise: 2 allowInterop "errors" in tts_web.dart are
-# web-only false positives; flutter build web compiles fine)
+# Lint (no errors expected; a few pre-existing infos/1 warning remain)
 flutter analyze
 
 # Tests
@@ -82,7 +81,7 @@ Common keys across all exercise types: `tipo`, `instruccion`, `quien_habla`, `fr
 
 ### TTS (Text-to-Speech)
 
-`tts_web.dart` and `tts_stub.dart` are conditionally imported — web uses ResponsiveVoice (voice 'US English Female', rate 0.85) with Web Speech API as fallback. Speech ends fire a custom `rvSpeechEnd` DOM event listened to by Dart. STT uses OpenAI Whisper via `tts_web.dart:startWebRecording()` — auto-stops after 1 s of silence. `SpeechService.calculateScore()` returns 0-100, exact word-by-word in order (no tolerance for endings; capped at 89 unless every word matches; contractions like what's/don't are expanded in both texts first, and two spoken words that join into one target word count as it); ≥ 60 counts as resolved, < 60 is a failure (`kScorePasa` / `kScorePerfecto` in `pronunciacion_widget.dart`). Whisper is called with `temperature` 0 and no `prompt`; recordings under 1 s or empty transcripts are a failed attempt with no score.
+`tts_web.dart` and `tts_stub.dart` are conditionally imported — web uses ResponsiveVoice (voice 'US English Female', rate 0.85) with Web Speech API as fallback. Speech ends fire a custom `rvSpeechEnd` DOM event listened to by Dart. STT uses OpenAI Whisper. Web recording lives in `mic_web.dart` (MediaRecorder + Web Audio, JS in `kMicJs`): it calibrates background noise on the first real signal, stops after 650 ms of silence (1000 ms for word lists), at a cap of 5 s + 0.6 s/word (max 12 s), or when the mic is tapped; no voice in 4 s → nothing is sent and the UI says 'No te escuché, inténtalo de nuevo'. While Whisper answers the mic shows 'Procesando…'. The mic stream is reused within an exercise and released when it closes. Android/iOS record with the `record` package (500 ms silence, 5 s cap). All values are in `lib/services/mic_config.dart`; set `kMicDebug = true` to log timings ('[mic] …'). `SpeechService.calculateScore()` returns 0-100, exact word-by-word in order (no tolerance for endings; capped at 89 unless every word matches; contractions like what's/don't are expanded in both texts first, and two spoken words that join into one target word count as it); ≥ 60 counts as resolved, < 60 is a failure (`kScorePasa` / `kScorePerfecto` in `pronunciacion_widget.dart`). Whisper is called with `temperature` 0 and no `prompt`; recordings under 1 s or empty transcripts are a failed attempt with no score.
 
 ### Gamification
 
