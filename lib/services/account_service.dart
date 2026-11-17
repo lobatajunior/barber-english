@@ -22,6 +22,14 @@ class AccountService {
 
   static Future<void>? _googleInit;
 
+  /// Error del último "Continuar con Google" por redirect (la página se
+  /// recargó): el botón lo muestra debajo al volver a la pantalla de login.
+  static final googleRedirectError = ValueNotifier<String?>(null);
+
+  /// Código propio: Google no llegó a abrir la sesión (popup cerrado sin
+  /// resultado o redirect sin completar).
+  static const kGoogleIncompleto = 'google-incompleto';
+
   /// Credencial de Google cuyo correo ya tiene cuenta (al vincular un
   /// invitado). Sirve para "Iniciar sesión con esa cuenta" sin volver a elegirla.
   static AuthCredential? _pendingGoogleCredential;
@@ -124,7 +132,10 @@ class AccountService {
       final UserCredential result;
       if (kIsWeb) {
         final provider = GoogleAuthProvider();
-        if (isStandaloneWebApp()) {
+        // App instalada o navegador móvil: redirect. En móvil el popup es otra
+        // pestaña y su resultado puede perderse al volver (el SDK lo da como
+        // popup-closed-by-user y se volvía al login sin entrar ni avisar).
+        if (isStandaloneWebApp() || isMobileWebBrowser()) {
           await _googleRedirect(provider, guest);
           return false;
         }
@@ -133,7 +144,18 @@ class AccountService {
               ? await guest.linkWithPopup(provider)
               : await FirebaseAuth.instance.signInWithPopup(provider);
         } on FirebaseAuthException catch (e) {
-          if (_isCancel(e)) return false;
+          if (_isCancel(e)) {
+            // El resultado puede llegar justo después de cerrarse el popup:
+            // si la sesión se abre en unos segundos, es un éxito. Si no, se
+            // avisa en vez de volver al login en silencio.
+            final user = await _esperarSesionGoogle();
+            if (user == null) {
+              throw FirebaseAuthException(code: kGoogleIncompleto);
+            }
+            namePromptDone.add(user.uid);
+            unawaited(_saveGoogleProfile(user));
+            return true;
+          }
           if (!_popupUnavailable.contains(e.code)) rethrow;
           await _googleRedirect(provider, guest);
           return false;
@@ -200,10 +222,11 @@ class AccountService {
       return null;
     } on FirebaseAuthException catch (e) {
       if (isEmailInUse(e)) _pendingGoogleCredential = e.credential;
-      return _isCancel(e) ? null : e;
+      // También al cancelar: se avisa en vez de volver al login en silencio.
+      return e;
     } catch (e) {
-      debugPrint('completeGoogleRedirect: error ignorado: $e');
-      return null;
+      debugPrint('completeGoogleRedirect: $e');
+      return FirebaseAuthException(code: kGoogleIncompleto);
     } finally {
       registering = false;
     }
@@ -225,6 +248,23 @@ class AccountService {
       guest != null
           ? guest.linkWithRedirect(provider)
           : FirebaseAuth.instance.signInWithRedirect(provider);
+
+  /// Espera hasta 3 s a que haya un usuario con Google (entrada o vinculación
+  /// cuyo resultado llegó tarde). null si no llega.
+  static Future<User?> _esperarSesionGoogle() async {
+    bool conGoogle(User? u) =>
+        u != null && u.providerData.any((p) => p.providerId == 'google.com');
+    final actual = FirebaseAuth.instance.currentUser;
+    if (conGoogle(actual)) return actual;
+    try {
+      return await FirebaseAuth.instance
+          .userChanges()
+          .firstWhere(conGoogle)
+          .timeout(const Duration(seconds: 3));
+    } catch (_) {
+      return null;
+    }
+  }
 
   static bool _isCancel(FirebaseAuthException e) =>
       e.code == 'popup-closed-by-user' ||
@@ -310,6 +350,16 @@ class AccountService {
               'contraseña.',
         'user-disabled' => 'Esta cuenta está desactivada',
         'operation-not-allowed' => 'Este método de acceso no está activado',
+        kGoogleIncompleto ||
+        'popup-closed-by-user' ||
+        'cancelled-popup-request' ||
+        'user-cancelled' ||
+        'web-storage-unsupported' ||
+        'unauthorized-domain' =>
+          'No se pudo iniciar sesión con Google. Inténtalo de nuevo.',
+        'popup-blocked' =>
+          'El navegador bloqueó la ventana de Google. Permite las ventanas '
+              'emergentes e inténtalo de nuevo.',
         'too-many-requests' =>
           'Demasiados intentos. Espera un momento e inténtalo de nuevo',
         _ => 'No se pudo completar. Inténtalo de nuevo',

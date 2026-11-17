@@ -27,11 +27,16 @@ void main() async {
   if (kIsWeb) AccountService.completeGoogleRedirect().then(_showRedirectError);
 }
 
-// Error de "Continuar con Google" por redirect: la página se recargó, así que
-// el botón ya no existe y el aviso sale como SnackBar.
+// Error de "Continuar con Google" por redirect: la página se recargó. Sin
+// sesión (pantalla de login) se muestra bajo el botón; con sesión (invitado
+// que vinculaba su cuenta) o con "Ese correo ya tiene cuenta", como SnackBar.
 void _showRedirectError(FirebaseAuthException? e) {
   if (e == null) return;
   final inUse = AccountService.isEmailInUse(e);
+  if (!inUse && FirebaseAuth.instance.currentUser == null) {
+    AccountService.googleRedirectError.value = AccountService.errorMessage(e);
+    return;
+  }
   WidgetsBinding.instance.addPostFrameCallback((_) {
     _messengerKey.currentState?.showSnackBar(SnackBar(
       duration: const Duration(seconds: 10),

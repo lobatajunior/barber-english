@@ -25,6 +25,31 @@ class _GoogleSignInSectionState extends State<GoogleSignInSection> {
   bool _emailInUse = false;
   String _error = '';
 
+  @override
+  void initState() {
+    super.initState();
+    // Error de un "Continuar con Google" por redirect (la página se recargó).
+    AccountService.googleRedirectError.addListener(_mostrarErrorRedirect);
+    final pendiente = AccountService.googleRedirectError.value;
+    if (pendiente != null) {
+      _error = pendiente;
+      AccountService.googleRedirectError.value = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    AccountService.googleRedirectError.removeListener(_mostrarErrorRedirect);
+    super.dispose();
+  }
+
+  void _mostrarErrorRedirect() {
+    final msg = AccountService.googleRedirectError.value;
+    if (msg == null) return;
+    AccountService.googleRedirectError.value = null;
+    if (mounted) setState(() => _error = msg);
+  }
+
   Future<void> _run(Future<void> Function() action) async {
     setState(() {
       _isLoading = true;
