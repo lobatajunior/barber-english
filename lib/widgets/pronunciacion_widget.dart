@@ -73,6 +73,14 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
   String get _phonetica =>
       widget.ejercicio['fonetica']?.toString() ?? '';
 
+  // Fonética de la frase: solo puede partir línea tras el separador '·'.
+  // Dentro de cada parte, espacios no separables y el guion unido con
+  // "word joiner" (U+2060), así nunca queda "a-POINT-" / "ment".
+  String get _phoneticaSinCortes => _phonetica
+      .split('·')
+      .map((u) => _sinCorteEnGuion(u.trim()).replaceAll(' ', '\u00A0'))
+      .join('\u00A0· ');
+
   // Lista de palabras/expresiones cortas (VOCAB, Barber Zone): respuesta
   // "want, time, bad" o "Hello, Welcome, Come in" (o con ·) + fonética
   // "[ UONT · TAIM · BAD ]" con el mismo número de partes. Cada parte: máx.
@@ -298,10 +306,10 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                             ),
                             Expanded(
                               child: Text(
-                                '[ $fon ]',
+                                '[\u00A0${_sinCorteEnGuion(fon)}\u00A0]',
                                 style: GoogleFonts.outfit(
                                   color: _kGreen,
-                                  fontSize: 17,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.w700,
                                   letterSpacing: 0.5,
                                 ),
@@ -337,11 +345,11 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                   Border.all(color: _kGreen.withValues(alpha: 0.30)),
             ),
             child: Text(
-              _phonetica,
+              _phoneticaSinCortes,
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
                 color: _kGreen,
-                fontSize: 17,
+                fontSize: 15,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.5,
               ),
@@ -504,13 +512,27 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
     }
     return Column(
       children: [
+        // Escena arriba; frase, fonética y "Escucha de nuevo" centradas en el
+        // espacio libre hasta la zona fija. Si no cabe, todo hace scroll.
         Expanded(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.only(bottom: isCompactScreen(context) ? 4 : 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [header, ...arriba],
-            ),
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: header),
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      bottom: isCompactScreen(context) ? 4 : 8),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: arriba,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         SizedBox(height: isCompactScreen(context) ? 4 : 8),
@@ -519,6 +541,9 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
     );
   }
 }
+
+/// Une el guion con sus letras para que la línea no se parta en él.
+String _sinCorteEnGuion(String s) => s.replaceAll('-', '\u2060-\u2060');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Botón micrófono con animación de círculos pulsantes en verde (CAMBIO 3-5)
@@ -711,14 +736,18 @@ class PronunciationResultPanel extends StatelessWidget {
                         // fuera de la pantalla.
                         if (detalle)
                           _ScrollConBarra(
-                            maxHeight: short ? 36 : 80,
+                            maxHeight: short ? 80 : 96,
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   if (feedback != null)
+                                    // Sin "Casi:" (el título ya lo dice) ni
+                                    // "repite más despacio" (ya está el
+                                    // botón "Escucha de nuevo" arriba).
                                     CorreccionLista(
                                       feedback: feedback!,
-                                      conPrefijo: _isSuccess,
+                                      conPrefijo: false,
+                                      conDespacio: false,
                                       alinear: TextAlign.left,
                                     ),
                                   // Lo que dijo el usuario
@@ -871,11 +900,15 @@ class CorreccionLista extends StatelessWidget {
   /// Centrado en la respuesta revelada; a la izquierda en el panel.
   final TextAlign alinear;
 
+  /// Muestra "Escucha de nuevo y repite más despacio" si hay > 3 diferencias.
+  final bool conDespacio;
+
   const CorreccionLista({
     super.key,
     required this.feedback,
     this.conPrefijo = true,
     this.alinear = TextAlign.center,
+    this.conDespacio = true,
   });
 
   @override
@@ -899,7 +932,7 @@ class CorreccionLista extends StatelessWidget {
             padding: const EdgeInsets.only(top: 2),
             child: Text('• $item', textAlign: alinear, style: style),
           ),
-        if (feedback.slowDown)
+        if (conDespacio && feedback.slowDown)
           Padding(
             padding: const EdgeInsets.only(top: 2),
             child: Text(

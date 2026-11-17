@@ -73,14 +73,16 @@ escuchar, pronunciacion, parejas, completar, ordenar, opciones, dialogo, dialogo
 - 90-100%: 🏆 "¡Pronunciación perfecta!" → verde + confetti (solo si
   coinciden TODAS las palabras exactas; si falta una, máximo 89%)
 - 60-89%:  👍 "¡Muy bien, se entiende!" → verde, pasa y da XP, y debajo
-  "Casi:" con hasta 2 diferencias
+  hasta 2 diferencias (sin línea "Casi:": el título ya es el mensaje)
 - 0-59%:   🎯 "Inténtalo de nuevo:" con hasta 3 diferencias → rojo, cuenta
   como fallo (2 fallos muestran la respuesta correcta y avanzan; las
   diferencias del último intento siguen solo en el panel de resultado)
 - Diferencias (lib/services/pronunciation_text.dart, `wordDiffs`), alineadas
   con las mismas palabras acertadas que el puntaje: escuché "X", era "Y" ·
   faltó "Y" · sobró "X". Se dice "escuché", nunca "dijiste" (Whisper también
-  se equivoca). Más de 3 → "Escucha de nuevo y repite más despacio".
+  se equivoca). Más de 3 → `slowDown` ("Escucha de nuevo y repite más
+  despacio"), que el panel de resultado NO muestra: ya está el botón
+  "Escucha de nuevo" arriba.
   En la lista vertical cada unidad muestra solo ✓ o ✗; las diferencias se leen
   únicamente en el panel de resultado (ni en la lista ni en la respuesta
   revelada).
