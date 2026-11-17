@@ -30,6 +30,10 @@ class PronunciacionWidget extends ConsumerStatefulWidget {
   // onFallo/onResuelto: la pantalla las muestra bajo la respuesta revelada.
   final ValueChanged<PronunciationFeedback?>? onCorreccion;
 
+  /// Cada intento con puntaje (0-100), acierte o no. Los intentos sin audio
+  /// útil (< 1 s o Whisper vacío) no cuentan.
+  final ValueChanged<double>? onIntento;
+
   /// Con [header] (la escena de ExerciseScreen) el widget ocupa todo el alto
   /// disponible: escena, frase y "Escucha de nuevo" hacen scroll arriba, y el
   /// micrófono / resultado / Continuar quedan fijos abajo, siempre visibles.
@@ -43,6 +47,7 @@ class PronunciacionWidget extends ConsumerStatefulWidget {
     this.onPerfecto,
     this.onFallo,
     this.onCorreccion,
+    this.onIntento,
     this.header,
   });
 
@@ -185,6 +190,7 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
           return;
         }
         final score = speech.calculateScore(words, _target);
+        widget.onIntento?.call(score);
         final diffs = speech.wordDiffs(words, _target);
         final feedback = PronunciationFeedback.from(score, diffs,
             perfecto: kScorePerfecto, pasa: kScorePasa);

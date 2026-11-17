@@ -10,6 +10,7 @@ import '../models/lesson.dart';
 import '../providers/progress_provider.dart';
 import '../providers/gamification_provider.dart';
 import '../services/account_service.dart';
+import '../services/stats_service.dart';
 import '../services/pronunciation_text.dart' show PronunciationFeedback;
 import 'guest_wall_screen.dart';
 import '../widgets/opciones_widget.dart';
@@ -130,8 +131,29 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
       widget.lesson.descripcionEs != null ||
       widget.lesson.motivacionEs != null;
 
+  // Estadísticas silenciosas (StatsService): nunca se esperan ni avisan de
+  // errores. La pronunciación se registra por intento en _onIntentoPronunciacion.
+  String get _tipoActual => _current['tipo']?.toString() ?? '';
+
+  void _onIntentoPronunciacion(double score) {
+    final ok = score >= kScorePasa;
+    StatsService.registrarTipo('pronunciacion', acierto: ok);
+    StatsService.registrarPronunciacion(
+      texto: _current['respuesta_correcta']?.toString() ?? '',
+      puntaje: score,
+      acierto: ok,
+      fonetica: _current['fonetica']?.toString() ?? '',
+      traduccion: _current['traduccion_pregunta']?.toString() ?? '',
+      seccion: widget.sectionId,
+    );
+  }
+
   void _onResolved() {
     if (!_resolved) {
+      if (_tipoActual != 'pronunciacion') {
+        StatsService.registrarTipo(_tipoActual, acierto: true);
+      }
+      StatsService.registrarDia(ejercicios: 1);
       // Capture the nivel before any exercise XP is added (only on first call)
       if (_nivelAlEmpezar == -1) {
         _nivelAlEmpezar = ref.read(gamificationProvider).nivel;
@@ -158,6 +180,9 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
   // _kMaxIntentos se muestra la respuesta correcta y se avanza sola.
   void _onFallo() {
     if (_resolved || _revelando) return;
+    if (_tipoActual != 'pronunciacion') {
+      StatsService.registrarTipo(_tipoActual, acierto: false);
+    }
     _intentosFallidos++;
     if (_intentosFallidos == 1) {
       setState(() {
@@ -666,6 +691,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
                           onPerfecto: _onPerfecto,
                           onFallo: _onFallo,
                           onCorreccion: (f) => _correccion = f,
+                          onIntento: _onIntentoPronunciacion,
                           header: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [

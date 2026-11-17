@@ -1,6 +1,7 @@
 import 'dart:async' show StreamSubscription, unawaited;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/gamification_service.dart';
+import '../services/stats_service.dart';
 import 'auth_provider.dart';
 
 class GamificationState {
@@ -66,6 +67,7 @@ class GamificationNotifier extends StateNotifier<GamificationState> {
     _raw = _raw.copyWith(xpTotal: newXP, nivel: GamificationService.getNivel(newXP));
     state = _fromRaw();
     unawaited(_service.save(_userId, _raw));
+    StatsService.registrarDia(xp: puntos);
   }
 
   // Checks and awards daily streak. Returns XP bonus earned (0 or 20).
@@ -85,6 +87,7 @@ class GamificationNotifier extends StateNotifier<GamificationState> {
       nivel: GamificationService.getNivel(newXP),
     );
     if (mounted) state = _fromRaw();
+    StatsService.registrarDia(xp: xpBonus);
     await _service.save(_userId, _raw);
     return xpBonus;
   }
