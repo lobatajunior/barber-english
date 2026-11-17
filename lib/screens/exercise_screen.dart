@@ -62,7 +62,13 @@ class ExerciseScreen extends ConsumerStatefulWidget {
     super.key,
     required this.lesson,
     required this.sectionId,
+    this.repaso = false,
   });
+
+  /// Repaso de Práctica: al terminar vuelve atrás sin resumen, sin los +100 XP
+  /// de lección, sin racha y sin marcar progreso. La XP por pronunciación se
+  /// suma igual que en una lección.
+  final bool repaso;
 
   @override
   ConsumerState<ExerciseScreen> createState() => _ExerciseScreenState();
@@ -228,6 +234,11 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
     // Evita sumar +100 XP de nuevo si se pulsa FINALIZAR varias veces.
     if (_completing) return;
     _completing = true;
+
+    if (widget.repaso) {
+      if (mounted) Navigator.of(context).pop();
+      return;
+    }
 
     // Capture starting nivel if no exercises were resolved before completion
     if (_nivelAlEmpezar == -1) {

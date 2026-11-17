@@ -8,7 +8,7 @@ import 'firebase_options.dart';
 import 'core/app_theme.dart';
 import 'core/app_colors.dart';
 import 'providers/auth_provider.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_shell.dart';
 import 'screens/login_screen.dart';
 import 'services/account_service.dart';
 import 'services/safe_area_stub.dart'
@@ -66,7 +66,7 @@ class BarberEnglishApp extends ConsumerWidget {
       home: authState.when(
         loading: () => const _SplashScreen(),
         error: (_, _) => const LoginScreen(),
-        data: (user) => user != null ? const HomeScreen() : const LoginScreen(),
+        data: (user) => user != null ? const MainShell() : const LoginScreen(),
       ),
     );
   }

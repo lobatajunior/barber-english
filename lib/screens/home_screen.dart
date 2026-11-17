@@ -116,7 +116,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   // No se pregunta con datos solo de caché (el nombre podría estar ya en el
   // servidor) ni a quien acaba de registrarse.
   void _maybeAskName(UserProfile? profile) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = ref.read(currentUserProvider);
     if (!mounted ||
         user == null ||
         user.isAnonymous ||
