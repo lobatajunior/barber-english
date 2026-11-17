@@ -54,7 +54,6 @@ class PronunciacionWidget extends ConsumerStatefulWidget {
 class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
     with SingleTickerProviderStateMixin {
   bool _isPlaying = false;
-  bool _modelPlayed = false;
   bool _isListening = false;
   bool _micUnavailable = false;
   bool _noSpeech = false; // último intento sin audio útil: sin puntaje
@@ -107,7 +106,8 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
       vsync: this,
       duration: const Duration(milliseconds: 1400),
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) => _speakModel());
+    // La frase NO suena sola al abrir el ejercicio (hacía la lección más
+    // lenta): solo con "Escucha de nuevo". El micrófono está listo desde ya.
   }
 
   @override
@@ -132,22 +132,16 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
       _audioTimeoutTimer?.cancel();
       _completeSub?.cancel();
       _completeSub = null;
-      setState(() {
-        _isPlaying = false;
-        _modelPlayed = true;
-      });
+      setState(() => _isPlaying = false);
     });
 
     // Fallback: si el audio falla silenciosamente (ej. Google TTS bloqueado),
-    // desbloquear el micrófono igualmente tras 6 segundos.
+    // desbloquear el micrófono y el botón igualmente tras 6 segundos.
     _audioTimeoutTimer = Timer(const Duration(seconds: 6), () {
       if (!mounted) return;
       _completeSub?.cancel();
       _completeSub = null;
-      setState(() {
-        _isPlaying = false;
-        _modelPlayed = true;
-      });
+      setState(() => _isPlaying = false);
     });
 
     speech.speak(_target);
@@ -403,9 +397,10 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                 _MicButton(
                   size: short ? 100 : 132,
                   isListening: _isListening,
-                  isEnabled: _modelPlayed && !_isPlaying,
+                  // Desactivado solo mientras suena la frase modelo.
+                  isEnabled: !_isPlaying,
                   pulseCtrl: _micPulseCtrl,
-                  onTap: (!_isListening && _modelPlayed && !_isPlaying)
+                  onTap: (!_isListening && !_isPlaying)
                       ? _startListening
                       : null,
                 ),
@@ -413,14 +408,14 @@ class _PronunciacionWidgetState extends ConsumerState<PronunciacionWidget>
                 Text(
                   _isListening
                       ? '🔴  Escuchando...'
-                      : (_modelPlayed
-                          ? '🎙️  Ahora pronuncia tú'
-                          : 'Espera el modelo de pronunciación...'),
+                      : (_isPlaying
+                          ? 'Espera el modelo de pronunciación...'
+                          : '🎙️  Ahora pronuncia tú'),
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
                     color: _isListening
                         ? _kGreen
-                        : (_modelPlayed ? Colors.white70 : Colors.white30),
+                        : (_isPlaying ? Colors.white30 : Colors.white70),
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
